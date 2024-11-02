@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL : '/api',
   withCredentials: false,
   headers: {
     Accept: 'application/json',
@@ -11,6 +12,7 @@ const apiClient = axios.create({
 export default {
 //클라이언트에서 직접 api요청 --> 서버요청으로 변경
   //const url = "https://openapi.naver.com/v1/search/book.json?query="+searchTitle;
+
 
  getBookInfo(searchTitle){
   const url = "/api/books/search/"+searchTitle;
@@ -33,4 +35,3 @@ export default {
     return axios.get(url);
   }
 };
-
