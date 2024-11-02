@@ -13,13 +13,6 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-<<<<<<< Updated upstream
-        target: 'http://localhost:8090',
-        changeOrigin: true,
-        secure:false,
-      },
-    },
-=======
         target: 'http://192.168.0.21:8190', // 요청을 보낼 프록시 서버 URL
       },
       '/ws-stomp': {
@@ -40,6 +33,5 @@ export default defineConfig({
 
   define: {
     global: 'window'
->>>>>>> Stashed changes
   },
 })
