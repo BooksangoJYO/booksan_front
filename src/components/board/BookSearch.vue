@@ -7,17 +7,16 @@
         <!--books 배열에 데이터가 있는경우 책 리스트 렌더링-->
         <div v-if="books.length">
             <!--순서가 없는 항목의 리스트 생성(ul)-->
-            <ul>
+            
                 <!--books 배열을 순회하면서 각 책 정보를 리스트 항목으로 렌더링-->
                 <!--index는 books 배열의 각 항목을 나타내는 변수-->
                 <!--<li>는 list item(리스트 항목)을 의미-->
-                <li v-for="(book,index) in books" :key="index" @click="selectBook(book)">
-                    <img :src ="book.image" alt="책 이미지" />
-                    <h3>{{ book.title }}</h3>
-                    <p>{{ book.writer }}</p>
-                    <p>{{ book.publisher }}</p>
-                </li>
-            </ul>
+            <div v-for="(book,index) in bookData" :key="index" @click="selectBook(book)">
+                <img :src ="book.image" alt="책 이미지" />
+                <h3>{{ book.title }}</h3>
+                <p>{{ book.writer }}</p>
+                <p>{{ book.publisher }}</p>
+            </div>            
         </div>
     </div>
 </template>
