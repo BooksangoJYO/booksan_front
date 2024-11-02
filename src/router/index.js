@@ -1,4 +1,4 @@
-import Book from '@/components/board/BookSearch.vue';
+import Book from '@/components/board/BoardInsert.vue';
 import ChatRoom from '@/components/ChatRoom.vue';
 import ChatRoomList from '@/components/ChatRoomList.vue';
 import { createRouter, createWebHistory } from 'vue-router';
