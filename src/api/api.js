@@ -16,10 +16,8 @@ export default {
 
  getBookInfo(searchTitle){
   const url = "/api/books/search/"+searchTitle;
-
-  //params: { query: searchTitle }: axios의 get 메서드에서 params 옵션을 사용하여 URL에 쿼리 파라미터를 추가합니다.
-  apiClient.get(url);
- },
+  return apiClient.get(url);
+ }, 
 
   postChatRoom(roomName) {
     const url = "/api/chat/room/insert/"+roomName;
