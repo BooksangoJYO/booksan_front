@@ -1,4 +1,4 @@
-import Book from '@/components/board/BoardInsert.vue';
+import BoardInsert from '@/components/board/BoardInsert.vue';
 import ChatRoom from '@/components/ChatRoom.vue';
 import ChatRoomList from '@/components/ChatRoomList.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -9,7 +9,7 @@ const router = createRouter({
     routes: [
         //{ path: '/', component: Main },
         { path: '/login', component: SocialLogin  },
-        { path: '/book', component: Book},
+        { path: '/board/insert', component: BoardInsert},
         {path:'/chat/roomList',component : ChatRoomList},
         {path: '/chat/room/enter/:roomId',component: ChatRoom}
     ]

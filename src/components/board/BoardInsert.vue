@@ -34,9 +34,10 @@
                 <!--책 카테고리(드롭다운)-->
                 <div>
                     <label for="category">책 카테고리:</label>
-                    <select>
-                        <option></option>
-
+                    <select id="category" v-model="form.category">
+                        <option v-for="category in categories" :key="category.booksCategoryId" :value="category.booksCategoryId">
+                            {{ category.booksCategoryName }}
+                        </option>
                     </select>
                 </div>
                 
@@ -64,7 +65,8 @@
 
 <script setup>
 import BookSearch from './BookSearch.vue';
-import {ref} from 'vue';
+import {ref,onMounted} from 'vue';
+import api from '@/api/api';
 
 //검색 상태 관리 변수
 let viewSearchStatus = ref(false);
@@ -78,6 +80,9 @@ const form = ref({
     price: 'null',
     nickname: '',
 });
+
+//카테고리 데이터를 저장하는 변수
+const categories = ref([]);
 
 //BookSearch 컴포넌트에서 선택된 책 정보를 받는 메서드
 const handleBookSelected = (book) => {
@@ -117,4 +122,21 @@ const submitForm = async () => {
     }
 };
 
+//카테고리 데이터를 가져오는 함수
+const getBookCategories = async () => {
+    try{
+        const response = await api.getBookCategories();
+        //첫번째 data는 응답 객체의 data필드, 두번째 data는 booksCategories 배열
+        console.log(response.data);
+        categories.value = response.data.booksCategories;
+    } catch(error) {
+        console.log("카테고리 데이터를 가져오는중 오류가 발생했습니다.", error);
+    }
+};
+
+
+//컴포넌트가 마운트될 때 카테고리 데이터를 가져옴
+onMounted(()=>{
+    getBookCategories();
+});
 </script>
