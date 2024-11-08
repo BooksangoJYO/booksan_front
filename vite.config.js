@@ -13,10 +13,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/board': {
-        target: 'http://192.168.0.20:8090', // 요청을 보낼 프록시 서버 URL
+        target: 'http://localhost:8090', // 요청을 보낼 프록시 서버 URL
       },
       '/api/books': {
-        target: 'http://192.168.0.20:8090', // 요청을 보낼 프록시 서버 URL
+        target: 'http://localhost:8090', // 요청을 보낼 프록시 서버 URL
       },
       '/api/chat': {
         target: 'http://192.168.0.21:8190', // 요청을 보낼 프록시 서버 URL

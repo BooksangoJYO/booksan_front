@@ -26,6 +26,20 @@ export default {
     return apiClient.get(url);
   },
 
+  //게시물 등록(boardData는 책정보+게시물 등록 정보)
+  BoardInsert(boardData){
+    const url = "/board/insert";
+    return apiClient.post(url, boardData);
+  },
+
+  //게시물 조회
+  getBoardRead(dealId) {
+    const url = `/board/read/${dealId}`;
+    return apiClient.get(url)
+  },
+
+  
+
   postChatRoom(roomName) {
     const url = "/chat/room/insert/"+roomName;
     return apiClient.post(url);

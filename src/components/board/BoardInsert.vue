@@ -34,7 +34,8 @@
                 <!--책 카테고리(드롭다운)-->
                 <div>
                     <label for="category">책 카테고리:</label>
-                    <select id="category" v-model="form.category">
+                    <select id="category" v-model.number="form.booksCategoryId">
+                        <option :value="null" disabled>카테고리를 선택하세요</option>
                         <option v-for="category in categories" :key="category.booksCategoryId" :value="category.booksCategoryId">
                             {{ category.booksCategoryName }}
                         </option>
@@ -76,8 +77,8 @@ const selectedBook = ref(null);
 const form = ref({
     title: '',
     content: '',
-    category: '',
-    price: 'null',
+    booksCategoryId: null,
+    price: null,
     nickname: '',
 });
 
@@ -101,19 +102,33 @@ const viewSearch=() =>{
 
 //폼 제출 메서드
 const submitForm = async () => {
+    // 유효성 검사 추가
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price || !form.value.nickname) {
+        alert("모든 필드를 입력하세요.");
+        return;
+    }
+
     try{
         //폼 데이터와 선택된 책 정보를 하나의 객체로 결합
         const dataToSend = {
-            ...form.value, //폼 데이터
-            bookInfo: selectedBook.value, //선택된 책정보
+            ...form.value, //폼 데이터(객체를 복사하여 포함)
+            isbn: selectedBook.value?.isbn || null,//선택된 책의 ISBN 없으면 null
+            bookTitle: selectedBook.value?.title || null,
+            bookWriter: selectedBook.value?.author || null,
+            bookPublisher: selectedBook.value?.publisher || null
+            
         };
 
+        //디버깅용 코드
+        console.log("전송할 데이터:", dataToSend);
+
         //백엔드에 POST 요청
-        const response = await axios.post('/api/submitBookData', dataToSend);
+        const response = await api.BoardInsert(dataToSend);
+        
         if(response.data.status==" success"){
-            alert(response.data.mssage);
+            alert(response.data.message);
         }else{
-            alert(response.data.mssage);
+            alert(response.data.message);
         }
         
     } catch(error) {
