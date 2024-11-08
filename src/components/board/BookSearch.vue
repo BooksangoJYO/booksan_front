@@ -1,7 +1,7 @@
 <template>    
     <div>
-        <!--searchTitle 변수와 양방향 바인딩-->
-        <input @keydown.enter="searchBook" type="text" v-model="searchTitle" placeholder="책 제목을 입력해주세요"/>
+        <!--keyword 변수와 양방향 바인딩-->
+        <input @keydown.enter="searchBook" type="text" v-model="keyword" placeholder="책 제목을 입력해주세요"/>
         <!--검색 버튼 클릭시 searchBook메서드 실행-->
         <button @click="searchBook">검색</button>
         
@@ -14,7 +14,21 @@
                 <h3>책 제목:{{ book.title }}</h3>
                 <p>책 저자:{{ book.author }}</p>
                 <p>책 출판사:{{ book.publisher }}</p>
-            </div>            
+            </div>    
+            
+            <!--페이지네이션 버튼(이전,다음,페이지 이동)-->
+            <div class="pagination">
+                <!--이전 버튼(이전 페이지블록으로 이동)-->
+                <button @click="goToPage(data.start -1)" :disabled="!data.prev">이전</button>
+
+                <!--현재 블록의 페이지 버튼-->
+                <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
+                    <button @click="goToPage(pageNum)" :class="{active: pageNum==data.page}">{{ pageNum }}</button>
+                </span>
+
+                <!--다음 블록 버튼-->
+                <button @click="goToPage(data.end + 1)" :disabled="!data.next">다음</button>
+            </div>
         </div>
     </div>
 </template>
@@ -22,7 +36,7 @@
 
 <script setup>
 //Vue Composition API: ref 함수를 사용하여 반응형 데이터 변수를 정의
-import {reactive, ref, defineEmits} from 'vue'; 
+import {reactive, ref, defineEmits, computed} from 'vue'; 
 //HTTP 요청을 보내기 위해 사용되는 라이브러리(네이버 API에 요청하거나 백엔드 서버에 데이터 전송)
 import api from '@/api/api';
 
@@ -43,21 +57,57 @@ import api from '@/api/api';
         */
         //반응형 변수 선언
         const emit = defineEmits(); //defineEmits를 사용하여 emit 정의
-        const searchTitle = ref('');        
+        const keyword = ref('');        
         const data = reactive({
             books : [],
+            page:1, //현재 페이지
+            size:10, //한페이지에 표시할 항목 수
+            totalPages:1, //총 페이지 수 (응답에 따라 설정)
+            start:1,    //현재 페이지 블록의 시작 페이지
+            end:10,     //현제 페이지 블록의 끝 페이지
+            prev:false, //이전 블록 존재 여부
+            next:false  //다음 블록 존재 여부
+        });
+
+        //블록 내의 페이지 리스트를 계산하는 변수
+        const pagesInCurrentBlock = computed(() => {
+            const pages = [];
+            for( let i = data.start; i<=data.end; i++){
+                pages.push(i);
+            }
+            return pages;
         });
 
         //책 검색 메서드(서버에 요청)
         const searchBook = async () => {
             try{
-                const response = await api.getBookInfo(searchTitle.value);
-                data.books.push(...response.data.items);
+                const response = await api.getBookInfo(keyword.value, data.page, data.size);
+                const responseData = response.data;
+                console.log(response.data.dtoList);
+                
+                //서버에서 넘어온 페이지네이션 데이터 설정
+                data.books=response.data.dtoList; //페이지네이션된 책 목록
+                data.page = responseData.page; //현재페이지
+                data.size = responseData.size; //한 페이지에 표시할 항목 수
+                data.start = responseData.start; //현재 페이지 블록의 시작 페이지
+                data.end = responseData.end; //현재 페이지 블록의 끝 페이지
+                data.prev = responseData.prev; // 이전 블록 존재 여부
+                data.next = responseData.next; // 다음 블록 존재 여부
+                data.totalPages = Math.ceil(responseData.total/ responseData.size); //총 페이지 수 업데이트
             } catch (error) {
                 console.error('책 검색 오류:', error);
-                alert('책 정보를 불러오는데 문제가 발생했습니다.')
+                alert('책 정보를 불러오는데 문제가 발생했습니다.');
             }
         };
+
+        //특정 페이지 이동
+        const goToPage = (pageNum) => {
+            //페이지 범위를 벗어나는 경우 무시
+            if (pageNum < 1 || pageNum > data.totalPages) return; 
+            data.page = pageNum;
+            //새로운 페이지 데이터 로드
+            searchBook(); 
+        }
 
         //책 선택 메서드
         const selectedBook = (book)  => {            
