@@ -7,6 +7,7 @@
                 <span id="sender">{{ data.chatRoom.sender }}</span>
             </h2>
                 <button class="btn btn-primary" type="button" id="char_room_list_button" @click="goToRoomList()">목록</button>
+                <button class="btn btn-primary" type="button" id="exit_room_button" @click="unsubscribe()">나가기</button>
         </div>
         <div class="input-group">
             <div class="input-group-prepend">
@@ -33,12 +34,16 @@ import { useRouter } from 'vue-router';
     const inputMessage = ref('');
     const router = useRouter();
     const roomId = localStorage.getItem('chat.roomId');
-    const sender = localStorage.getItem('chat.sender');
     let subscription = null;
+    let userSubscription = null;
+    const email = localStorage.getItem('chat.email');
 
     const ws = new StompJs.Client({
         webSocketFactory: () => {
             return new SockJS('/ws-stomp');
+        },
+        connectHeaders: {
+            'email': email,
         },
         debug: function (str) {
             console.log(str);
@@ -56,13 +61,11 @@ import { useRouter } from 'vue-router';
         }
     });
 
-
-
     const data = reactive({
         chatRoom:{
             name : '',
             userCount : '',
-            sender : sender,
+            sender : email,
 
         },
         messages :[
@@ -74,11 +77,19 @@ import { useRouter } from 'vue-router';
       router.push({ path: '/chat/roomList' });
     };
 
+    const getPrevMessage = async ()=>{
+        const response = await api.getPrevMessage(roomId);
+        data.messages = data.messages.concat(response.data.map(item => ({
+            sender: item.sender,
+            message: item.message
+        })));
+    }
+
     onMounted(() => {
-        unsubscribe();
         // STOMP 연결 활성화
         ws.activate();
         getRoomInfo();
+        getPrevMessage();
     });
     
     onUnmounted(() => {
@@ -90,20 +101,31 @@ import { useRouter } from 'vue-router';
 
 
     const subscribe = () => {
+        const userRoomUrl = '/user/sub/chat/room/' + roomId;
         const url = '/sub/chat/room/'+roomId;
         subscription = ws.subscribe(url, message => {
             const recv = JSON.parse(message.body);
             recvMessage(recv);
-        }, {sender:sender});
+        });
+
+        userSubscription = ws.subscribe(userRoomUrl, message => {
+        console.log("Received private message for email:", email);
+        const recv = JSON.parse(message.body);
+        recvMessage(recv);
+        });
     };
+    
 
     const unsubscribe = () => {
-        console.log("subscription", subscription);
+        console.log("subscription unconnect", subscription);
         
         if(subscription != null) {
-            subscription.unsubscribe();
+            subscription.unsubscribe({
+               roomId : roomId
+            });
             subscription = null;
         }
+        router.push({ path: '/chat/roomList'});
     }
 
     const getRoomInfo = async () => {
@@ -133,8 +155,8 @@ import { useRouter } from 'vue-router';
                 body: JSON.stringify({ 
                     type: 'TALK', 
                     roomId: roomId, 
-                    sender: sender, 
-                    message: inputMessage.value 
+                    message: inputMessage.value,
+                    sender : email
                 })
             });
             
@@ -153,5 +175,6 @@ import { useRouter } from 'vue-router';
     }
         data.messages.push({ sender: recv.sender, message: recv.message });
     }
+
 </script>
 

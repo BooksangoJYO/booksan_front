@@ -14,6 +14,7 @@ export default {
   //const url = "https://openapi.naver.com/v1/search/book.json?query="+searchTitle;
 
 
+
   //책제목으로 검색해서 네이버API서버에 책정보 가져오기
   getBookInfo(keyword, page, size){
     const url = "/books/search/"+keyword;
@@ -27,6 +28,11 @@ export default {
     const url = "/books/categories";
     return apiClient.get(url);
   },
+
+
+  postChatRoom(roomName,email,writerEmail) {
+    const url = "/chat/room/insert/"+roomName + "/" + email + "/" + writerEmail;
+
 
   //게시물 등록(boardData는 책정보+게시물 등록 정보)
   BoardInsert(boardData){
@@ -54,11 +60,22 @@ export default {
   },
   getRoomInfo(roomId){
     const url = "/chat/room/"+roomId;
-    return axios.get(url);
+    return apiClient.get(url);
 
   },
-  getRoomList(){
-    const url = '/chat/rooms';
-    return axios.get(url);
+  getRoomList(email){
+    console.log("방 목록 요청"+email);
+    const url = '/chat/rooms/'+email;
+    return apiClient.get(url);
+  },
+  
+  getPrevMessage(roomId){
+    const url = '/chat/prevMessage/'+roomId;
+    return apiClient.get(url);
+  },
+
+  getAlarmRooms(email){
+    const url = '/chat/rooms/alarm/'+email;
+    return apiClient.get(url);
   }
 };
