@@ -93,9 +93,15 @@ apiClient,
   },
   
   //게시물 수정
-  updateBoard(dataToSend){
+  updateBoard(dataToSend) {
     const url = "/board/update";
     return apiClient.put(url, dataToSend);
+  },
+
+  //게시물 삭제
+  deleteBoard(dealId) {
+    const url =`/board/delete/${dealId}`;
+    return apiClient.delete(url)
   },
 
   postChatRoom(roomName) {
