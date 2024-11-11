@@ -36,14 +36,15 @@ import { useRouter } from 'vue-router';
     const roomId = localStorage.getItem('chat.roomId');
     let subscription = null;
     let userSubscription = null;
-    const email = localStorage.getItem('chat.email');
+    const email = "smc9704@naver.com"
 
     const ws = new StompJs.Client({
         webSocketFactory: () => {
             return new SockJS('/ws-stomp');
         },
         connectHeaders: {
-            'email': email,
+            accessToken: localStorage.getItem("accessToken"),
+            refreshToken : localStorage.getItem("refreshToken"),
         },
         debug: function (str) {
             console.log(str);

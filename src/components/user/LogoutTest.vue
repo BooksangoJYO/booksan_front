@@ -18,6 +18,7 @@ const handleLogout = async () => {
         
         document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        localStorage.removeItem('userEmail');
         router.push('/login');
         alert('로그아웃 되었습니다.');
     } catch (error) {
