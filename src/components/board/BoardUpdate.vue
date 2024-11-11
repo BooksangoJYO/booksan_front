@@ -46,8 +46,18 @@
 
                 <!-- 닉네임 입력 -->
                 <div>
-                    <label for="nickname">닉네임:</label>
-                    <input type="text" id="nickname" v-model="form.nickname" />
+                    <label for="emial">email:</label>
+                    <input type="text" id="email" v-model="form.email" />
+                </div>
+
+                <!--판매 상태 선택 라디오 버튼-->
+                <div>
+                    <label>
+                        <input type="radio" value="Y" v-model="form.status" />판매 완료
+                    </label>
+                    <label>
+                        <input type="radio" value="N" v-model="form.status" />판매 중
+                    </label>
                 </div>
 
                 <!-- 제출 버튼 -->
@@ -74,7 +84,8 @@ const form = ref({
     content: '',
     booksCategoryId: null,
     price: null,
-    nickname: '',
+    email: '',
+    status: 'N', //기본값을 'N'으로 설정하여 판매중 상태로 초기화
 });
 const categories = ref([]);
 
@@ -91,7 +102,8 @@ const fetchBoardData = async () => {
             content: boardData.content,
             booksCategoryId: boardData.booksCategoryId,
             price: boardData.price,
-            nickname: boardData.nickname,
+            email: boardData.email,
+            status: boardData.status,
         };        
     } catch (error) {
         console.error("게시글 데이터를 불러오는 중 오류 발생:", error);

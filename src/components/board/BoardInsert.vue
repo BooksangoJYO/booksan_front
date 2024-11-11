@@ -49,8 +49,8 @@
 
                 <!--닉네임 입력(변경될부분 나중에 로그인정보에서 가져옴)-->
                 <div>
-                    <label for="nickname">닉네임:</label>
-                    <input type="text" id="nickname" v-model="form.nickname" />
+                    <label for="email">email:</label>
+                    <input type="text" id="email" v-model="form.email" />
                 </div>
 
                 <!--제출 버튼-->
@@ -81,7 +81,7 @@ const form = ref({
     content: '',
     booksCategoryId: null,
     price: null,
-    nickname: '',
+    email: 'user1@example.com',
 });
 
 //카테고리 데이터를 저장하는 변수
@@ -105,7 +105,7 @@ const viewSearch=() =>{
 //폼 제출 메서드
 const submitForm = async () => {
     // 유효성 검사 추가
-    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price || !form.value.nickname) {
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price || !form.value.email) {
         alert("모든 필드를 입력하세요.");
         return;
     }
@@ -129,6 +129,7 @@ const submitForm = async () => {
         
         if(response.data.status==" success"){
             alert(response.data.message);
+            router.push('/board/list'); //게시글 등록 성공시 게시글 목록으로 이동
         }else{
             alert(response.data.message);
         }
