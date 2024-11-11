@@ -21,6 +21,8 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+.settings/
+.project
 
 # MAC OS specific
 .DS_Store
