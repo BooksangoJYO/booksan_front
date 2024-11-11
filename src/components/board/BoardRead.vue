@@ -7,22 +7,30 @@
         <h2>게시물 정보</h2>
         <p><strong>게시글 번호:</strong> {{ board.dealId }}</p>
         <p><strong>제목:</strong> {{ board.title }}</p>
-        <p><strong>작성자:</strong> {{ board.nickname }}</p>
+        <p><strong>작성자:</strong> {{ board.email }}</p>
         <p><strong>가격:</strong> {{ board.price }}원</p>
         <p><strong>내용:</strong> {{ board.content }}</p>
       </section>
 
       <div>
         <button @click="goToBoardUpdate">수정</button>
-        <button>삭제</button>
+        <button @click="showDeleteModal">삭제</button>
         <button @click="goToBoardList">목록으로</button>
       </div>
+
+      <!--삭제 확인 모달 컴포넌트 사용-->
+      <DeleteModal
+        :isVisible="isModalVisible"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="closeModal"
+      />
       
 
       
       <!-- 도서 정보 -->      
       <section v-if="book">
         <h2>도서 정보</h2>
+        <p><strong>책 이미지:</strong><img :src="book.image" alt="책 이미지"/></p>
         <p><strong>책 제목:</strong> {{ book.title }}</p>
         <p><strong>저자:</strong> {{ book.author }}</p>
         <p><strong>출판사:</strong> {{ book.publisher }}</p>
@@ -48,12 +56,43 @@
     import { ref, onMounted } from 'vue';
     import { useRoute,useRouter } from 'vue-router';
     import api from '@/api/api';  //api.js파일 import
+    import DeleteModal from './DeleteModal.vue';  //삭제 모달창 import
   
     const route = useRoute();
     const router = useRouter();
     const board = ref(null); // 게시물 정보
     const book = ref(null); // 도서 정보
-    const reviews = ref([]); // 리뷰 정보  
+    const reviews = ref([]); // 리뷰 정보
+    const isModalVisible = ref(false); //삭제 모달 표시 여부
+    
+    //삭제 모달 열기
+    function showDeleteModal() {
+      isModalVisible.value = true;
+    }
+
+    //삭제 모달 닫기
+    function closeModal() {
+      isModalVisible.value = false;
+    }
+
+    //삭제 확인 함수
+    async function confirmDelete() {
+      try {
+        const response = await api.deleteBoard(board.value.dealId);
+        if (response.data.status === "success") {
+          alert("게시글이 삭제되었습니다.");
+          goToBoardList(); // 삭제후 목록 페이지로 이동
+        } else {
+          alert("삭제 실패: " + response.data.message);
+        }
+      } catch (error) {
+        console.error("게시글 삭제 중 오류발생:",error);
+        alert("삭제에 실패했습니다.");
+      } finally{
+        closeModal(); // 모달 닫기
+      }
+    }
+
 
     //수정 페이지로 이동하는 함수
     function goToBoardUpdate() {

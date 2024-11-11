@@ -15,7 +15,7 @@
         <div v-for="(board, index) in boardList" :key="index" class="board-item" @click="goToBoardRead(board.dealId)">
           <p>게시글 번호: {{ board.dealId }}</p>
           <h3>게시글 제목: {{ board.title }}</h3>
-          <p>작성자: {{ board. nickname }}</p>          
+          <p>작성자: {{ board.email }}</p>          
         </div>
       </div>
       <div v-else>
@@ -72,15 +72,23 @@
     console.log("Fetching board list..."); // 추가
     console.log("Fetching board list with keyword:", keyword.value); // 추가
     try {      
-      const response = await api.getBoardList(paginationData.page,paginationData.size, keyword.value || '' );
-      boardList.value = response.data.data.dtoList;      
-      paginationData.page = response.data.data.page;
-      paginationData.size = response.data.data.size;
-      paginationData.start = response.data.data.start;
-      paginationData.end = response.data.data.end;
-      paginationData.prev = response.data.data.prev;
-      paginationData.next = response.data.data.next;
-      paginationData.totalPages = Math.ceil(response.data.data.total / paginationData.size);
+      const response = await api.getBoardList(paginationData.page, paginationData.size, keyword.value || '' );
+
+      //응답데이터가 정의되어있는지 확인 후, dtoList에 접근
+      if (response.data && response.data.data && response.data.data.dtoList) {
+        boardList.value = response.data.data.dtoList;      
+        paginationData.page = response.data.data.page;
+        paginationData.size = response.data.data.size;
+        paginationData.start = response.data.data.start;
+        paginationData.end = response.data.data.end;
+        paginationData.prev = response.data.data.prev;
+        paginationData.next = response.data.data.next;
+        paginationData.totalPages = Math.ceil(response.data.data.total / paginationData.size);
+      } else {
+        //dtoList가 없을 경우 빈배열로 설정
+        boardList.value = [];
+        console.warn("dtoList가 비어있거나 정의되지 않았습니다.");
+      }
     } catch (error) {
       console.error('게시글 목록을 가져오는 중 오류가 발생했습니다:', error);
       alert('게시글을 불러오는 중 문제가 발생했습니다.');
