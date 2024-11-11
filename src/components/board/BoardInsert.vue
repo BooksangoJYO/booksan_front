@@ -4,20 +4,19 @@
         <button @click="viewSearch">검색</button>
         <BookSearch v-if="viewSearchStatus" @book-selected="handleBookSelected"/>
     
-
-
         <!--선택된 책 정보 출력-->
         <div v-if="selectedBook">
-            <h3>선택된 책 정보</h3>
+            <h1>선택된 책 정보</h1>
             <p>책 이미지: <img :src="selectedBook.image" alt="책 이미지"/></p>
             <p>책 제목: {{ selectedBook.title }}</p>
             <p>책 저자: {{ selectedBook.author }}</p>
             <p>책 출판사: {{ selectedBook.publisher }}</p>
+            <p>isbn: {{ selectedBook.isbn }}</p>
         </div>
 
         <!--등록폼-->
         <div>
-            <h3>책 등록 폼</h3>
+            <h1>게시글 등록</h1>
             <form @submit.prevent="submitForm">
                 <!--제목 입력-->
                 <div>
@@ -57,6 +56,7 @@
                 <!--제출 버튼-->
                 <div>
                     <button type="submit">등록</button>
+                    <button type="button" @click="goToBoardList">취소</button>
                 </div>
             </form>
         </div>
@@ -66,10 +66,12 @@
 
 <script setup>
 import BookSearch from './BookSearch.vue';
+import { useRouter } from 'vue-router';
 import {ref,onMounted} from 'vue';
 import api from '@/api/api';
 
 //검색 상태 관리 변수
+const router =useRouter(); //router 객체 생성
 let viewSearchStatus = ref(false);
 //선택된 책 정보를 저장하는 변수
 const selectedBook = ref(null);
@@ -136,6 +138,12 @@ const submitForm = async () => {
         alert('데이터 전송에 문제가 발생했습니다.')
     }
 };
+
+
+//취소 버튼 누르면 게시글 목록으로 이동
+const goToBoardList = () => {
+    router.push('/board/list'); 
+}
 
 //카테고리 데이터를 가져오는 함수
 const getBookCategories = async () => {

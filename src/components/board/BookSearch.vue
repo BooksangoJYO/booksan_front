@@ -14,6 +14,7 @@
                 <h3>책 제목:{{ book.title }}</h3>
                 <p>책 저자:{{ book.author }}</p>
                 <p>책 출판사:{{ book.publisher }}</p>
+                <p>isbn: {{ book.isbn }}</p>
             </div>    
             
             <!--페이지네이션 버튼(이전,다음,페이지 이동)-->
@@ -81,7 +82,7 @@ import api from '@/api/api';
         //책 검색 메서드(서버에 요청)
         const searchBook = async () => {
             try{
-                const response = await api.getBookInfo(keyword.value, data.page, data.size);
+                const response = await api.getBooksInfo(keyword.value, data.page, data.size);
                 const responseData = response.data;
                 console.log(response.data.dtoList);
                 
