@@ -1,6 +1,6 @@
 import BoardInsert from '@/components/board/BoardInsert.vue';
-import ChatRoom from '@/components/ChatRoom.vue';
-import ChatRoomList from '@/components/ChatRoomList.vue';
+import ChatRoom from '@/components/chat/ChatRoom.vue';
+import ChatRoomList from '@/components/chat/ChatRoomList.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import SocialLogin from '../components/SocialLogin.vue';
 
