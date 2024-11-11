@@ -16,9 +16,11 @@ export default {
 
 
   //책제목으로 검색해서 네이버API서버에 책정보 가져오기
-  getBookInfo(searchTitle){
-    const url = "/books/search/"+searchTitle;
-    return apiClient.get(url);
+  getBookInfo(keyword, page, size){
+    const url = "/books/search/"+keyword;
+    return apiClient.get(url, {
+        params: {page, size}
+    });
   }, 
 
   //책 카테고리 리스트 가져오기
@@ -27,9 +29,33 @@ export default {
     return apiClient.get(url);
   },
 
+
   postChatRoom(roomName,email,writerEmail) {
     const url = "/chat/room/insert/"+roomName + "/" + email + "/" + writerEmail;
 
+
+  //게시물 등록(boardData는 책정보+게시물 등록 정보)
+  BoardInsert(boardData){
+    const url = "/board/insert";
+    return apiClient.post(url, boardData);
+  },
+
+  //게시물 단건조회
+  getBoardRead(dealId) {
+    const url = `/board/read/${dealId}`;
+    return apiClient.get(url)
+  },
+
+  //게시물 목록(페이지네이션)
+  getBoardList(page, size, searchTitle= '') {
+    const url = "/board/list";
+    return apiClient.get(url, {
+      params : { page, size, searchTitle }
+    });
+  },  
+
+  postChatRoom(roomName) {
+    const url = "/chat/room/insert/"+roomName;
     return apiClient.post(url);
   },
   getRoomInfo(roomId){
