@@ -16,12 +16,18 @@ export default {
 
 
   //책제목으로 검색해서 네이버API서버에 책정보 가져오기
-  getBookInfo(keyword, page, size){
-    const url = "/books/search/"+keyword;
+  getBooksInfo(keyword, page, size){
+    const url = "/books/searchAll/"+keyword;
     return apiClient.get(url, {
         params: {page, size}
     });
-  }, 
+  },
+  
+  //isbn으로 책 정보 가져오기(1건)
+  getBookInfo(isbn){
+    const url = "/books/search/"+isbn;
+    return apiClient.get(url);
+  },
 
   //책 카테고리 리스트 가져오기
   getBookCategories(){
@@ -33,7 +39,7 @@ export default {
   postChatRoom(roomName,email,writerEmail) {
     const url = "/chat/room/insert/"+roomName + "/" + email + "/" + writerEmail;
 
-
+  },
   //게시물 등록(boardData는 책정보+게시물 등록 정보)
   BoardInsert(boardData){
     const url = "/board/insert";
@@ -46,13 +52,18 @@ export default {
     return apiClient.get(url)
   },
 
-  //게시물 목록(페이지네이션)
-  getBoardList(page, size, searchTitle= '') {
-    const url = "/board/list";
-    return apiClient.get(url, {
-      params : { page, size, searchTitle }
-    });
-  },  
+  //게시물 목록(페이지네이션)(쿼리스트링방식으로 수정)
+  getBoardList(page, size, keyword) {
+    console.log("페이지는"+page);
+    const url = "/board/list?page=" + page +"&size=" + size +"&keyword="+ keyword;
+    return apiClient.get(url);
+  },
+  
+  //게시물 수정
+  updateBoard(dataToSend){
+    const url = "/board/update";
+    return apiClient.put(url, dataToSend);
+  },
 
   postChatRoom(roomName) {
     const url = "/chat/room/insert/"+roomName;
