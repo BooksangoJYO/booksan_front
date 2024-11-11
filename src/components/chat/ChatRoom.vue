@@ -36,15 +36,22 @@ import { useRouter } from 'vue-router';
     const roomId = localStorage.getItem('chat.roomId');
     let subscription = null;
     let userSubscription = null;
-    const email = "smc9704@naver.com"
-
+    const email = localStorage.getItem('userEmail');
+    
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+  
     const ws = new StompJs.Client({
         webSocketFactory: () => {
             return new SockJS('/ws-stomp');
         },
         connectHeaders: {
-            accessToken: localStorage.getItem("accessToken"),
-            refreshToken : localStorage.getItem("refreshToken"),
+            accessToken:  getCookie('accessToken'),
+            refreshToken : getCookie('refreshToken'),
         },
         debug: function (str) {
             console.log(str);

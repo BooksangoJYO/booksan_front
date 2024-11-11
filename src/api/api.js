@@ -12,9 +12,15 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   config => {
-    const accessToken = localStorage.getItem('accessToken')
-    const refreshToken = localStorage.getItem('refreshToken')
-    
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+  }
+  
+  const accessToken = getCookie('accessToken');
+  const refreshToken = getCookie('refreshToken');
     if (accessToken) {
       config.headers.accessToken = accessToken
       config.headers.refreshToken = refreshToken
