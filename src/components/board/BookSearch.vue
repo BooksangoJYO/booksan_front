@@ -82,7 +82,7 @@ import api from '@/api/api';
         //책 검색 메서드(서버에 요청)
         const searchBook = async () => {
             try{
-                const response = await api.getBooksInfo(keyword.value, data.page, data.size);
+                const response = await api.getBooksInfo(keyword.value, data.page || 1, data.size || 10);
                 const responseData = response.data;
                 console.log(response.data.dtoList);
                 

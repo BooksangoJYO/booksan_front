@@ -127,9 +127,9 @@ const submitForm = async () => {
         //백엔드에 POST 요청
         const response = await api.BoardInsert(dataToSend);
         
-        if(response.data.status==" success"){
+        if(response.data.status=="success"){
             alert(response.data.message);
-            router.push('/board/list'); //게시글 등록 성공시 게시글 목록으로 이동
+            router.push({path :'/board/list'}); //게시글 등록 성공시 게시글 목록으로 이동
         }else{
             alert(response.data.message);
         }
