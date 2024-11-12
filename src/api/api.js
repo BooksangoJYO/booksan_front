@@ -1,4 +1,14 @@
+import router from '@/router';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 
 const apiClient = axios.create({
   baseURL : '/api',
@@ -12,18 +22,10 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   config => {
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-  }
   
   const accessToken = getCookie('accessToken');
-  const refreshToken = getCookie('refreshToken');
     if (accessToken) {
       config.headers.accessToken = accessToken
-      config.headers.refreshToken = refreshToken
     }
     return config
   },
@@ -31,6 +33,45 @@ apiClient.interceptors.request.use(
     return Promise.reject(error)
   }
 );
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
+      
+      try {
+        console.log("refresh토큰 실행");
+        
+        // 인증 서버로 직접 refresh 요청
+        const refreshToken = getCookie('refreshToken');
+        const { data } = await apiClient.post('/users/refresh', {
+          refreshToken
+        });
+        
+        // 새 access token으로 원래 요청 재시도
+        const newAccessToken = data.accessToken;
+        console.log("새로운 엑세스 토큰 "+ newAccessToken);
+        Cookies.set('accessToken', newAccessToken, { 
+          httpOnly: false, 
+          secure: true 
+        });
+        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(error.config);
+      } catch (error) {
+        // refresh 실패시 로그인으로
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
+        localStorage.removeItem("userData");
+        router.replace({ path: '/login' });
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+
+
 
 export default {
 //클라이언트에서 직접 api요청 --> 서버요청으로 변경
