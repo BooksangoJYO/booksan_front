@@ -11,8 +11,7 @@ function getCookie(name) {
 
 
 const apiClient = axios.create({
-  baseURL : '/api',
-  withCredentials: true,
+  withCredentials: false,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
