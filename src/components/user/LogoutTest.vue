@@ -16,8 +16,8 @@ const handleLogout = async () => {
         // 서버 로그아웃 호출 (서버에서 쿠키 삭제)
         await auth.logout();
         
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
+        document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         localStorage.removeItem('userEmail');
         router.push('/login');
         alert('로그아웃 되었습니다.');
