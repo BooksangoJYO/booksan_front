@@ -1,4 +1,4 @@
-
+import Main from '@/components/Home.vue'
 import BoardInsert from '@/components/board/BoardInsert.vue';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
@@ -17,7 +17,7 @@ import KakaoCallback from '@/components/user/KakaoCallback.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        //{ path: '/', component: Main },
+        { path: '/', component: Main },
         { path: '/login', name: 'login', component: SocialLogin },
         { path: '/signup', name: 'signup', component: SocialSignup },
         { path: '/logout', name: 'LogoutTest', component: LogoutTest },
