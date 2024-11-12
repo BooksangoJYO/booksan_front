@@ -25,7 +25,7 @@
 				{{ room.name }} ({{ room.userCount }})
 			</li>
 		</ul>
-        <AlarmRooms v-if="viewAlarmRooms" :email="email" />
+        <AlarmRooms v-if="viewAlarmRooms" />
         <div>
             <button @click="toggleAlarmRooms">알림창 열기</button>
         </div>
@@ -43,7 +43,6 @@ import { useRouter } from 'vue-router';
     const router = useRouter();
     const roomName = ref(null);
 	let subscription = null;
-    const email = localStorage.getItem('chat.email');
     const data = reactive({
         chatRooms: []
     });
@@ -52,9 +51,6 @@ import { useRouter } from 'vue-router';
     const stompClient = new StompJs.Client({
         webSocketFactory: () => {
             return new SockJS('/ws-stomp');
-        },
-        connectHeaders: {
-            'email': email,
         },
         debug: function (str) {
             console.log(str);
@@ -72,13 +68,9 @@ import { useRouter } from 'vue-router';
         }
     });
 
-    onMounted(() => {
-        // STOMP 연결 활성화
-        const email = prompt("이메일을 입력하세요:");
-        localStorage.setItem('chat.email', email);
-        stompClient.activate();
-        roomListOutput(email);
-    });
+    onMounted(()=>{
+        roomListOutput();
+    })
 
     onUnmounted(() => {
         // STOMP 연결 해제
@@ -87,8 +79,8 @@ import { useRouter } from 'vue-router';
         }
     });
 
-    const roomListOutput = async (email) => {
-        const response = await api.getRoomList(email);
+    const roomListOutput = async () => {
+        const response = await api.getRoomList();
         console.log(response);
         console.log(response.data);
         data.chatRooms = response.data;  // 받아온 방 목록을 상태에 저장
@@ -99,18 +91,14 @@ import { useRouter } from 'vue-router';
             alert("방 제목을 입력해 주십시요.");
             return;
         }
-        if("" === email) {
-            alert("이메일을 입력해 주십시요.");
-            return;
-        }
-        const writerEmail = "user1@example.com"
-        await api.postChatRoom(roomName.value,email,writerEmail)
+        const writerEmail = "gdh6356@naver.com"
+        await api.postChatRoom(roomName.value,writerEmail)
         .then(response => {
             const chatRoom = response.data; // 서버에서 반환된 데이터
             alert(chatRoom.name + "방 개설에 성공하였습니다.");
             roomName.value='';
             // 다른 사람이 개설한 방 목록과 내가 개설한 목록을 전체를 얻어 출력한다
-            roomListOutput(email);
+            roomListOutput();
         })
         .catch(err => {
             alert("채팅방 개설에 실패하였습니다.");
@@ -118,10 +106,6 @@ import { useRouter } from 'vue-router';
     };
 
     const enterRoom = roomId => {
-        if("" === email) {
-            alert("이메일을 입력해 주십시요.");
-            return;
-        }
         //입장하는 사람의 이름과 채팅방이름을 지역저장소에 저장한다
         //이렇게 저장하면 다른 페이지에서 해당 키를 이용하여 값을 읽을 수 있다
         localStorage.setItem('chat.roomId', roomId);
@@ -137,13 +121,12 @@ import { useRouter } from 'vue-router';
     };
 
     const recvMessage = recv =>  {
-        console.log(recv);
-        roomListOutput(email);
+        roomListOutput();
         recv.sender = recv.type == 'ENTER' ? '[알림]' : recv.sender;
         //서버에서 처리할 수 있게 개능 개선함
         if (recv.type == 'CHAT_INFO_UPDATE') {
             //채팅목록을 다시 로딩하여 출력한다
-            roomListOutput(email);
+            roomListOutput();
         }
     }
 

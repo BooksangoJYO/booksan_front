@@ -3,10 +3,10 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import api from '@/api/api.js';
 import Cookies from 'js-cookie';
+import { onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
@@ -34,6 +34,7 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
+                localStorage.setItem('userEmail',responseData.userEmail);
                 router.push('/chat/roomList');
             } else {
                 router.push({
