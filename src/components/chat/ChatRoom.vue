@@ -47,7 +47,7 @@ import { useRouter } from 'vue-router';
   
     const ws = new StompJs.Client({
         webSocketFactory: () => {
-            return new SockJS('/ws-stomp');
+            return new SockJS('http://3.39.238.25:8080/ws-stomp');
         },
         connectHeaders: {
             accessToken:  getCookie('accessToken'),
@@ -109,8 +109,8 @@ import { useRouter } from 'vue-router';
 
 
     const subscribe = () => {
-        const userRoomUrl = '/user/sub/chat/room/' + roomId;
-        const url = '/sub/chat/room/'+roomId;
+        const userRoomUrl = 'http://3.39.238.25:8080/user/sub/chat/room/' + roomId;
+        const url = 'http://3.39.238.25:8080/sub/chat/room/'+roomId;
         subscription = ws.subscribe(url, message => {
             const recv = JSON.parse(message.body);
             recvMessage(recv);
@@ -159,7 +159,7 @@ import { useRouter } from 'vue-router';
         
         try {
             ws.publish({
-                destination: '/pub/chat/message',
+                destination: 'http://3.39.238.25:8080/pub/chat/message',
                 body: JSON.stringify({ 
                     type: 'TALK', 
                     roomId: roomId, 
