@@ -9,24 +9,28 @@ const apiClient = axios.create({
   }
 });
 
-// request 인터셉터
-apiClient.interceptors.request.use(config => {
-  return config;
-});
 
-// response 인터셉터
-apiClient.interceptors.response.use(
-  response => response,
+apiClient.interceptors.request.use(
+  config => {
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+  }
+  
+  const accessToken = getCookie('accessToken');
+  const refreshToken = getCookie('refreshToken');
+    if (accessToken) {
+      config.headers.accessToken = accessToken
+      config.headers.refreshToken = refreshToken
+    }
+    return config
+  },
   error => {
-      if  (error.response?.status === 401) {
-          localStorage.removeItem('accessToken');
-          window.location.href = '/login';
-          alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
-      }
-      return Promise.reject(error);
+    return Promise.reject(error)
   }
 );
-
 
 export default {
 //클라이언트에서 직접 api요청 --> 서버요청으로 변경
@@ -68,11 +72,6 @@ apiClient,
     return apiClient.get(url);
   },
 
-
-  postChatRoom(roomName,email,writerEmail) {
-    const url = "/chat/room/insert/"+roomName + "/" + email + "/" + writerEmail;
-
-  },
   //게시물 등록(boardData는 책정보+게시물 등록 정보)
   BoardInsert(boardData){
     const url = "/board/insert";
@@ -98,11 +97,18 @@ apiClient,
     return apiClient.put(url, dataToSend);
   },
 
+
+  postChatRoom(roomName,writerEmail) {
+    const url = "/chat/room/insert/"+roomName+ "/"+ writerEmail;
+    return apiClient.post(url);
+  },
+  
   //게시물 삭제
   deleteBoard(dealId) {
     const url =`/board/delete/${dealId}`;
     return apiClient.delete(url)
   },
+
 
   //책 리뷰(댓글) 등록
   addComment(isbn, uid , content) {
@@ -137,18 +143,13 @@ apiClient,
     return apiClient.delete(url);
   },
 
-  postChatRoom(roomName) {
-    const url = "/chat/room/insert/"+roomName;
-    return apiClient.post(url);
-  },
   getRoomInfo(roomId){
     const url = "/chat/room/"+roomId;
     return apiClient.get(url);
 
   },
-  getRoomList(email){
-    console.log("방 목록 요청"+email);
-    const url = '/chat/rooms/'+email;
+  getRoomList(){
+    const url = '/chat/rooms';
     return apiClient.get(url);
   },
   

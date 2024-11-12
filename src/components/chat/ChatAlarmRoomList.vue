@@ -16,20 +16,15 @@
   <script setup>
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
-        const props = defineProps({
-        email: {
-            type: String,
-            required: false,
-        },
-        });
-
+      const email = localStorage.getItem('userEmail');
       const data = reactive({
+
         alarmRooms : [],
       }); // 알림이 있는 채팅방 목록
 
       const fetchAlarmRooms = async () => {
         try {
-          const response = await api.getAlarmRooms(props.email);
+          const response = await api.getAlarmRooms(email);
           data.alarmRooms = response.data;
         } catch (error) {
           console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
