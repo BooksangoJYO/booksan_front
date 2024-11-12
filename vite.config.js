@@ -13,28 +13,28 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/board': {
-        target: 'http://192.168.0.20:8090', // 요청을 보낼 프록시 서버 URL
+        target: 'http://13.125.214.144:8080', // 요청을 보낼 프록시 서버 URL
       },
       '/api/books': {
-        target: 'http://192.168.0.20:8090', // 요청을 보낼 프록시 서버 URL
+        target: 'http://13.125.214.144:8080', // 요청을 보낼 프록시 서버 URL
       },
       '/api/chat': {
-        target: 'http://192.168.0.21:8190', // 요청을 보낼 프록시 서버 URL
+        target: 'http://3.39.238.25:8080', // 요청을 보낼 프록시 서버 URL
       },
       '/api/users': {
-        target: 'http://192.168.0.15:8081', // 요청을 보낼 프록시 서버 URL
+        target: 'http://3.38.92.146:8080', // 요청을 보낼 프록시 서버 URL
 
       },
       '/ws-stomp': {
-        target: 'http://192.168.0.21:8190',
+        target: 'http://3.39.238.25:8080',
         ws: true
       },
       '/pub': {
-        target: 'http://192.168.0.21:8190',
+        target: 'http://3.39.238.25:8080',
         ws: true
       },
       '/sub': {
-        target: 'http://192.168.0.21:8190',
+        target: 'http://3.39.238.25:8080',
         ws: true
       }
     },
