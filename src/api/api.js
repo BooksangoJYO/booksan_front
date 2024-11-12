@@ -109,7 +109,40 @@ apiClient,
     return apiClient.delete(url)
   },
 
-  
+
+  //책 리뷰(댓글) 등록
+  addComment(isbn, uid , content) {
+    console.log("댓글 등록 요청 데이터:", {isbn,uid,content});
+    const url = "/books/comment/insert";
+    return apiClient.post(url, {
+      isbn: isbn,
+      uid: uid,
+      content: content
+    });
+  },
+
+  //책 리뷰 목록 가져오기
+  getCommentList(isbn) {
+    const url = `/books/comment/list/${isbn}`;
+    return apiClient.get(url);
+  },
+
+  //책 리뷰 수정
+  updateBookComment(commentId, content, uid) {
+    const url = "/books/comment/update";
+    return apiClient.put(url, {
+      commentId: commentId,
+      content: content,
+      uid: uid
+    });
+  },
+
+  //책 리뷰 삭제
+  deleteBookComment(commentId) {
+    const url = `/books/comment/delete/${commentId}`;
+    return apiClient.delete(url);
+  },
+
   getRoomInfo(roomId){
     const url = "/chat/room/"+roomId;
     return apiClient.get(url);

@@ -45,10 +45,25 @@
           <li v-for="(review, index) in reviews" :key="index">
             <p><strong>UID:</strong> {{ review.uid }}</p>
             <p><strong>날짜:</strong> {{ review.insertDatetime }}</p>
-            <p><strong>내용:</strong> {{ review.content }}</p>
+
+            <!--수정버튼누르면 수정 폼 활성화-->
+            <div v-if="review.isEditing">
+              <textarea v-model="review.newContent"></textarea>
+              <button @click="updateBookComment(review.commentId, review.newContent, review.uid)">수정 완료</button>
+              <button @click="review.isEditing = false">취소</button>
+            </div>
+            <div v-else>
+              <p><strong>내용:</strong> {{ review.content }}</p>
+              <button @click="review.isEditing = true; review.newContent = review.content">수정</button>
+              <button @click="deleteBookComment(review.commentId)">삭제</button>
+            </div>
+            
           </li>
         </ul>
       </section>
+
+      <!--댓글 작성 폼-->
+      <CommentForm @comment-submitted="addComment" />
     </div>
   </template>
   
@@ -57,7 +72,8 @@
     import { useRoute,useRouter } from 'vue-router';
     import api from '@/api/api';  //api.js파일 import
     import DeleteModal from './DeleteModal.vue';  //삭제 모달창 import
-  
+    import CommentForm from './CommentForm.vue';  //댓글 작성 폼 컴포넌트
+        
     const route = useRoute();
     const router = useRouter();
     const board = ref(null); // 게시물 정보
@@ -65,6 +81,88 @@
     const reviews = ref([]); // 리뷰 정보
     const isModalVisible = ref(false); //삭제 모달 표시 여부
     
+    //댓글 등록 함수
+    async function addComment(commentData) {
+      if(!commentData || !commentData.uid || !commentData.content) {
+        console.warn("댓글 데이터가 올바르지 않습니다.", commentData);
+        return;
+      }
+
+      console.log("댓글 등록 요청 데이터:", {
+        isbn: book.value.isbn,
+        uid: commentData.uid,
+        content: commentData.content
+      });
+
+      try {
+        const response = await api.addComment(
+          book.value.isbn, 
+          commentData.uid, 
+          commentData.content
+        );
+
+        if (response.data.status === 'success') {
+          alert('댓글이 성공적으로 등록되었습니다.');
+          //댓글 등록후 최신 리뷰 목록 가져오기
+          await getCommentList(book.value.isbn);
+        } else {
+            alert('댓글 등록 실패: ' + response.data.message);
+        }
+      } catch (error) {
+          console.error('댓글 등록 중 오류 발생:', error);
+          alert('댓글 등록에 실패했습니다.');
+      }
+    }
+
+    //댓글 목록을 가져와서 reviews 배열을 갱신하는 함수
+    async function getCommentList(isbn) {
+      try {
+        const response = await api.getCommentList(isbn);
+        if (response.data.status === 'success') {
+          reviews.value = response.data.bookCommentList; //최신 댓글 목록으로 업데이트
+        } else {
+          console.error('댓글 목록을 가져오는데 실패했습니다.',response.data.message);
+        } 
+      } catch (error) {
+          console.error('댓글 목록을 가져오는 중 오류 발생:', error);
+      }
+    }
+
+    //댓글 수정 함수
+    async function updateBookComment(commentId, newContent, uid) {
+      try {
+        const response = await api.updateBookComment(commentId, newContent, uid);
+        if( response.data.status === 'success') {
+          alert('댓글이 성공적으로 수정되었습니다.');
+          await getCommentList(book.value.isbn); //수정 후 댓글 목록 갱신
+        } else {
+          alert('댓글 수정 실패:' + response.data.message);
+        }
+      } catch (error) {
+        console.error('댓글 수정 중 오류 발생:', error);
+        alert('댓글 수정에 실패했습니다.');
+      }
+    }
+
+    //댓글 삭제 함수
+    async function deleteBookComment(commentId) {
+      try{
+        const response = await api.deleteBookComment(commentId);
+        if (response.data.status === 'success') {
+          alert('댓글이 성공적으로 삭제되었습니다.');
+          await getCommentList(book.value.isbn); //삭제후 댓글 목록 갱신
+        } else {
+          alert('댓글 삭제 실패: ' + response.data.message);
+        }        
+      } catch (error) {
+        console.error('댓글 삭제 중 오류 발생:', error);
+        alert('댓글 삭제에 실패했습니다.')
+      }
+    }
+
+    
+    
+
     //삭제 모달 열기
     function showDeleteModal() {
       isModalVisible.value = true;
