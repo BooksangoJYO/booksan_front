@@ -46,7 +46,7 @@
 
                 <!-- 닉네임 입력 -->
                 <div>
-                    <label for="emial">email:</label>
+                    <label for="email">email:</label>
                     <input type="text" id="email" v-model="form.email" />
                 </div>
 
