@@ -58,6 +58,11 @@ apiClient,
     return apiClient.delete('/users/delete');
   },
 
+  //키워드로 책 정보 가져오기(게시물 등록시 검색기능)
+  getBooksInfo(searchTitle, page, size){
+    const url = `/books/searchAll/${searchTitle}/${page}/${size}`;
+    return apiClient.get(url);
+  },
 
 
   //isbn으로 책 정보 가져오기(1건)
@@ -111,12 +116,12 @@ apiClient,
 
 
   //책 리뷰(댓글) 등록
-  addComment(isbn, uid , content) {
-    console.log("댓글 등록 요청 데이터:", {isbn,uid,content});
+  addComment(isbn, email , content) {
+    console.log("댓글 등록 요청 데이터:", {isbn,email,content});
     const url = "/books/comment/insert";
     return apiClient.post(url, {
       isbn: isbn,
-      uid: uid,
+      email: email,
       content: content
     });
   },
@@ -128,12 +133,12 @@ apiClient,
   },
 
   //책 리뷰 수정
-  updateBookComment(commentId, content, uid) {
+  updateBookComment(commentId, content, email) {
     const url = "/books/comment/update";
     return apiClient.put(url, {
       commentId: commentId,
       content: content,
-      uid: uid
+      email: email
     });
   },
 

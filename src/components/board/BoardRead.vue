@@ -25,8 +25,6 @@
         @cancelDelete="closeModal"
       />
       
-
-      
       <!-- 도서 정보 -->      
       <section v-if="book">
         <h2>도서 정보</h2>
@@ -36,31 +34,16 @@
         <p><strong>출판사:</strong> {{ book.publisher }}</p>
         <p><strong>ISBN:</strong> {{ book.isbn }}</p>
         <p><strong>책 소개:</strong> {{ book.description }}</p>
-      </section>
-  
-      <!-- 도서 리뷰 -->       
-      <section v-if="reviews && reviews.length">
-        <h2>도서 리뷰</h2>
-        <ul>
-          <li v-for="(review, index) in reviews" :key="index">
-            <p><strong>UID:</strong> {{ review.uid }}</p>
-            <p><strong>날짜:</strong> {{ review.insertDatetime }}</p>
+      </section>     
 
-            <!--수정버튼누르면 수정 폼 활성화-->
-            <div v-if="review.isEditing">
-              <textarea v-model="review.newContent"></textarea>
-              <button @click="updateBookComment(review.commentId, review.newContent, review.uid)">수정 완료</button>
-              <button @click="review.isEditing = false">취소</button>
-            </div>
-            <div v-else>
-              <p><strong>내용:</strong> {{ review.content }}</p>
-              <button @click="review.isEditing = true; review.newContent = review.content">수정</button>
-              <button @click="deleteBookComment(review.commentId)">삭제</button>
-            </div>
-            
-          </li>
-        </ul>
-      </section>
+      <!-- 도서 리뷰 리스트 컴포넌트 사용-->
+       <CommentListForm
+        v-if="book && book.isbn" 
+        :reviews = "reviews"
+        :isbn = "book.isbn"
+        @updateBookComment = "updateBookComment"
+        @deleteBookComment = "deleteBookComment"
+       />
 
       <!--댓글 작성 폼-->
       <CommentForm @comment-submitted="addComment" />
@@ -72,7 +55,9 @@
     import { useRoute,useRouter } from 'vue-router';
     import api from '@/api/api';  //api.js파일 import
     import DeleteModal from './DeleteModal.vue';  //삭제 모달창 import
-    import CommentForm from './CommentForm.vue';  //댓글 작성 폼 컴포넌트
+    import CommentForm from './CommentForm.vue';  //댓글 작성 폼 컴포넌트 import
+    import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
+     
         
     const route = useRoute();
     const router = useRouter();
@@ -83,21 +68,21 @@
     
     //댓글 등록 함수
     async function addComment(commentData) {
-      if(!commentData || !commentData.uid || !commentData.content) {
+      if(!commentData || !commentData.email || !commentData.content) {
         console.warn("댓글 데이터가 올바르지 않습니다.", commentData);
         return;
       }
 
       console.log("댓글 등록 요청 데이터:", {
         isbn: book.value.isbn,
-        uid: commentData.uid,
+        email: commentData.email,
         content: commentData.content
       });
 
       try {
         const response = await api.addComment(
           book.value.isbn, 
-          commentData.uid, 
+          commentData.email, 
           commentData.content
         );
 
@@ -129,9 +114,12 @@
     }
 
     //댓글 수정 함수
-    async function updateBookComment(commentId, newContent, uid) {
+    async function updateBookComment({commentId, newContent, email}) {
       try {
-        const response = await api.updateBookComment(commentId, newContent, uid);
+        console.log("댓글 수정 요청 데이터: ", {commentId,newContent, email});
+
+        //책 리뷰 수정 요청
+        const response = await api.updateBookComment(commentId, newContent, email);
         if( response.data.status === 'success') {
           alert('댓글이 성공적으로 수정되었습니다.');
           await getCommentList(book.value.isbn); //수정 후 댓글 목록 갱신
@@ -242,7 +230,8 @@
         // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
         await getBoardRead(dealId); //게시글 단건조회
         if (board.value && board.value.isbn) {
-            await getBookInfo(board.value.isbn);  //책정보 얻기          
+            await getBookInfo(board.value.isbn);  //책정보 얻기    
+            await getCommentList(book.value.isbn); //책리뷰 목록 가져오기       
         }
     });
   

@@ -3,8 +3,8 @@
         <h1>리뷰 등록</h1>
         <form @submit.prevent="submitComment">
             <div>
-                <label for="uid">UID:</label>
-                <input id="uid" v-model="uid" required />
+                <label for="email">email:</label>
+                <input id="email" v-model="email" required />
             </div>
             <div>
                 <label for="content">내용:</label>
@@ -18,14 +18,14 @@
 <script setup>
 import { ref } from 'vue';
 
-const uid = ref(''); 
+const email = ref(''); 
 const commentContent=ref('');
 
 const emit = defineEmits(['comment-submitted']); //comment-submitted 이벤트 정의
 
 const submitComment = () => {
-    if(uid.value.trim() ==='') {
-        alert('UID를 입력하세요.');
+    if(email.value.trim() ==='') {
+        alert('email를 입력하세요.');
         return;
     }
     
@@ -36,10 +36,10 @@ const submitComment = () => {
     }
 
     //댓글 내용을 부모 컴포넌트로 전달
-    emit('comment-submitted', {uid: uid.value, content: commentContent.value});
+    emit('comment-submitted', {email: email.value, content: commentContent.value});
     
     //입력 필드 초기화
-    uid.value = '';
+    email.value = '';
     commentContent.value = ''; 
 };
 </script>
