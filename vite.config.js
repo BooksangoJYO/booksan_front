@@ -23,30 +23,30 @@ export default defineConfig({
     secure: false, // 요청을 보낼 프록시 서버 URL
       },
       '/api/chat': {
-        target: 'http://3.39.238.25:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true, // 추가
     secure: false, // 요청을 보낼 프록시 서버 URL
       },
       '/api/users': {
-        target: 'http://3.38.92.146:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true, // 추가
     secure: false, // 요청을 보낼 프록시 서버 URL
 
       },
       '/ws-stomp': {
-        target: 'http://3.39.238.25:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true, // 추가
     secure: false,
         ws: true
       },
       '/pub': {
-        target: 'http://3.39.238.25:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true, // 추가
     secure: false,
         ws: true
       },
       '/sub': {
-        target: 'http://3.39.238.25:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true, // 추가
     secure: false,
         ws: true

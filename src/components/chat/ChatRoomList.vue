@@ -29,6 +29,7 @@
         <div>
             <button @click="toggleAlarmRooms">알림창 열기</button>
         </div>
+        <button class="home-button" @click="goToHome">홈으로</button>
     </div>
 </template>
 
@@ -134,4 +135,7 @@ import { useRouter } from 'vue-router';
         viewAlarmRooms.value = !viewAlarmRooms.value;
     };
 
+    const goToHome = () => {
+    router.replace('/');  // 홈 경로로 replace
+    };
 </script>

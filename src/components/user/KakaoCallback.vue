@@ -3,11 +3,10 @@
 </template>
 
 <script setup>
-import api from '@/api/api.js';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
 const router = useRouter();
 const route = useRoute();
 
@@ -21,9 +20,8 @@ onMounted(async () => {
     }
 
     try {
-        const response = await api.apiClient.get(`/users/auth/kakao/callback?code=${code}`);
+        const response = await axios.get(`/api/users/auth/kakao/callback?code=${code}`);
         const responseData = response.data;
-
         if (responseData.status === 'success') {
             if (responseData.type === 'existing') {
                 Cookies.set('accessToken', responseData.accessToken, { 
@@ -35,7 +33,7 @@ onMounted(async () => {
                     secure: true
                 });
                 localStorage.setItem('userEmail',responseData.userEmail);
-                router.push('/chat/roomList');
+                router.push('/');
             } else {
                 router.push({
                     path: '/signup',
