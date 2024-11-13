@@ -31,12 +31,13 @@
         <button @click="goToPage(paginationData.end + 1)" :disabled="!paginationData.next">다음</button>
       </div>
     </div>
+    <button class="home-button" @click="goToHome">홈으로</button>
   </template>
   
   <script setup>
-  import { ref, reactive, onMounted, computed } from 'vue';
-  import { useRouter } from 'vue-router';
   import api from '@/api/api'; // API 요청을 보내는 파일을 import
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
   
   // 상태 정의
   const router = useRouter();
@@ -118,7 +119,9 @@
   onMounted(fetchBoardList);
   
   
-  
+  const goToHome = () => {
+    router.replace('/');  // 홈 경로로 replace
+    };
   </script>
   
   <style scoped>

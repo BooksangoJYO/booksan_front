@@ -44,7 +44,7 @@ apiClient.interceptors.response.use(
         
         // 인증 서버로 직접 refresh 요청
         const refreshToken = getCookie('refreshToken');
-        const { data } = await apiClient.post('http://3.38.92.146:8080/api/users/refresh', {
+        const { data } = await apiClient.post('/api/users/refresh', {
           refreshToken
         });
         
@@ -75,108 +75,108 @@ apiClient.interceptors.response.use(
 
 export default {
   handleKakaoCallback(code) {
-    return axios.get(`http://3.38.92.146:8080/api/users/auth/kakao/callback?code=${code}`);
+    return apiClient.get(`/api/users/auth/kakao/callback?code=${code}`);
   },
 
   logout() {
-    return axios.post('http://3.38.92.146:8080/api/users/logout');
+    return apiClient.post('/api/users/logout');
   },
 
   getUserInfo() {
-    return axios.get('http://3.38.92.146:8080/api/users/mypage');
+    return apiClient.get('/api/users/mypage');
   },
 
   updateProfile(userData) {
-    return axios.post('http://3.38.92.146:8080/api/users/update', userData);
+    return apiClient.post('/api/users/update', userData);
   },
 
   deleteAccount() {
-    return axios.delete('http://3.38.92.146:8080/api/users/delete');
+    return apiClient.delete('/api/users/delete');
   },
 
   getBooksInfo(searchTitle, page, size) {
-    const url = `http://13.125.214.144:8080/api/books/searchAll/${searchTitle}/${page}/${size}`;
-    return axios.get(url);
+    const url = `/api/books/searchAll/${searchTitle}/${page}/${size}`;
+    return apiClient.get(url);
   },
 
   getBookInfo(isbn) {
-    const url = `http://13.125.214.144:8080/api/books/search/${isbn}`;
-    return axios.get(url);
+    const url = `/api/books/search/${isbn}`;
+    return apiClient.get(url);
   },
 
   getBookCategories() {
-    const url = 'http://13.125.214.144:8080/api/books/categories';
-    return axios.get(url);
+    const url = '/api/books/categories';
+    return apiClient.get(url);
   },
 
   BoardInsert(boardData) {
-    const url = 'http://13.125.214.144:8080/api/board/insert';
-    return axios.post(url, boardData);
+    const url = '/api/board/insert';
+    return apiClient.post(url, boardData);
   },
 
   getBoardRead(dealId) {
-    const url = `http://13.125.214.144:8080/api/board/read/${dealId}`;
-    return axios.get(url);
+    const url = `/api/board/read/${dealId}`;
+    return apiClient.get(url);
   },
 
   getBoardList(page, size, keyword) {
-    const url = `http://13.125.214.144:8080/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
-    return axios.get(url);
+    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
+    return apiClient.get(url);
   },
 
   updateBoard(dataToSend) {
-    const url = 'http://13.125.214.144:8080/api/board/update';
-    return axios.put(url, dataToSend);
+    const url = '/api/board/update';
+    return apiClient.put(url, dataToSend);
   },
 
   postChatRoom(roomName, writerEmail) {
-    const url = `http://3.39.238.25:8080/api/chat/room/insert/${roomName}/${writerEmail}`;
-    return axios.post(url);
+    const url = `/api/chat/room/insert/${roomName}/${writerEmail}`;
+    return apiClient.post(url);
   },
 
   deleteBoard(dealId) {
-    const url = `http://13.125.214.144:8080/api/board/delete/${dealId}`;
-    return axios.delete(url);
+    const url = `/api/board/delete/${dealId}`;
+    return apiClient.delete(url);
   },
 
   addComment(isbn, email, content) {
-    const url = 'http://13.125.214.144:8080/api/books/comment/insert';
-    return axios.post(url, { isbn, email, content });
+    const url = '/api/books/comment/insert';
+    return apiClient.post(url, { isbn, email, content });
   },
 
   getCommentList(isbn) {
-    const url = `http://13.125.214.144:8080/api/books/comment/list/${isbn}`;
-    return axios.get(url);
+    const url = `/api/books/comment/list/${isbn}`;
+    return apiClient.get(url);
   },
 
   updateBookComment(commentId, content, email) {
-    const url = 'http://13.125.214.144:8080/api/books/comment/update';
-    return axios.put(url, { commentId, content, email });
+    const url = '/api/books/comment/update';
+    return apiClient.put(url, { commentId, content, email });
   },
 
   deleteBookComment(commentId) {
-    const url = `http://13.125.214.144:8080/api/books/comment/delete/${commentId}`;
-    return axios.delete(url);
+    const url = `/api/books/comment/delete/${commentId}`;
+    return apiClient.delete(url);
   },
 
   getRoomInfo(roomId) {
-    const url = `http://3.39.238.25:8080/api/chat/room/${roomId}`;
-    return axios.get(url);
+    const url = `/api/chat/room/${roomId}`;
+    return apiClient.get(url);
   },
 
   getRoomList() {
-    const url = 'http://3.39.238.25:8080/api/chat/rooms';
-    return axios.get(url);
+    const url = '/api/chat/rooms';
+    return apiClient.get(url);
   },
 
   getPrevMessage(roomId) {
-    const url = `http://3.39.238.25:8080/api/chat/prevMessage/${roomId}`;
-    return axios.get(url);
+    const url = `/api/chat/prevMessage/${roomId}`;
+    return apiClient.get(url);
   },
 
   getAlarmRooms(email) {
-    const url = `http://3.39.238.25:8080/api/chat/rooms/alarm/${email}`;
-    return axios.get(url);
+    const url = `/api/chat/rooms/alarm/${email}`;
+    return apiClient.get(url);
   },
 };
 
