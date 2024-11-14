@@ -52,6 +52,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api/api.js';
+import axios from 'axios';
 
 const email = ref('');      // 카카오에서 받은 이메일
 const uid = ref('');        // uid는 소셜 로그인 후 받아온 값을 사용
@@ -80,7 +81,7 @@ const checkNickname = async () => {
     }
 
     try {
-        const response = await api.apiClient.get(`/users/checkNickname?nickname=${nickname.value}`);
+        const response = await axios.get(`/api/users/checkNickname?nickname=${nickname.value}`);
         isAvailable.value = response.data.available;
         nicknameMessage.value = response.data.available ? 
             '사용 가능한 닉네임입니다.' : 
@@ -109,7 +110,7 @@ const handleSignup = async () => {
     }
     try {
          // email과 uid 함께 전송
-		 const response = await api.apiClient.post('/users/signup', {
+		 const response = await axios.post('/api/users/signup', {
             email: email.value,
             uid: uid.value,
             nickname: nickname.value
@@ -126,9 +127,6 @@ const handleSignup = async () => {
                 localStorage.setItem('accessToken', response.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.refreshToken);
 
-                // API 클라이언트에 액세스 토큰 설정
-                api.apiClient.defaults.headers.common['Authorization'] = 
-                    `Bearer ${response.data.accessToken}`;
             }
             
             alert("회원가입이 성공적으로 완료되었습니다!");

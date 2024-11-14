@@ -48,10 +48,10 @@
                 </div>
 
                 <!--닉네임 입력(변경될부분 나중에 로그인정보에서 가져옴)-->
-                <div>
+                <!-- <div>
                     <label for="email">email:</label>
                     <input type="text" id="email" v-model="form.email" />
-                </div>
+                </div> -->
 
                 <!--제출 버튼-->
                 <div>
@@ -80,8 +80,7 @@ const form = ref({
     title: '',
     content: '',
     booksCategoryId: null,
-    price: null,
-    email: 'user1@example.com',
+    price: null        
 });
 
 //카테고리 데이터를 저장하는 변수
@@ -105,7 +104,7 @@ const viewSearch=() =>{
 //폼 제출 메서드
 const submitForm = async () => {
     // 유효성 검사 추가
-    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price || !form.value.email) {
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
         alert("모든 필드를 입력하세요.");
         return;
     }
@@ -131,12 +130,17 @@ const submitForm = async () => {
             alert(response.data.message);
             router.push({path :'/board/list'}); //게시글 등록 성공시 게시글 목록으로 이동
         }else{
-            alert(response.data.message);
+            alert(response.data.message);   
         }
         
     } catch(error) {
-        console.error('데이터 전송 오류', error);
-        alert('데이터 전송에 문제가 발생했습니다.')
+        console.log(error);
+        if(error.status === 401){
+            alert('로그인이 필요한 기능입니다.')
+        }
+        else{
+            alert('데이터 전송에 문제가 발생했습니다.')
+        }
     }
 };
 
