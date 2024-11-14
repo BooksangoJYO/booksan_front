@@ -68,21 +68,19 @@
     
     //댓글 등록 함수
     async function addComment(commentData) {
-      if(!commentData || !commentData.email || !commentData.content) {
+      if(!commentData || !commentData.content) {
         console.warn("댓글 데이터가 올바르지 않습니다.", commentData);
         return;
       }
 
       console.log("댓글 등록 요청 데이터:", {
-        isbn: book.value.isbn,
-        email: commentData.email,
+        isbn: book.value.isbn,        
         content: commentData.content
       });
 
       try {
         const response = await api.addComment(
-          book.value.isbn, 
-          commentData.email, 
+          book.value.isbn,           
           commentData.content
         );
 
@@ -133,12 +131,12 @@
     }
 
     //댓글 삭제 함수
-    async function deleteBookComment(commentId) {
+    async function deleteBookComment({commentId,email}) {
       try{
-        const response = await api.deleteBookComment(commentId);
+        const response = await api.deleteBookComment(commentId,email);
         if (response.data.status === 'success') {
           alert('댓글이 성공적으로 삭제되었습니다.');
-          await getCommentList(book.value.isbn); //삭제후 댓글 목록 갱신
+          await getCommentList(book.value.isbn,email); //삭제후 댓글 목록 갱신
         } else {
           alert('댓글 삭제 실패: ' + response.data.message);
         }        

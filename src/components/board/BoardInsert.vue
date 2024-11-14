@@ -1,170 +1,484 @@
 <template>
-    <div>
-        <!--책 검색 컴포넌트(BookSearch) 포함-->
-        <button @click="viewSearch">검색</button>
-        <BookSearch v-if="viewSearchStatus" @book-selected="handleBookSelected"/>
-    
-        <!--선택된 책 정보 출력-->
-        <div v-if="selectedBook">
-            <h1>선택된 책 정보</h1>
-            <p>책 이미지: <img :src="selectedBook.image" alt="책 이미지"/></p>
-            <p>책 제목: {{ selectedBook.title }}</p>
-            <p>책 저자: {{ selectedBook.author }}</p>
-            <p>책 출판사: {{ selectedBook.publisher }}</p>
-            <p>isbn: {{ selectedBook.isbn }}</p>
+    <div class="container">
+      <!-- 헤더 -->
+      <header class="header">
+        <div class="header-left">
+          <div class="shopping-bag">
+            <img alt="장바구니" />
+          </div>
+          <nav>
+            <span class="nav-item active">중고책 찾기</span>
+            <span class="nav-item">도서 검색</span>
+          </nav>
         </div>
-
-        <!--등록폼-->
-        <div>
-            <h1>게시글 등록</h1>
-            <form @submit.prevent="submitForm">
-                <!--제목 입력-->
-                <div>
-                    <label for="title">제목:</label>
-                    <input type="text" id="title" v-model="form.title" />
+        <div class="header-right">
+          <i class="notification-icon"></i>
+          <i class="user-icon"></i>
+        </div>
+      </header>
+  
+      <!-- 실물 이미지 업로드 -->
+      <section class="image-upload-section">
+        <h2 class="section-title">실물 이미지 업로드</h2>
+        <div class="image-grid">
+          <div
+            v-for="(image, index) in images"
+            :key="index"
+            class="image-item"
+            @click="selectImage(index)"
+          >
+            <img v-if="image" :src="image" :alt="`업로드된 이미지 ${index + 1}`">
+            <div v-else class="image-placeholder">
+              <span class="upload-icon">↑</span>
+              <span class="upload-text">IMAGE</span>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- 도서 검색 섹션 -->
+      <section class="book-search-section">
+        <h2 class="section-title">관련한 도서 정보 등록</h2>
+        <div class="search-container">
+          <!-- 검색창 컴포넌트 -->
+          <div class="search-area">
+            <BookSearch @book-selected="handleBookSelected" />
+          </div>
+  
+          <!-- 선택된 책 정보 -->
+          <div class="selected-book-area">
+            <div v-if="selectedBook" class="selected-book-info">
+              <img
+                :src="selectedBook.image"
+                :alt="selectedBook.title"
+                class="selected-book-cover"
+              />
+              <div class="selected-book-details">
+                <div class="book-field">
+                  <span class="field-label">도서명</span>
+                  <span class="field-value">{{ selectedBook.title }}</span>
                 </div>
-
-                <!--내용 입력-->
-                <div>
-                    <label for="content">내용:</label>
-                    <textarea id="content" v-model="form.content"></textarea>
+                <div class="book-field">
+                  <span class="field-label">저자</span>
+                  <span class="field-value">{{ selectedBook.author }}</span>
                 </div>
-
-                <!--책 카테고리(드롭다운)-->
-                <div>
-                    <label for="category">책 카테고리:</label>
-                    <select id="category" v-model.number="form.booksCategoryId">
-                        <option :value="null" disabled>카테고리를 선택하세요</option>
-                        <option v-for="category in categories" :key="category.booksCategoryId" :value="category.booksCategoryId">
-                            {{ category.booksCategoryName }}
-                        </option>
+                <div class="book-field">
+                  <span class="field-label">출판사</span>
+                  <span class="field-value">{{ selectedBook.publisher }}</span>
+                </div>
+                <div class="book-field">
+                  <span class="field-label">ISBN</span>
+                  <span class="field-value">{{ selectedBook.isbn }}</span>
+                </div>
+                <div class="book-field">
+                  <span class="field-label">카테고리</span>
+                  <div class="dropdown-wrapper">
+                    <select v-model="form.booksCategoryId" class="category-dropdown">
+                      <option :value="null" disabled>카테고리를 선택하세요</option>
+                      <option
+                        v-for="category in categories"
+                        :key="category.booksCategoryId"
+                        :value="category.booksCategoryId"
+                      >
+                        {{ category.booksCategoryName }}
+                      </option>
                     </select>
+                  </div>
                 </div>
-                
-                <!--가격 입력-->
-                <div>
-                    <label for="price">가격:</label>
-                    <input type="number" id="price" v-model="form.price" />
-                </div>
-
-                <!--닉네임 입력(변경될부분 나중에 로그인정보에서 가져옴)-->
-                <!-- <div>
-                    <label for="email">email:</label>
-                    <input type="text" id="email" v-model="form.email" />
-                </div> -->
-
-                <!--제출 버튼-->
-                <div>
-                    <button type="submit">등록</button>
-                    <button type="button" @click="goToBoardList">취소</button>
-                </div>
-            </form>
+              </div>
+            </div>
+            <div v-else class="empty-book-info">
+              <p>도서가 선택되지 않았습니다. 왼쪽에서 책을 선택해주세요.</p>
+            </div>
+          </div>
         </div>
+      </section>
+  
+      <!-- 판매가 설정 -->
+      <section class="price-section">
+        <h2 class="section-title">판매가 설정</h2>
+        <div class="price-input-wrapper">
+          <input
+            type="number"
+            v-model="form.price"
+            class="price-input"
+            placeholder="판매가를 입력해주세요"
+          >
+        </div>
+      </section>
+  
+      <!-- 판매글 작성 -->
+      <section class="description-section">
+        <h2 class="section-title">판매글 작성</h2>
+        <div class="description-wrapper">
+          <input
+            type="text"
+            v-model="form.title"
+            class="title-input"
+            placeholder="제목을 입력하세요"
+          >
+          <textarea
+            v-model="form.content"
+            class="description-textarea"
+            placeholder="내용을 입력하세요"
+          ></textarea>
+        </div>
+      </section>
+  
+      <!-- 등록/취소 버튼 -->
+      <div class="button-group">
+        <button @click="submitForm" class="submit-button">등록하기</button>
+        <button @click="goToBoardList" class="cancel-button">취소</button>
+      </div>
     </div>
-</template>
+  </template>
+  
 
+  <script setup>
+  import BookSearch from './BookSearch.vue';
+  import { ref, onMounted } from 'vue';
+  import api from '@/api/api';
+  import {useRouter} from 'vue-router';
 
-<script setup>
-import BookSearch from './BookSearch.vue';
-import { useRouter } from 'vue-router';
-import {ref,onMounted} from 'vue';
-import api from '@/api/api';
+  const router = useRouter();
 
-//검색 상태 관리 변수
-const router =useRouter(); //router 객체 생성
-let viewSearchStatus = ref(false);
-//선택된 책 정보를 저장하는 변수
-const selectedBook = ref(null);
-//등록폼 데이터
-const form = ref({
+  const selectedBook = ref(null);
+  const images = ref([null, null, null, null]);
+  
+  const form = ref({
     title: '',
     content: '',
     booksCategoryId: null,
-    price: null        
-});
-
-//카테고리 데이터를 저장하는 변수
-const categories = ref([]);
-
-//BookSearch 컴포넌트에서 선택된 책 정보를 받는 메서드
-const handleBookSelected = (book) => {
-    //선택된 책 정보를 등록 컴포넌트에 전달
+    price: null,
+  });
+  
+  const categories = ref([]);
+  
+  const handleBookSelected = (book) => {
     selectedBook.value = book;
-    //책 정보가 선택되면 BookSearch 컴포넌트를 비활성화
-    viewSearchStatus.value= false;
-};
-
-//검색 창 열고 닫기
-const viewSearch=() =>{
-    viewSearchStatus.value = !viewSearchStatus.value;
-    // if(viewSearchStatus.value){viewSearchStatus.value = false;}
-    // else{viewSearchStatus.value=true;}
-};
-
-//폼 제출 메서드
-const submitForm = async () => {
-    // 유효성 검사 추가
-    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
-        alert("모든 필드를 입력하세요.");
-        return;
-    }
-
-    try{
-        //폼 데이터와 선택된 책 정보를 하나의 객체로 결합
-        const dataToSend = {
-            ...form.value, //폼 데이터(객체를 복사하여 포함)
-            isbn: selectedBook.value?.isbn || null,//선택된 책의 ISBN 없으면 null
-            bookTitle: selectedBook.value?.title || null,
-            bookWriter: selectedBook.value?.author || null,
-            bookPublisher: selectedBook.value?.publisher || null
-            
+  };
+  
+  const selectImage = (index) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          images.value[index] = e.target.result;
         };
-
-        //디버깅용 코드
-        console.log("전송할 데이터:", dataToSend);
-
-        //백엔드에 POST 요청
-        const response = await api.BoardInsert(dataToSend);
-        
-        if(response.data.status=="success"){
-            alert(response.data.message);
-            router.push({path :'/board/list'}); //게시글 등록 성공시 게시글 목록으로 이동
-        }else{
-            alert(response.data.message);   
-        }
-        
-    } catch(error) {
-        console.log(error);
-        if(error.status === 401){
-            alert('로그인이 필요한 기능입니다.')
-        }
-        else{
-            alert('데이터 전송에 문제가 발생했습니다.')
-        }
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+  
+  const submitForm = async () => {
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+      alert('모든 필드를 입력하세요.');
+      return;
     }
-};
-
-
-//취소 버튼 누르면 게시글 목록으로 이동
-const goToBoardList = () => {
-    router.push('/board/list'); 
-}
-
-//카테고리 데이터를 가져오는 함수
-const getBookCategories = async () => {
-    try{
-        const response = await api.getBookCategories();
-        //첫번째 data는 응답 객체의 data필드, 두번째 data는 booksCategories 배열
-        console.log(response.data);
-        categories.value = response.data.booksCategories;
-    } catch(error) {
-        console.log("카테고리 데이터를 가져오는중 오류가 발생했습니다.", error);
+  
+    try {
+      const dataToSend = {
+        ...form.value,
+        isbn: selectedBook.value?.isbn || null,
+        bookTitle: selectedBook.value?.title || null,
+        bookWriter: selectedBook.value?.author || null,
+        bookPublisher: selectedBook.value?.publisher || null,
+      };
+  
+      const response = await api.BoardInsert(dataToSend);
+  
+      if (response.data.status == 'success') {
+        alert(response.data.message);
+        router.push({ path: '/board/list' });
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.status === 401) {
+            alert('로그인이 필요한 기능입니다.');
+        } else {
+            alert('데이터 전송에 문제가 발생했습니다.');
+        }      
     }
-};
-
-
-//컴포넌트가 마운트될 때 카테고리 데이터를 가져옴
-onMounted(()=>{
+  };
+  
+  const goToBoardList = () => {
+    router.push('/board/list');
+  };
+  
+  const getBookCategories = async () => {
+    try {
+      const response = await api.getBookCategories();
+      categories.value = response.data.booksCategories;
+    } catch (error) {
+      console.error('카테고리 데이터를 가져오는 중 오류가 발생했습니다.', error);
+    }
+  };
+  
+  onMounted(() => {
     getBookCategories();
-});
-</script>
+  });
+  </script>
+  
+  <style scoped>
+  /* 전체 레이아웃 */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  }
+  
+  /* 헤더 스타일 */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 40px;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  .nav-item {
+    color: #666;
+    margin-right: 20px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .nav-item.active {
+    color: #000;
+    font-weight: 500;
+  }
+  
+  /* 섹션 타이틀 공통 스타일 */
+  .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 20px;
+  }
+  
+  /* 이미지 업로드 섹션 */
+  .image-upload-section {
+    margin-bottom: 40px;
+  }
+  
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  .image-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #F8F9FA;
+    border: 1px dashed #DFE2E6;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .image-item {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+  }
+  
+  .image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* 검색 및 선택된 책 섹션 */
+  .book-search-section {
+    margin-bottom: 40px;
+  }
+  
+  .search-container {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .search-area {
+    flex: 2;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #F8F9FA;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .selected-book-area {
+    flex: 3;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #F8F9FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .selected-book-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .selected-book-cover {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 20px;
+    align-self: center;
+  }
+  
+  .selected-book-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .book-field {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .field-label {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .field-value {
+    font-size: 14px;
+  }
+  
+  /* 빈 상태 메시지 */
+  .empty-book-info {
+    font-size: 16px;
+    color: #888;
+  }
+  
+  /* 판매가 입력 */
+  .price-section {
+    margin-bottom: 40px;
+  }
+  
+  .price-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* 판매글 작성 */
+  .description-section {
+    margin-bottom: 40px;
+  }
+  
+  .title-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .description-textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    border: 1px solid #DFE2E6;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+  }
+  
+  /* 버튼 스타일 */
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .submit-button,
+  .cancel-button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .submit-button {
+    background-color: #8b4513;
+    color: white;
+    flex: 1;
+  }
+  
+  .cancel-button {
+    background-color: #868e96;
+    color: white;
+    flex: 1;
+  }
+  
+  .submit-button:hover {
+    background-color: #693610;
+  }
+  
+  .cancel-button:hover {
+    background-color: #495057;
+  }
+  
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .image-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .search-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .search-area,
+    .selected-book-area {
+      max-width: 100%;
+    }
+  
+    .selected-book-cover {
+      max-width: 200px;
+    }
+  }
+  </style>
+  
