@@ -13,12 +13,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/board': {
-        target: 'http://13.125.214.144:8080',
+        target: 'http://localhost:8090',
         changeOrigin: true, // 추가
     secure: false, // 요청을 보낼 프록시 서버 URL
       },
       '/api/books': {
-        target: 'http://13.125.214.144:8080',
+        target: 'http://localhost:8090',
         changeOrigin: true, // 추가
     secure: false, // 요청을 보낼 프록시 서버 URL
       },
