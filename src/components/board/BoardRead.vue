@@ -164,7 +164,7 @@
     //삭제 확인 함수
     async function confirmDelete() {
       try {
-        const response = await api.deleteBoard(board.value.dealId);
+        const response = await api.deleteBoard(board.value.dealId, {email: board.value.email});
         if (response.data.status === "success") {
           alert("게시글이 삭제되었습니다.");
           goToBoardList(); // 삭제후 목록 페이지로 이동
@@ -173,7 +173,12 @@
         }
       } catch (error) {
         console.error("게시글 삭제 중 오류발생:",error);
-        alert("삭제에 실패했습니다.");
+        if(error.status === 401){
+            alert('로그인이 필요한 기능입니다.')
+        }
+        else{
+            alert('삭제에 실패했습니다.')
+        }        
       } finally{
         closeModal(); // 모달 닫기
       }
@@ -205,22 +210,11 @@
         const response = await api.getBoardRead(dealId);
         console.log('게시물 정보 :', response.data);  //게시물 정보와 댓글 정보 확인
         board.value = response.data.data;
-        reviews.value = response.data.bookCommentList;
+        book.value = response.data.bookData;
     } catch (error) {
         console.error('게시물 정보를 가져오는 중 오류 발생:', error);
     }
     }
-
-    // 도서 정보 조회 함수(isbn) (네이버 API 호출)
-    async function getBookInfo(isbn) {
-    try{
-        const response = await api.getBookInfo(isbn);
-        console.log("도서정보 데이터확인: ",response.data); //도서정보확인
-        book.value = response.data.items[0];            
-    } catch (error) {
-        console.error('도서 정보를 가져오는 중 오류 발생:', error);
-    }
-    }  
     
 
     // 페이지 마운트 시 호출
@@ -230,7 +224,6 @@
         // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
         await getBoardRead(dealId); //게시글 단건조회
         if (board.value && board.value.isbn) {
-            await getBookInfo(board.value.isbn);  //책정보 얻기    
             await getCommentList(book.value.isbn); //책리뷰 목록 가져오기       
         }
     });

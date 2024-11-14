@@ -36,6 +36,8 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+
+
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
       
@@ -146,9 +148,10 @@ export default {
     return apiClient.post(url);
   },
 
-  deleteBoard(dealId) {
+  //가판대 삭제
+  deleteBoard(dealId, {email}) {
     const url = `/api/board/delete/${dealId}`;
-    return apiClient.delete(url);
+    return apiClient.delete(url, {data: {email}});
   },
 
   addComment(isbn, email, content) {

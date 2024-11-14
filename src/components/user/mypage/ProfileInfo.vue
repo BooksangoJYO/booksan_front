@@ -16,14 +16,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import auth from '@/api/auth.js';
+import api from '@/api/api';
 
 const router = useRouter();
 const nickname = ref('');
 
 onMounted(async () => {
 try {
-    const response = await auth.get('/users/mypage');
+    const response = await api.get('/users/mypage');
     nickname.value = response.data.nickname;
 } catch (error) {
     console.error('사용자 정보 조회 실패:', error);
@@ -32,7 +32,7 @@ try {
 
 const handleUpdate = async () => {
 try {
-    const response = await auth.post('/users/update', {
+    const response = await api.post('/users/update', {
     nickname: nickname.value
     });
     if(response.data.status === 'success') {

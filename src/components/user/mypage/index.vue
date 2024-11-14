@@ -12,7 +12,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import auth from '@/api/auth';
+import api from '@/api/api';
 import Cookies from 'js-cookie';
 
 const router = useRouter();
@@ -20,7 +20,7 @@ const userInfo = ref(null);
 
 onMounted(async () => {
     try {
-        const response = await auth.getUserInfo();
+        const response = await api.getUserInfo();
         userInfo.value = response.data;
         console.log('사용자 정보:', userInfo.value);
     } catch (error) {
@@ -32,7 +32,7 @@ onMounted(async () => {
 const deleteAccount = async () => {
     if(confirm('정말 탈퇴하시겠습니까?')) {
         try {
-            await auth.deleteAccount();
+            await api.deleteAccount();
 
             // 쿠키 삭제
             Cookies.remove('accessToken');

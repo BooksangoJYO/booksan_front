@@ -4,7 +4,7 @@
 
 <script setup>
 // import axios from 'axios';
-import auth from '@/api/auth';
+import api from '@/api/api';
 import Cookies from 'js-cookie';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -21,7 +21,7 @@ onMounted(async () => {
     }
 
     try {
-        const response = await auth.handleKakaoCallback(code);
+        const response = await api.handleKakaoCallback(code);
         const responseData = response.data;
         
         if (responseData.status === 'success') {

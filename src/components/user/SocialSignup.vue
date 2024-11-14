@@ -51,7 +51,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import auth from '@/api/auth';
+import api from '@/api/api';
 import Cookies from 'js-cookie';
 
 const email = ref('');          // 카카오에서 받은 이메일
@@ -81,7 +81,7 @@ const checkNickname = async () => {
     }
 
     try {
-        const response = await auth.checkNickname(nickname.value);
+        const response = await api.checkNickname(nickname.value);
         isAvailable.value = response.data.available;
         nicknameMessage.value = response.data.available ? 
             '사용 가능한 닉네임입니다.' : 
@@ -110,7 +110,7 @@ const handleSignup = async () => {
     }
     
     try {
-        const response = await auth.signup(email.value, uid.value, nickname.value);
+        const response = await api.signup(email.value, uid.value, nickname.value);
         console.log('회원가입 응답:', response);
         console.log('응답 데이터:', response.data);
 
