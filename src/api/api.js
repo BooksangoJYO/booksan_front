@@ -76,8 +76,20 @@ apiClient.interceptors.response.use(
 
 
 export default {
+  login(uid, email) {
+    return apiClient.post('/api/users/auth/socialLogin', { uid, email });
+  },
+
+  signup(email, uid, nickname) {
+    return apiClient.post('/api/users/signup', { email, uid, nickname });
+  },
+
   handleKakaoCallback(code) {
     return apiClient.get(`/api/users/auth/kakao/callback?code=${code}`);
+  },
+
+  checkNickname(nickname) {
+    return apiClient.get(`/api/users/checkNickname?nickname=${nickname}`);
   },
 
   logout() {
