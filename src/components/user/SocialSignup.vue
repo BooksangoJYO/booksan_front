@@ -51,18 +51,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '../../api/api.js';
+import auth from '@/api/auth';
+import Cookies from 'js-cookie';
 
-const email = ref('');      // 카카오에서 받은 이메일
-const uid = ref('');        // uid는 소셜 로그인 후 받아온 값을 사용
-const nickname = ref('');   // 닉네임
-const route = useRoute();   // 현재 라우트 정보를 가져오기
-const router = useRouter(); // useRouter를 통해 router 인스턴스 가져오기
+const email = ref('');          // 카카오에서 받은 이메일
+const uid = ref('');            // uid는 소셜 로그인 후 받아온 값을 사용
+const nickname = ref('');       // 닉네임
+const route = useRoute();       // 현재 라우트 정보를 가져오기
+const router = useRouter();     // useRouter를 통해 router 인스턴스 가져오기
 const isAvailable = ref(false); //사용가능한 닉네임
 const nicknameMessage = ref('닉네임을 입력해주세요.'); //닉네임 검사
 
 onMounted(() => {
-    email.value = route.query.email; // 쿼리 파라미터에서 이메일 가져오기
+    email.value = route.query.email;    // 쿼리 파라미터에서 이메일 가져오기
     uid.value = route.query.code;       // 쿼리 파라미터에서 UID 가져오기
 
 	console.log('회원가입 폼 초기 데이터:', {
@@ -80,7 +81,7 @@ const checkNickname = async () => {
     }
 
     try {
-        const response = await api.apiClient.get(`/users/checkNickname?nickname=${nickname.value}`);
+        const response = await auth.checkNickname(nickname.value);
         isAvailable.value = response.data.available;
         nicknameMessage.value = response.data.available ? 
             '사용 가능한 닉네임입니다.' : 
@@ -107,39 +108,27 @@ const handleSignup = async () => {
         router.push('/login');
         return;
     }
+    
     try {
-         // email과 uid 함께 전송
-		 const response = await api.apiClient.post('/users/signup', {
-            email: email.value,
-            uid: uid.value,
-            nickname: nickname.value
+        const response = await auth.signup(email.value, uid.value, nickname.value);
+        console.log('회원가입 응답:', response);
+        console.log('응답 데이터:', response.data);
+
+        // 토큰 저장
+        Cookies.set('accessToken', response.data.accessToken, { 
+            httpOnly: false, 
+            secure: true 
         });
-
-        if (response.data.status === "success") {
-            // 두 토큰 모두 저장
-            if (response.data.accessToken && response.data.refreshToken) {
-                console.log('발급된 JWT 토큰:', {
-                    accessToken: response.data.accessToken,
-                    refreshToken: response.data.refreshToken
-                });
-                
-                localStorage.setItem('accessToken', response.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.refreshToken);
-
-                // API 클라이언트에 액세스 토큰 설정
-                api.apiClient.defaults.headers.common['Authorization'] = 
-                    `Bearer ${response.data.accessToken}`;
-            }
-            
-            alert("회원가입이 성공적으로 완료되었습니다!");
-            router.push('/chat/roomList'); // 메인 페이지로 리다이렉트
-        } else {
-            throw new Error(response.data.message);
-        }
+        Cookies.set('refreshToken', response.data.refreshToken, { 
+            httpOnly: false, 
+            secure: true 
+        });
+        
+        alert("회원가입이 성공적으로 완료되었습니다!");
+        router.push('/');
     } catch (error) {
-        console.error("회원가입 실패:", error.response?.data || error);
-		console.error('상세 에러 정보:', error.response?.data);
-        alert(error.response?.data?.message || "회원가입에 실패했습니다.");
+        console.error("회원가입 실패:", error);
+        alert(error.message || "회원가입에 실패했습니다.");
     }
 };
 

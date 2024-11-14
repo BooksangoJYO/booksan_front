@@ -3,7 +3,8 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+// import axios from 'axios';
+import auth from '@/api/auth';
 import Cookies from 'js-cookie';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -20,8 +21,9 @@ onMounted(async () => {
     }
 
     try {
-        const response = await axios.get(`/api/users/auth/kakao/callback?code=${code}`);
+        const response = await auth.handleKakaoCallback(code);
         const responseData = response.data;
+        
         if (responseData.status === 'success') {
             if (responseData.type === 'existing') {
                 Cookies.set('accessToken', responseData.accessToken, { 
@@ -32,9 +34,11 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
-                localStorage.setItem('userEmail',responseData.userEmail);
+                localStorage.setItem('userEmail', responseData.userEmail);
                 router.push('/');
-            } else {
+                //그전 url이 있으면 전페이지로 이동, 없으면 메인페이지
+            } else if(responseData.type === 'new'){
+                // 신규 회원이거나 탈퇴했던 회원인 경우
                 router.push({
                     path: '/signup',
                     query: {
@@ -48,6 +52,7 @@ onMounted(async () => {
         }
     } catch (error) {
         console.error('로그인 처리 실패:', error);
+        alert('로그인 처리 중 오류가 발생했습니다.');
         router.push('/login');
     }
 });
