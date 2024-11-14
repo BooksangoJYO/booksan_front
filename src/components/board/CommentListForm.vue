@@ -16,7 +16,7 @@
             <div v-else>
               <p><strong>내용:</strong> {{ review.content }}</p>
               <button @click="review.isEditing = true; review.newContent = review.content">수정</button>
-              <button @click="deleteBookComment(review.commentId)">삭제</button>
+              <button @click="deleteBookComment(review.commentId, review.email)">삭제</button>
             </div>
             
           </li>
@@ -42,8 +42,8 @@ const updateBookComment = (commentId, newContent, email) => {
 };
 
 //책 리뷰 삭제
-const deleteBookComment = (commentId) => {
-  emit('deleteBookComment', commentId);
+const deleteBookComment = (commentId, email) => {
+  emit('deleteBookComment', {commentId, email});
 };
 </script>
 
