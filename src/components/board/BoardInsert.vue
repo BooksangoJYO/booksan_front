@@ -142,14 +142,12 @@
 
   const router = useRouter();
 
-  // 도서 선택 관련
   const selectedBook = ref(null);
-  const categories = ref([]);
-  const handleBookSelected = (book) => {
-    selectedBook.value = book;
-  };
+  
+    //이미지 파일 업로드 관련
+    const images = ref(Array(4).fill(null));
+    const imageFiles = ref(Array(4).fill(null));
 
-  // 본문 작성 관련
   const form = ref({
     title: '',
     content: '',
@@ -157,9 +155,12 @@
     price: null,
   });
   
-  //이미지 파일 업로드 관련
-  const images = ref(Array(4).fill(null));
-  const imageFiles = ref(Array(4).fill(null));
+  const categories = ref([]);
+  
+  const handleBookSelected = (book) => {
+    selectedBook.value = book;
+  };
+  
   const selectImage = (index) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -171,6 +172,7 @@
         imageFiles.value[index] = file;
         
         // 미리보기 생성
+
         const reader = new FileReader();
         reader.onload = (e) => {
           images.value[index] = e.target.result;
@@ -180,8 +182,7 @@
     };
     input.click();
   };
-
-
+  
   // FormData 생성
   const getFormData = () => {
     const formData = new FormData()
@@ -207,20 +208,22 @@
     return formData
   }
 
+
   const submitForm = async () => {
     if (!imageFiles.value.some(file => file != null) || !form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+
       alert('모든 필드를 입력하세요.');
       return;
     }
-
+  
     try {
-        const response = await api.BoardInsert(getFormData());
-        if (response.data.status == 'success') {
-            alert(response.data.message);
-            router.push({ path: '/board/list' });
-        } else {
-            alert(response.data.message);
-        }
+      const response = await api.BoardInsert(getFormData());
+      if (response.data.status == 'success') {
+        alert(response.data.message);
+        router.push({ path: '/board/list' });
+      } else {
+        alert(response.data.message);
+      }
     } catch (error) {
       console.error(error);
       if (error.status === 401) {
