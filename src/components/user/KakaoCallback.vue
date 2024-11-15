@@ -34,7 +34,8 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
-                localStorage.setItem('userEmail', responseData.userEmail);
+                sessionStorage.setItem('userEmail',responseData.userEmail);
+
                 router.push('/');
                 //그전 url이 있으면 전페이지로 이동, 없으면 메인페이지
             } else if(responseData.type === 'new'){

@@ -18,7 +18,6 @@ const apiClient = axios.create({
   }
 });
 
-
 apiClient.interceptors.request.use(
   config => {
   
@@ -36,8 +35,6 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-
-
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
       
@@ -63,7 +60,7 @@ apiClient.interceptors.response.use(
         // refresh 실패시 로그인으로
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
-        localStorage.removeItem("userData");
+        sessionStorage.removeItem("userData");
         router.replace({ path: '/login' });
       }
     }
@@ -158,15 +155,14 @@ export default {
     });
   },
 
-  postChatRoom(roomName, writerEmail) {
-    const url = `/api/chat/room/insert/${roomName}/${writerEmail}`;
-    return apiClient.post(url);
+  postChatRoom(name,dealId, writerEmail) {
+    const url = `/api/chat/room/insert//${writerEmail}`;
+    return apiClient.post(url,{name,dealId});
   },
 
-  //가판대 삭제
-  deleteBoard(dealId, {email}) {
+  deleteBoard(dealId) {
     const url = `/api/board/delete/${dealId}`;
-    return apiClient.delete(url, {data: {email}});
+    return apiClient.delete(url);
   },
 
   //댓글 등록
@@ -193,6 +189,16 @@ export default {
     return apiClient.delete(url, {
       data : { email }
     });
+  },
+
+  insertFavorite(dealId) {
+    const url = '/api/board/favorite/list/'+dealId;
+    return apiClient.post(url);
+  },
+
+  getFavoriteList() {
+    const url = '/api/board/favorite/insert';
+    return apiClient.get(url);
   },
 
   getRoomInfo(roomId) {
