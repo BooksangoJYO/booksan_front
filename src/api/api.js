@@ -73,8 +73,20 @@ apiClient.interceptors.response.use(
 
 
 export default {
+  login(uid, email) {
+    return apiClient.post('/api/users/auth/socialLogin', { uid, email });
+  },
+
+  signup(email, uid, nickname) {
+    return apiClient.post('/api/users/signup', { email, uid, nickname });
+  },
+
   handleKakaoCallback(code) {
     return apiClient.get(`/api/users/auth/kakao/callback?code=${code}`);
+  },
+
+  checkNickname(nickname) {
+    return apiClient.get(`/api/users/checkNickname?nickname=${nickname}`);
   },
 
   logout() {
@@ -93,39 +105,54 @@ export default {
     return apiClient.delete('/api/users/delete');
   },
 
+  //네이버 책 검색 api(가판대 등록시 사용)
   getBooksInfo(searchTitle, page, size) {
     const url = `/api/books/searchAll/${searchTitle}/${page}/${size}`;
     return apiClient.get(url);
   },
 
+  //등록된 책정보 얻기(조회페이지에서 사용-선택된 책정보)
   getBookInfo(isbn) {
     const url = `/api/books/search/${isbn}`;
     return apiClient.get(url);
   },
 
+  //책 카테고리 얻기
   getBookCategories() {
     const url = '/api/books/categories';
     return apiClient.get(url);
   },
 
+  //가판대 등록
   BoardInsert(boardData) {
     const url = '/api/board/insert';
-    return apiClient.post(url, boardData);
+    return apiClient.post(url, boardData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
+  //가판대 단건조회
   getBoardRead(dealId) {
     const url = `/api/board/read/${dealId}`;
     return apiClient.get(url);
   },
 
+  //가판대 목록 가져오기
   getBoardList(page, size, keyword) {
     const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
     return apiClient.get(url);
   },
 
+  //가판대 수정
   updateBoard(dataToSend) {
     const url = '/api/board/update';
-    return apiClient.put(url, dataToSend);
+    return apiClient.put(url, dataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
   postChatRoom(name,dealId, writerEmail) {
@@ -138,24 +165,30 @@ export default {
     return apiClient.delete(url);
   },
 
-  addComment(isbn, email, content) {
+  //댓글 등록
+  addComment(isbn, content) {
     const url = '/api/books/comment/insert';
-    return apiClient.post(url, { isbn, email, content });
+    return apiClient.post(url, { isbn, content });
   },
 
+  //댓글 목록
   getCommentList(isbn) {
     const url = `/api/books/comment/list/${isbn}`;
     return apiClient.get(url);
   },
 
+  //댓글 수정
   updateBookComment(commentId, content, email) {
     const url = '/api/books/comment/update';
     return apiClient.put(url, { commentId, content, email });
   },
 
-  deleteBookComment(commentId) {
+  //댓글 삭제
+  deleteBookComment(commentId, email) {
     const url = `/api/books/comment/delete/${commentId}`;
-    return apiClient.delete(url);
+    return apiClient.delete(url, {
+      data : { email }
+    });
   },
 
   insertFavorite(dealId) {

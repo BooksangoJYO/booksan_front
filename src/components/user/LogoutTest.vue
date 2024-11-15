@@ -7,14 +7,14 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import auth from '../../api/auth';
+import api from '@/api/api';
 
 const router = useRouter();
 
 const handleLogout = async () => {
     try {
         // 서버 로그아웃 호출 (서버에서 쿠키 삭제)
-        await auth.logout();
+        await api.logout();
         
         document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
