@@ -32,7 +32,7 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
-                localStorage.setItem('userEmail',responseData.userEmail);
+                sessionStorage.setItem('userEmail',responseData.userEmail);
                 router.push('/');
             } else {
                 router.push({
