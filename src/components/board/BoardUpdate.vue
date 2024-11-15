@@ -133,6 +133,7 @@
     booksCategoryId: null,
     price: null,
     status: "N", // 기본값을 'N'으로 설정하여 판매중 상태로 초기화
+    email: ""
   });
   const categories = ref([]);
   
@@ -149,6 +150,7 @@
         booksCategoryId: boardData.booksCategoryId,
         price: boardData.price,
         status: boardData.status,
+        email: boardData.email
       };
     } catch (error) {
       console.error("게시글 데이터를 불러오는 중 오류 발생:", error);
