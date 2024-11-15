@@ -129,7 +129,11 @@ export default {
   //가판대 등록
   BoardInsert(boardData) {
     const url = '/api/board/insert';
-    return apiClient.post(url, boardData);
+    return apiClient.post(url, boardData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
   //가판대 단건조회
@@ -147,7 +151,11 @@ export default {
   //가판대 수정
   updateBoard(dataToSend) {
     const url = '/api/board/update';
-    return apiClient.put(url, dataToSend);
+    return apiClient.put(url, dataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
   postChatRoom(roomName, writerEmail) {
