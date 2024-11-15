@@ -143,8 +143,11 @@
   const router = useRouter();
 
   const selectedBook = ref(null);
-  const images = ref([null, null, null, null]);
   
+    //이미지 파일 업로드 관련
+    const images = ref(Array(4).fill(null));
+    const imageFiles = ref(Array(4).fill(null));
+
   const form = ref({
     title: '',
     content: '',
@@ -165,6 +168,11 @@
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
+        // 파일 객체 저장
+        imageFiles.value[index] = file;
+        
+        // 미리보기 생성
+
         const reader = new FileReader();
         reader.onload = (e) => {
           images.value[index] = e.target.result;
@@ -175,23 +183,41 @@
     input.click();
   };
   
+  // FormData 생성
+  const getFormData = () => {
+    const formData = new FormData()
+
+    // 본문 데이터 추가
+    Object.keys(form.value).forEach((key) => {
+        if (form.value[key] !== null) formData.append(key, form.value[key])
+    })
+
+    // 선택된 도서 정보 추가
+    if (selectedBook.value) {
+        formData.append('isbn', selectedBook.value.isbn || '');
+        formData.append('bookTitle', selectedBook.value.title || '');
+        formData.append('bookWriter', selectedBook.value.author || '');
+        formData.append('bookPublisher', selectedBook.value.publisher || '');
+    }
+
+    // 이미지 파일 추가
+    imageFiles.value.forEach((file, index) => {
+        if (file) formData.append('files', file, `image_${index}.jpg`)
+    })
+
+    return formData
+  }
+
+
   const submitForm = async () => {
-    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+    if (!imageFiles.value.some(file => file != null) || !form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+
       alert('모든 필드를 입력하세요.');
       return;
     }
   
     try {
-      const dataToSend = {
-        ...form.value,
-        isbn: selectedBook.value?.isbn || null,
-        bookTitle: selectedBook.value?.title || null,
-        bookWriter: selectedBook.value?.author || null,
-        bookPublisher: selectedBook.value?.publisher || null,
-      };
-  
-      const response = await api.BoardInsert(dataToSend);
-  
+      const response = await api.BoardInsert(getFormData());
       if (response.data.status == 'success') {
         alert(response.data.message);
         router.push({ path: '/board/list' });
