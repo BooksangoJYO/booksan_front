@@ -140,8 +140,8 @@ export default {
   },
 
   //가판대 목록 가져오기
-  getBoardList(page, size, keyword) {
-    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
+  getBoardList(page, size, keyword, availableOnly, booksCategoryId) {
+    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}`;
     return apiClient.get(url);
   },
 
