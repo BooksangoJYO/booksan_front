@@ -97,6 +97,11 @@ export default {
     return apiClient.get('/api/users/mypage');
   },
 
+  getBookmarks() {
+    console.log('API 호출 파라미터:');
+    return apiClient.get('/api/board/favorite/list');
+  },
+
   updateProfile(userData) {
     return apiClient.post('/api/users/update', userData);
   },

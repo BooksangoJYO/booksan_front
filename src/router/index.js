@@ -12,6 +12,8 @@ import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Mypage from '@/components/user/mypage/index.vue';
+import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
+import MyPost from '@/components/user/mypage/MyPost.vue';
 
 
 const router = createRouter({
@@ -22,6 +24,8 @@ const router = createRouter({
         { path: '/signup', name: 'signup', component: SocialSignup },
         { path: '/logout', name: 'LogoutTest', component: LogoutTest },
         { path: '/mypage', name: 'mypage', component: Mypage },
+        { path: '/mypage/bookmarks', name: 'bookmarks', component: Bookmarks },
+        { path: '/mypost', name: 'mypost', component: MyPost },
         { path: '/profileInfo', name: 'profileInfo', component: ProfileInfo },
         { path: '/auth/kakao/callback', name: 'KakaoCallback', component: KakaoCallback },
         { path: '/board/insert', component: BoardInsert},
