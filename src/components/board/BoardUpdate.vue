@@ -2,8 +2,7 @@
     <div class="container">
       <h1>가판대 수정 페이지</h1>
 
-      <!--첨부파일 들어가야 될 부분-->
-      
+      <!--첨부파일 들어가야 될 부분-->      
 
       <!-- 수평선 추가 -->
       <hr class="section-divider" />
@@ -61,10 +60,10 @@
           <div class="form-group">
             <label for="content" class="field-label">내용:</label>
             <textarea
-              id="content"
-              v-model="form.content"
-              class="form-textarea"
-              placeholder="내용을 입력하세요"
+                id="content"
+                v-model="form.content"
+                class="form-textarea"
+                placeholder="내용을 입력하세요"
             ></textarea>
           </div>
   
@@ -235,71 +234,79 @@
   height: auto; /* 비율 유지 */
   object-fit: contain; /* 이미지 비율 유지 및 잘리지 않도록 설정 */
   margin-right: 20px; /* 이미지와 텍스트 간 여백 추가 */
-}
-  
-  .section-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .field-label {
-    font-weight: bold;
-    margin-right: 10px;
-  }
-  
-  .form-input,
-  .form-textarea,
-  .form-select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .form-textarea {
-    resize: vertical;
-  }
-  
-  .radio-group label {
-    margin-right: 15px;
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  
-  .submit-button,
-  .cancel-button {
-    flex: 1;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .submit-button {
-    background-color: #8b4513;
-    color: white;
-  }
-  
-  .cancel-button {
-    background-color: #868e96;
-    color: white;
-  }
+}  
 
-  .section-divider {
+.form-textarea {
+  width: 100%; /* 부모 요소에 맞춰 너비를 설정 */
+  max-width: 800px; /* 최대 너비 설정 */
+  height: 200px; /* 고정 높이 설정 */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: none; /* 크기 조정 비활성화 */  
+  overflow: auto; /* 텍스트 초과 시 스크롤 */  
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.field-label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.radio-group label {
+  margin-right: 15px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.submit-button,
+.cancel-button {
+  flex: 1;
+  padding: 10px 20px;
   border: none;
-  height: 2px;
-  background-color: #ccc;
-  margin: 20px 0; /* 위아래 간격 */
-  }
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #8b4513;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #868e96;
+  color: white;
+}
+
+.section-divider {
+border: none;
+height: 2px;
+background-color: #ccc;
+margin: 20px 0; /* 위아래 간격 */
+}
 </style>
   

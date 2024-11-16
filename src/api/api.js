@@ -159,7 +159,7 @@ export default {
     const url = `/api/chat/room/insert//${writerEmail}`;
     return apiClient.post(url,{name,dealId});
   },
-  
+
   //게시판 삭제
   deleteBoard(dealId, email) {
     const url = `/api/board/delete/${dealId}`;
@@ -192,6 +192,12 @@ export default {
     return apiClient.delete(url, {
       data : { email }
     });
+  },
+
+  //판매 상태 변경 API 메서드 추가
+  updateBoardStatus(dealId, status) {
+    const url = `/api/board/status/update`;
+    return apiClient.put(url, {dealId,status})
   },
 
   insertFavorite(dealId) {
