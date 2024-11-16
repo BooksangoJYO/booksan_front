@@ -100,9 +100,10 @@ const sendMessage = async () => {
   }
 };
 
-const exitChat = () => {
-  console.log("나가기 실행!!");
+const exitChat = async() => {
   showMenu.value = false;
+  emit('exitChat');
+
 };
 
 // 컴포넌트가 마운트된 후 초기 스크롤

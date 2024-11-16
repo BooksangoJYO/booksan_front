@@ -5,15 +5,6 @@
                 <h3>채팅방 리스트</h3>
             </div>
         </div>
-        <!-- <div class="input-group">
-            <div class="input-group-prepend">
-                <label class="input-group-text">방제목</label>
-            </div>
-            <input type="text"  @keydown.enter="createRoom()" class="form-control" v-model="roomName" id="room_name">
-            <div class="input-group-append">
-                <button class="btn btn-primary" @click="createRoom()" type="button" id="create_room_button">채팅방 개설</button>
-            </div>
-        </div> -->
         <!-- 방 목록은 비동기로 서버에서 얻어 출력한다 -->
         <ul id="roomList">
 			<li
@@ -30,10 +21,6 @@
                 </div>
 			</li>
 		</ul>
-        <!-- <AlarmRooms v-if="viewAlarmRooms" />
-        <div>
-            <button @click="toggleAlarmRooms">알림창 열기</button>
-        </div> -->
     </div>
 </template>
 
@@ -46,8 +33,6 @@ import { defineEmits, onMounted, reactive, ref } from 'vue';
     const data = reactive({
         chatRooms: []
     });
-
-    let viewAlarmRooms = ref(false);
 
 
     onMounted(()=>{
@@ -90,9 +75,6 @@ import { defineEmits, onMounted, reactive, ref } from 'vue';
         emit('enterChatRoom');
     }
 
-    const toggleAlarmRooms = () => {
-        viewAlarmRooms.value = !viewAlarmRooms.value;
-    };
 
 
 </script>

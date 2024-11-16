@@ -1,7 +1,7 @@
 <template>
   <div class="chat-container">
     <ChatRoomList v-show="isWideScreen" @enterChatRoom="enterChatRoom" ref="chatRoomRef"/>
-    <ChatRoom :data="chatRoomData" @sendMessage="sendMessage"/>
+    <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
   </div>
 </template>
 
@@ -166,10 +166,20 @@ const displayEnterUserCount = userCount => {
     chatRoomData.chatRoom.userCount=userCount;
 }
 
+
+const exitChat = ()=>{
+  console.log("나가기 실행!!");
+}
+
 onMounted(() => {
   stompClient.activate();
   chatRoomData.roomId='';
-  sessionStorage.getItem('chat.roomId');
+  const roomId = sessionStorage.getItem('chat.roomId')
+  if(roomId){
+    chatRoomData.roomId=roomId;
+    getRoomInfo();
+    getPrevMessage();
+  }
   // 윈도우 크기 변경 시 반응형 처리
   window.addEventListener('resize', handleResize);
 });
