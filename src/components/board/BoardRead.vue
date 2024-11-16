@@ -428,6 +428,15 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         window.alert(response.data.message); 
       } 
     }
+
+    const insertFavoriteBook = async ()=>{ 
+      const response = await api.insertFavoriteBook(board.value.isbn); 
+      if(response.data.status){ 
+        console.log("책 북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
+    }
 </script>
   
 <style scoped>
