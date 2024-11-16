@@ -1,6 +1,5 @@
 <template>
     <div class="alarm-rooms">
-      <h2>{{ email }}알림이 있는 채팅방</h2>
       <ul v-if="data.alarmRooms.length">
         <li v-for="room in data.alarmRooms" :key="room.roomId" class="room-item">
           <h3>{{ room.name }}</h3>
@@ -16,7 +15,6 @@
   <script setup>
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
-      const email = localStorage.getItem('userEmail');
       const data = reactive({
 
         alarmRooms : [],
@@ -24,7 +22,7 @@ import { onMounted, reactive } from 'vue';
 
       const fetchAlarmRooms = async () => {
         try {
-          const response = await api.getAlarmRooms(email);
+          const response = await api.getAlarmRooms();
           data.alarmRooms = response.data;
         } catch (error) {
           console.error("채팅방 목록을 가져오는 중 오류 발생:", error);

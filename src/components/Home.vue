@@ -11,11 +11,19 @@
                 <span class="blind">채팅창 열기</span>
             </a>
         </div>
-        
+        <BoardAlertList v-if="viewBoardAlertList" />
+        <div>
+            <button @click="toggleBoardAlertList">알림창 열기</button>
+        </div>
+        <ChatAlarmRooms v-if="viewChatAlarmRooms" />
+        <div>
+            <button @click="toggleChatAlarmRooms">채팅 알림창 열기</button>
+        </div>
     </div>
 </template>
 
 <script setup>
+import 
 const openChatWindow= ()=> {
  window.open(
    'http://localhost:5173/chat/room', 
