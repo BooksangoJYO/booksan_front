@@ -216,8 +216,13 @@ export default {
     return apiClient.get(url);
   },
 
-  getAlarmRooms(email) {
-    const url = `/api/chat/rooms/alarm/${email}`;
+  getAlertRooms() {
+    const url = `/api/chat/rooms/alert`;
+    return apiClient.get(url);
+  },
+
+  getAlertBoards() {
+    const url = `/api/board/book/alert/list`;
     return apiClient.get(url);
   },
 };
