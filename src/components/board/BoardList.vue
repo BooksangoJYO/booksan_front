@@ -11,14 +11,14 @@
       <button @click="fetchBoardList" class="search-button">검색</button>
     </div>
     <div class="category-container">
-    <div v-for="(category, index) in categories" :key="index" class="category-item">
+    <div v-for="(category, index) in categories" :key="index" class="category-item" @click="setCategory(category.id)">
       <img
         v-if="category.icon"
         :src="`https://cdn-icons-png.flaticon.com/512/2933/2933275.png`"
         alt="Category Icon"
         class="category-icon"
       />
-      <span class="category-text" @click="setCategory(category.name)">{{ category.name }}</span>
+      <span class="category-text">{{ category.name }}</span>
     </div>
   </div>
 
@@ -61,7 +61,7 @@
     </div>
 
     <!-- 페이지네이션 -->
-    <div v-if="paginationData.totalPages > 1" class="pagination">
+    <div v-if="boardList.length" class="pagination">
       <button @click="goToPage(paginationData.start - 1)" :disabled="!paginationData.prev" class="pagination-button">이전</button>
       <span v-for="pageNum in pageInCurrentBlock" :key="pageNum">
         <button @click="goToPage(pageNum)" :class="{ active: paginationData.page === pageNum }" class="pagination-button">{{ pageNum }}</button>
@@ -82,23 +82,29 @@ const keyword = ref('');
 const availableOnly = ref(false);
 const boardList = ref([]);
 const bookmarkedDeals = ref(new Set());
+const selectedCategoryId = ref(null);
 const categories = ref([
-  { name: "철학", icon: "philosophy.png" },
-  { name: "종교", icon: "religion.png" },
-  { name: "사회 과학", icon: "social_science.png" },
-  { name: "순수 과학", icon: "pure_science.png" },
-  { name: "기술 과학", icon: "technical_science.png" },
-  { name: "예술", icon: "art.png" },
-  { name: "언어", icon: "language.png" },
-  { name: "문학", icon: "literature.png" },
-  { name: "역사", icon: "history.png" },
-  { name: "기타", icon: "others.png" },
+  { id:1, name: "철학", icon: "philosophy.png" },
+  { id:2, name: "종교", icon: "religion.png" },
+  { id:3, name: "사회 과학", icon: "social_science.png" },
+  { id:4, name: "순수 과학", icon: "pure_science.png" },
+  { id:5, name: "기술 과학", icon: "technical_science.png" },
+  { id:6, name: "예술", icon: "art.png" },
+  { id:7, name: "언어", icon: "language.png" },
+  { id:8, name: "문학", icon: "literature.png" },
+  { id:9, name: "역사", icon: "history.png" },
+  { id:10, name: "기타", icon: "others.png" },
 ]);
 
-const setCategory = (categoryName) => {
-  console.log(`Selected Category: ${categoryName}`);
-  // 카테고리 선택 로직 추가
+const setCategory = (categoryId) => {
+  selectedCategoryId.value = categoryId; // 선택된 카테고리 ID 저장
+  paginationData.page = 1;
+  paginationData.size = 10;
+  console.log(`Selected Category ID: ${categoryId}`);
+  fetchBoardList(); // 선택한 카테고리에 따라 게시글 목록 새로고침
 };
+
+
 
 const paginationData = reactive({
   page: 1,
@@ -136,7 +142,13 @@ const search = () => {
 // 게시글 목록 가져오기
 const fetchBoardList = async () => {
   try {
-    const response = await api.getBoardList(paginationData.page, paginationData.size, keyword.value || '', availableOnly.value);
+      const response = await api.getBoardList(
+      paginationData.page, 
+      paginationData.size, 
+      keyword.value || '', 
+      availableOnly.value,
+      selectedCategoryId.value || 0 //선택된 카테고리 ID 전달
+    );
 
     if (response.data && response.data.data && response.data.data.dtoList) {
       boardList.value = response.data.data.dtoList;
