@@ -20,7 +20,53 @@
 
         <div class="board-info" v-if="board">
           <div class="board-header">
-            <img :src="book.image" alt="책 이미지" class="book-image" />
+            <!-- 상품 이미지 슬라이더 -->
+            <div class="slider-container">
+              <div class="slider-wrapper">
+                <div class="slides" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+                  <div v-for="(image, index) in images" :key="index" class="slide">
+                    <div class="image-frame">
+                      <img 
+                        :src="'/api/board/read/download/' + image.imgId" 
+                        :alt="'Image ' + index"
+                        class="slide-image"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="controls">
+                  <!-- 화살표 버튼 -->
+                  <button 
+                    @click="prevSlide" 
+                    class="arrow-button prev"
+                    :disabled="currentIndex === 0"
+                  >
+                    &#10094;
+                  </button>
+                  <button 
+                    @click="nextSlide" 
+                    class="arrow-button next"
+                    :disabled="currentIndex === images.length - 1"
+                  >
+                    &#10095;
+                  </button>
+                </div>
+                
+                <!-- 동그라미 인디케이터 -->
+                <div class="dot-indicators" v-if="images.length > 0">
+                  <button 
+                    v-for="(_, index) in images" 
+                    :key="index"
+                    @click="goToSlide(index)"
+                    :class="['dot', { active: currentIndex === index }]"
+                    :aria-label="`Go to slide ${index + 1}`"
+                  />
+                </div>
+              </div>
+            </div>
+
+
             <div class="board-details">
               <h1 class="board-title">{{ board.title }}</h1>
               <ul class="board-metadata">
@@ -45,7 +91,6 @@
                   <button class="action-button">북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
-              </div>
             </div>
           </div>
         </div>
@@ -149,6 +194,26 @@
         alert('판매 상태를 변경하지 못했습니다.')
       }
       }
+    // 이미지 슬라이드 관련 코드
+    const images = ref([]);
+    const currentIndex = ref(0)
+
+    const nextSlide = () => {
+      if (currentIndex.value < images.value.length - 1) {
+        currentIndex.value++
+      }
+    }
+
+    const prevSlide = () => {
+      if (currentIndex.value > 0) {
+        currentIndex.value--
+      }
+    }
+
+    const goToSlide = (index) => {
+      currentIndex.value = index
+    }
+    // 여기까지
 
     // 계산된 속성(카테고리 명 이름 보여주기 위한 함수)
     const categoryName = computed(() => {
@@ -316,6 +381,7 @@
         console.log('게시물 정보 :', response.data);  //게시물 정보와 댓글 정보 확인
         console.log('isWriter 값:', response.data.isWriter);  // 작성자 여부 확인
         board.value = response.data.data; //게시물 데이터
+        images.value = board.value.imageFileDTOList; //이미지 데이터
         book.value = response.data.bookData; //책 데이터
         isWriter.value = response.data.isWriter; // 작성자인지 여부
     } catch (error) {
@@ -381,6 +447,9 @@
   gap: 150px; /* 이미지와 텍스트 사이의 간격 */
   max-width: 1200px;
   margin: 0 auto;
+  width: 40%; /* 부모 컨테이너 너비에 맞춤 (더 넓게 설정) */
+  margin: 0 auto; /* 중앙 정렬 */
+  position: relative; /* 버튼 위치를 고정하기 위해 사용 */
 }
 
 .board-header .book-image {
@@ -428,6 +497,111 @@
   overflow-wrap: break-word; /* 단어가 화면을 넘어갈 경우 줄바꿈 */
   line-height: 1.5; /* 줄 간격 */
 }
+
+/* 이미지 슬라이더 관련 */
+.slider-container {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 300px;
+}
+
+.slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.slides {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+}
+
+/* 정사각형 프레임 설정 */
+.image-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 정사각형 비율 유지 */
+  background-color: #f0f0f0; /* 빈 공간 회색 처리 */
+}
+
+.slide-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+/* 화살표 버튼 스타일 */
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+  border: none;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  z-index: 2;
+}
+
+.arrow-button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.arrow-button:disabled {
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* 동그라미 인디케이터 스타일 */
+.dot-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dot:hover {
+  background-color: #999;
+}
+
+.dot.active {
+  background-color: #4CAF50;
+}
+/* 여기까지 */
 
 .book-image {
   flex: 0 0 350px; /* 고정 너비 */
