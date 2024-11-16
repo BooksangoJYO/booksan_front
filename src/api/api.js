@@ -236,12 +236,12 @@ export default {
   },
 
   insertFavoriteBook(isbn) {
-    const url = '/api/board/favorite/book/insert/'+isbn;
+    const url = '/api/books/favorite/book/insert/'+isbn;
     return apiClient.post(url);
   },
 
   getFavoriteBookList() {
-    const url = '/api/board/favorite/book/list'
+    const url = '/api/books/favorite/book/list'
     return apiClient.get(url);
   },
 

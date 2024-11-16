@@ -87,7 +87,7 @@
                 </div>
                 <!-- 작성자가 아닌 경우 -->
                 <div v-else>
-                  <button class="action-button">책갈피</button>
+                  <button class="action-button" @click="insertFavorite">책갈피</button>
                   <button class="action-button" @click="openChat" >북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
@@ -420,6 +420,23 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
             alert("서버 오류입니다. 다시시도해주세요");
         });
     };
+    const insertFavorite = async ()=>{ 
+      const response = await api.insertFavorite(board.value.dealId); 
+      if(response.data.status){ 
+        console.log("북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
+    }
+
+    const insertFavoriteBook = async ()=>{ 
+      const response = await api.insertFavoriteBook(board.value.isbn); 
+      if(response.data.status){ 
+        console.log("책 북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
+    }
 </script>
   
 <style scoped>
