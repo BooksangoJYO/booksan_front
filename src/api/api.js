@@ -159,10 +159,13 @@ export default {
     const url = `/api/chat/room/insert//${writerEmail}`;
     return apiClient.post(url,{name,dealId});
   },
-
-  deleteBoard(dealId) {
+  
+  //게시판 삭제
+  deleteBoard(dealId, email) {
     const url = `/api/board/delete/${dealId}`;
-    return apiClient.delete(url);
+    return apiClient.delete(url, {
+      data: email
+    });
   },
 
   //댓글 등록
