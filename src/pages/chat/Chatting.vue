@@ -1,18 +1,18 @@
 <template>
   <div class="chat-container">
-    <div v-show="isWideScreen">
-      <ChatRoomSellerList
-        v-if="dealId"
-        :dealId="dealId"
-        @enterChatRoom="enterChatRoom"
-        ref="chatRoomRef"
-      />
-      <ChatRoomList
-        v-else
-        @enterChatRoom="enterChatRoom"
-        ref="chatRoomRef"
-      />
-    </div>
+    <ChatRoomSellerList
+      v-if="dealId"
+      v-show="isWideScreen"
+      :dealId="dealId"
+      @enterChatRoom="enterChatRoom"
+      ref="chatRoomRef"
+    />
+    <ChatRoomList
+      v-else
+      v-show="isWideScreen"
+      @enterChatRoom="enterChatRoom"
+      ref="chatRoomRef"
+    />
     <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
   </div>
 </template>
@@ -44,12 +44,21 @@ const chatRoomData = reactive({
     chatRoom:{
         name : '',
         userCount : '',
-        sender : email,
+        dealId : '',
 
     },
     messages :[
-    ]
+    ],
+    boardInfo:{},
+    bookInfo:{}
 });
+
+const getBoardInfo = async (dealId)=>{
+  console.log("dealID="+dealId);
+  const response = await api.getBoardRead(dealId);
+  chatRoomData.boardInfo = response.data.data;
+  chatRoomData.bookInfo =  response.data.bookData;
+}
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -170,7 +179,7 @@ const getPrevMessage = async ()=>{
 const getRoomInfo = async () => {
     const response = await api.getRoomInfo(chatRoomData.roomId);
     chatRoomData.chatRoom.name = response.data.name;
-    chatRoomData.chatRoom.sender=response.data.sender;
+    chatRoomData.chatRoom.dealId = response.data.dealId;
     chatRoomData.chatRoom.userCount=response.data.userCount;
 }
 
@@ -183,14 +192,15 @@ const exitChat = ()=>{
   console.log("나가기 실행!!");
 }
 
-onMounted(() => {
+onMounted(async () => {
   stompClient.activate();
   chatRoomData.roomId='';
   const roomId = sessionStorage.getItem('chat.roomId')
   if(roomId){
     chatRoomData.roomId=roomId;
-    getRoomInfo();
+    await getRoomInfo();
     getPrevMessage();
+    getBoardInfo(chatRoomData.chatRoom.dealId);
   }
   // 윈도우 크기 변경 시 반응형 처리
   window.addEventListener('resize', handleResize);
@@ -211,14 +221,15 @@ const handleResize = () => {
   isWideScreen.value = window.innerWidth >= 800;
 };
 
-const enterChatRoom = () => {
+const enterChatRoom = async () => {
   unsubscribeChatRoom();
   chatRoomData.roomId = '';
   chatRoomData.messages = [];
   chatRoomData.roomId = sessionStorage.getItem('chat.roomId'),
-  getRoomInfo();
+  await getRoomInfo();
   subscribeChatRoom();
   getPrevMessage();
+  getBoardInfo(chatRoomData.chatRoom.dealId);
 }
 
 </script>
