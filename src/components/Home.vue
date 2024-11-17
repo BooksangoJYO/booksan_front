@@ -23,7 +23,6 @@
 </template>
 
 <script setup>
-import 
 const openChatWindow= ()=> {
  window.open(
    'http://localhost:5173/chat/room', 
