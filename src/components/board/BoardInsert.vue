@@ -203,7 +203,8 @@
 
 
   const submitForm = async () => {
-    if (!imageFiles.value.some(file => file != null) || !form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+    //!imageFiles.value.some(file => file != null) ||
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
 
       alert('모든 필드를 입력하세요.');
       return;

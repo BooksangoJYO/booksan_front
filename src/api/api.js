@@ -140,8 +140,8 @@ export default {
   },
 
   //가판대 목록 가져오기
-  getBoardList(page, size, keyword) {
-    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
+  getBoardList(page, size, keyword, availableOnly, booksCategoryId) {
+    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}`;
     return apiClient.get(url);
   },
 
@@ -201,12 +201,12 @@ export default {
   },
 
   insertFavorite(dealId) {
-    const url = '/api/board/favorite/list/'+dealId;
+    const url = '/api/board/favorite/insert/'+dealId;
     return apiClient.post(url);
   },
 
   getFavoriteList() {
-    const url = '/api/board/favorite/insert';
+    const url = '/api/board/favorite/list'
     return apiClient.get(url);
   },
 
@@ -230,9 +230,20 @@ export default {
     return apiClient.get(url);
   },
 
-  getAlertBoards() {
-    const url = `/api/board/book/alert/list`;
+  getReservationBoards() {
+    const url = `/api/board/reservation/list`;
     return apiClient.get(url);
   },
+
+  insertFavoriteBook(isbn) {
+    const url = '/api/books/favorite/book/insert/'+isbn;
+    return apiClient.post(url);
+  },
+
+  getFavoriteBookList() {
+    const url = '/api/books/favorite/book/list'
+    return apiClient.get(url);
+  },
+
 };
 

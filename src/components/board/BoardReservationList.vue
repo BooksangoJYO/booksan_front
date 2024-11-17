@@ -1,7 +1,7 @@
 <template>
-    <div class="alert-boards">
-      <ul v-if="data.alertBooks.length">
-        <li v-for="board in data.alertBoards" :key="board.dealId" class="board-item">
+    <div class="reservation-boards">
+      <ul v-if="data.reservationBoards.length">
+        <li v-for="board in data.reservationBoards" :key="board.dealId" class="board-item">
           <img :src="board.image"/>
           <p>책 이름: {{ board.bookTitle }}</p>
           <p>게시글 제목: {{ board.title}}</p>
@@ -15,19 +15,19 @@
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
       const data = reactive({
-        alertBoards : [],
+        reservationBoards : [],
       }); // 알림이 있는 채팅방 목록
 
-      const fetchAlertBoards = async () => {
+      const fetchReservationBoards = async () => {
         try {
-          const response = await api.getAlertBoards();
-          data.alertBoards = response.data;
+          const response = await api.getReservationBoards();
+          data.reservationBoards = response.data;
         } catch (error) {
-          console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
+          console.error("예약 목록을 가져오는 중 오류 발생:", error);
         }
       };
   
-      onMounted(fetchAlertBoards);
+      onMounted(fetchReservationBoards);
 
 
   </script>

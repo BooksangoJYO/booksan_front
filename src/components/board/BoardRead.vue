@@ -12,7 +12,7 @@
             @click="toggleSaleStatus"
           >
             {{ board.status === 'N' ? '판매 중' : '판매 완료' }}
-          </button>          
+          </button>
         </div>
 
         <!-- 수평선 추가 -->
@@ -21,7 +21,7 @@
         <div class="board-info" v-if="board">
           <div class="board-header">
             <!-- 상품 이미지 슬라이더 -->
-            <div class="slider-container">
+            <div class="slider-container" v-if="board.image">
               <div class="slider-wrapper">
                 <div class="slides" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
                   <div v-for="(image, index) in images" :key="index" class="slide">
@@ -82,13 +82,13 @@
                 <div v-if="isWriter">
                   <button class="edit-button" @click="goToBoardUpdate">수정하기</button>
                   <button class="delete-button" @click="showDeleteModal">삭제하기</button>
-                  <button class="action-button">북싼챗</button>
+                  <button class="action-button" >북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
                 <!-- 작성자가 아닌 경우 -->
                 <div v-else>
-                  <button class="action-button">책갈피</button>
-                  <button class="action-button">북싼챗</button>
+                  <button class="action-button" @click="insertFavorite">책갈피</button>
+                  <button class="action-button" @click="openChat" >북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
             </div>
@@ -147,11 +147,11 @@
   </template>
   
 <script setup>
-    import { ref, onMounted, computed } from 'vue';
-    import { useRoute,useRouter } from 'vue-router';
-    import api from '@/api/api';  //api.js파일 import
-    import DeleteModal from './DeleteModal.vue';  //삭제 모달창 import
-    import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
+    import api from '@/api/api'; //api.js파일 import
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
+import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
      
         
     const route = useRoute();
@@ -401,8 +401,42 @@
         }
     });
   
-      
-    
+    //채팅방 생성후 이동
+    const openChat = async () =>{
+        console.log("오픈챗실행");
+        const writerEmail = board.value.email;
+        const dealId = board.value.dealId;
+        await api.postChatRoom(board.value.title,dealId,writerEmail)
+        .then(response => {
+            const chatRoom = response.data; // 서버에서 반환된 데이터
+            sessionStorage.setItem('chat.roomId',chatRoom.roomId);
+            window.open(
+              'http://localhost:5173/chat/room',
+              '채팅방',
+              'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+            );
+        })
+        .catch(err => {
+            alert("서버 오류입니다. 다시시도해주세요");
+        });
+    };
+    const insertFavorite = async ()=>{ 
+      const response = await api.insertFavorite(board.value.dealId); 
+      if(response.data.status){ 
+        console.log("북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
+    }
+
+    const insertFavoriteBook = async ()=>{ 
+      const response = await api.insertFavoriteBook(board.value.isbn); 
+      if(response.data.status){ 
+        console.log("책 북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
+    }
 </script>
   
 <style scoped>
