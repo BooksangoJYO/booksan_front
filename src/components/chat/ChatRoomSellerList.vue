@@ -7,31 +7,36 @@
         </div>
         <!-- 방 목록은 비동기로 서버에서 얻어 출력한다 -->
         <ul id="roomList">
-			<li
-			v-for="room in data.chatRooms"
-			:key="room.roomId"
-			@click="enterRoom(room.roomId)"
-			>
-                <div class="chat-item">
-                    <div v-if="getUserRole(room)">
-                    {{ getUserRole(room) }}
+          <li
+          v-if="data.chatRooms.length"
+          v-for="room in data.chatRooms"
+          :key="room.roomId"
+          @click="enterRoom(room.roomId)"
+          >
+                    <div class="chat-item">
+                        <div class="avatar"></div>
+                        <div class="message">
+                            <div class="text">{{ room.name }}</div>
+                            <div class="sub-text">{{room.userCount}}</div>
+                        </div>
                     </div>
-                    <div class="avatar"></div>
-                    <div class="message">
-                        <div class="text">{{ room.name }}</div>
-                        <div class="sub-text">{{room.userCount}}</div>
-                    </div>
-                </div>
-			</li>
-		</ul>
+          </li>
+          <li>현재 들어온 거래 요청이 없습니다.</li>
+        </ul>
     </div>
 </template>
 
 <script setup>
 import api from "@/api/api";
-import { defineEmits, onMounted, reactive } from 'vue';
+import { defineEmits, defineProps, onMounted, reactive } from 'vue';
 
-    const email = sessionStorage.getItem('userEmail');
+    const props = defineProps({
+      dealId: {
+          type: Number,
+          required: true
+      }
+    });
+
     const emit = defineEmits();
     const data = reactive({
         chatRooms: []
@@ -42,19 +47,10 @@ import { defineEmits, onMounted, reactive } from 'vue';
         roomListOutput();
     })
 
-    const getUserRole= (room)=> {
-        console.log(email);
-        console.log(room);
-        const userType = room.userMap[email];
-        console.log(userType);
-      if (email && userType != null) {
-        return userType == "customer" ? "구매" : "판매";
-      }
-      return null; // 해당 이메일이 없으면 null 반환
-    }
 
     const roomListOutput = async () => {
-        const response = await api.getRoomList();
+      console.log("셀러챗룸");
+        const response = await api.getRoomListByDealId(props.dealId);
         data.chatRooms = response.data;  // 받아온 방 목록을 상태에 저장
     };
 

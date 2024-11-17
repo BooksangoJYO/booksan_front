@@ -1,6 +1,18 @@
 <template>
   <div class="chat-container">
-    <ChatRoomList v-show="isWideScreen" @enterChatRoom="enterChatRoom" ref="chatRoomRef"/>
+    <div v-show="isWideScreen">
+      <ChatRoomSellerList
+        v-if="dealId"
+        :dealId="dealId"
+        @enterChatRoom="enterChatRoom"
+        ref="chatRoomRef"
+      />
+      <ChatRoomList
+        v-else
+        @enterChatRoom="enterChatRoom"
+        ref="chatRoomRef"
+      />
+    </div>
     <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
   </div>
 </template>
@@ -10,13 +22,17 @@
 import api from '@/api/api';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
+import ChatRoomSellerList from '@/components/chat/ChatRoomSellerList.vue';
 import * as StompJs from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const email = sessionStorage.getItem('userEmail');
 const router = useRouter();
+const route = useRoute();
+const dealId = route.params.dealId ? Number(route.params.dealId) : null
+
 let subscriptionAlarm = null;
 let subscriptionChatRoom = null;
 
@@ -69,11 +85,7 @@ const stompClient = new StompJs.Client({
   },
   onWebSocketClose: () => {
     window.alert('웹소켓 연결이 종료되었습니다.');
-    router.replace('/').then(() => {
-      window.location.reload();  // 페이지 새로 고침
-    }).catch((error) => {
-      console.error('라우터 이동 오류:', error);
-    });
+    window.close();
   },
 });
 

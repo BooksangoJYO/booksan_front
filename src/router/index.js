@@ -9,9 +9,9 @@ import LogoutTest from '@/components/user/LogoutTest.vue';
 import SocialLogin from '@/components/user/SocialLogin.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
 import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
+import Mypage from '@/components/user/mypage/index.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import Mypage from '@/components/user/mypage/index.vue';
 
 
 const router = createRouter({
@@ -28,7 +28,7 @@ const router = createRouter({
         { path: '/board/list', component: BoardList},
         { path: '/board/read/:dealId', component: BoardRead},
         { path: '/board/update/:dealId', component: BoardUpdate},
-        {path: '/chat/room',component: Chatting}
+        {path: '/chat/room/:dealId?',component: Chatting}
 
 
     ]

@@ -220,6 +220,12 @@ export default {
     return apiClient.get(url);
   },
 
+  getRoomListByDealId(dealId){
+    const url = '/api/chat/rooms/seller/'+dealId;
+    console.log(url);
+    return apiClient.get(url);
+  },
+
   getPrevMessage(roomId) {
     const url = `/api/chat/prevMessage/${roomId}`;
     return apiClient.get(url);

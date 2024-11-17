@@ -82,7 +82,7 @@
                 <div v-if="isWriter">
                   <button class="edit-button" @click="goToBoardUpdate">수정하기</button>
                   <button class="delete-button" @click="showDeleteModal">삭제하기</button>
-                  <button class="action-button" >북싼챗</button>
+                  <button class="action-button" @click="openSellerChat">북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
                 <!-- 작성자가 아닌 경우 -->
@@ -419,7 +419,16 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         .catch(err => {
             alert("서버 오류입니다. 다시시도해주세요");
         });
-    };
+    }
+
+    const openSellerChat = async () => {
+      window.open(
+              'http://localhost:5173/chat/room/'+board.value.dealId,
+              '채팅방',
+              'width=800,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+            );
+    }
+
     const insertFavorite = async ()=>{ 
       const response = await api.insertFavorite(board.value.dealId); 
       if(response.data.status){ 
