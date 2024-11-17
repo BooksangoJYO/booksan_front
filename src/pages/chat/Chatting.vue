@@ -1,6 +1,18 @@
 <template>
   <div class="chat-container">
-    <ChatRoomList v-show="isWideScreen" @enterChatRoom="enterChatRoom" ref="chatRoomRef"/>
+    <ChatRoomSellerList
+      v-if="dealId"
+      v-show="isWideScreen"
+      :dealId="dealId"
+      @enterChatRoom="enterChatRoom"
+      ref="chatRoomRef"
+    />
+    <ChatRoomList
+      v-else
+      v-show="isWideScreen"
+      @enterChatRoom="enterChatRoom"
+      ref="chatRoomRef"
+    />
     <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
   </div>
 </template>
@@ -10,13 +22,17 @@
 import api from '@/api/api';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
+import ChatRoomSellerList from '@/components/chat/ChatRoomSellerList.vue';
 import * as StompJs from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const email = sessionStorage.getItem('userEmail');
 const router = useRouter();
+const route = useRoute();
+const dealId = route.params.dealId ? Number(route.params.dealId) : null
+
 let subscriptionAlarm = null;
 let subscriptionChatRoom = null;
 
@@ -28,12 +44,21 @@ const chatRoomData = reactive({
     chatRoom:{
         name : '',
         userCount : '',
-        sender : email,
+        dealId : '',
 
     },
     messages :[
-    ]
+    ],
+    boardInfo:{},
+    bookInfo:{}
 });
+
+const getBoardInfo = async (dealId)=>{
+  console.log("dealID="+dealId);
+  const response = await api.getBoardRead(dealId);
+  chatRoomData.boardInfo = response.data.data;
+  chatRoomData.bookInfo =  response.data.bookData;
+}
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -69,11 +94,7 @@ const stompClient = new StompJs.Client({
   },
   onWebSocketClose: () => {
     window.alert('웹소켓 연결이 종료되었습니다.');
-    router.replace('/').then(() => {
-      window.location.reload();  // 페이지 새로 고침
-    }).catch((error) => {
-      console.error('라우터 이동 오류:', error);
-    });
+    window.close();
   },
 });
 
@@ -158,7 +179,7 @@ const getPrevMessage = async ()=>{
 const getRoomInfo = async () => {
     const response = await api.getRoomInfo(chatRoomData.roomId);
     chatRoomData.chatRoom.name = response.data.name;
-    chatRoomData.chatRoom.sender=response.data.sender;
+    chatRoomData.chatRoom.dealId = response.data.dealId;
     chatRoomData.chatRoom.userCount=response.data.userCount;
 }
 
@@ -171,14 +192,15 @@ const exitChat = ()=>{
   console.log("나가기 실행!!");
 }
 
-onMounted(() => {
+onMounted(async () => {
   stompClient.activate();
   chatRoomData.roomId='';
   const roomId = sessionStorage.getItem('chat.roomId')
   if(roomId){
     chatRoomData.roomId=roomId;
-    getRoomInfo();
+    await getRoomInfo();
     getPrevMessage();
+    getBoardInfo(chatRoomData.chatRoom.dealId);
   }
   // 윈도우 크기 변경 시 반응형 처리
   window.addEventListener('resize', handleResize);
@@ -199,14 +221,15 @@ const handleResize = () => {
   isWideScreen.value = window.innerWidth >= 800;
 };
 
-const enterChatRoom = () => {
+const enterChatRoom = async () => {
   unsubscribeChatRoom();
   chatRoomData.roomId = '';
   chatRoomData.messages = [];
   chatRoomData.roomId = sessionStorage.getItem('chat.roomId'),
-  getRoomInfo();
+  await getRoomInfo();
   subscribeChatRoom();
   getPrevMessage();
+  getBoardInfo(chatRoomData.chatRoom.dealId);
 }
 
 </script>

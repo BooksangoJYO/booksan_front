@@ -126,6 +126,7 @@ export default {
   //가판대 등록
   BoardInsert(boardData) {
     const url = '/api/board/insert';
+    console.log(boardData);
     return apiClient.post(url, boardData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -136,7 +137,7 @@ export default {
   //가판대 단건조회
   getBoardRead(dealId) {
     const url = `/api/board/read/${dealId}`;
-    return apiClient.get(url);
+    return apiClient.get(url);  
   },
 
   //가판대 목록 가져오기
@@ -217,6 +218,12 @@ export default {
 
   getRoomList() {
     const url = '/api/chat/rooms';
+    return apiClient.get(url);
+  },
+
+  getRoomListByDealId(dealId){
+    const url = '/api/chat/rooms/seller/'+dealId;
+    console.log(url);
     return apiClient.get(url);
   },
 
