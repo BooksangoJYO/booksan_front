@@ -269,8 +269,8 @@
     })
 
     if(existingImages.value.length > 0) {
-      existingImages.imgId.forEach((imgId) => {
-        formData.append('existingImgIds', imgId)
+      existingImages.value.forEach((img) => {
+        formData.append('existingImageIds', img.imgId)
       })
     }
 
