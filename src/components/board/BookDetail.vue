@@ -8,6 +8,7 @@
           <p>저자: {{ book.author }}</p>
           <p>출판사: {{ book.publisher }}</p>
           <p>ISBN: {{ book.isbn }}</p>
+          <button class="action-button" @click="insertFavoriteBook">책갈피</button>
         </div>
       </div>
       <h2>책 소개</h2>
@@ -53,11 +54,11 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, reactive ,computed} from 'vue';
-  import { useRoute,useRouter } from 'vue-router';
   import api from '@/api/api';
-  import CommentListForm from './CommentListForm.vue';
-  import CommentForm from './CommentForm.vue';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import CommentForm from './CommentForm.vue';
+import CommentListForm from './CommentListForm.vue';
 
   const router = useRouter();
   const route = useRoute(); //라우터에서 파라미터 가져오기
@@ -243,6 +244,15 @@ async function addComment(commentData) {
             alert('삭제에 실패했습니다.')
         }
       }
+    }
+
+    const insertFavoriteBook = async ()=>{ 
+      const response = await api.insertFavoriteBook(board.value.isbn); 
+      if(response.data.status){ 
+        console.log("책 북마크 성공"); 
+      } else{ 
+        window.alert(response.data.message); 
+      } 
     }
   </script>
   
