@@ -93,7 +93,6 @@ const stompClient = new StompJs.Client({
     router.replace('/');
   },
   onWebSocketClose: () => {
-    window.alert('웹소켓 연결이 종료되었습니다.');
     window.close();
   },
 });

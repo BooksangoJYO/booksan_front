@@ -1,96 +1,200 @@
 <template>
-    <div class="alert-rooms">
-      <ul v-if="data.alertRooms.length">
-        <li v-for="room in data.alertRooms" :key="room.roomId" class="room-item">
-          <h3>{{ room.name }}</h3>
-          <p>방 ID: {{ room.roomId }}</p>
-          <p>생성일: {{ room.insertDaytime}}</p>
-          <p>타입: {{ room.type }}</p>
-        </li>
-      </ul>
-      <p v-else>알림이 있는 채팅방이 없습니다.</p>
+  <div class="alert-rooms">
+    <div class="notification-box">
+      <h3 class="notification-title">채팅 알림</h3>
+      <div class="room-items">
+        <ul>
+          <li
+            v-if="data.alertRooms.length"
+            v-for="room in data.alertRooms"
+            :key="room.roomId"
+            @click="openChat(room.roomId)"
+            class="room-item"
+          >
+            <div class="chat-item">
+              <div class="avatar-container">
+                <div class="avatar"></div>
+                <div class="notification-badge" v-if="room.hasNewMessage"></div>
+              </div>
+              <div class="message">
+                <div class="text">{{ room.name }}</div>
+                <div class="notification-indicator" v-if="room.hasNewMessage">
+                  새 메시지
+                </div>
+              </div>
+            </div>
+          </li>
+          <li v-else class="empty-state">현재 새로운 채팅방 알림이 없습니다.</li>
+        </ul>
+      </div>
     </div>
-  </template>
-  
+  </div>
+</template>
+
 <script setup>
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
-      const data = reactive({
 
-        alertRooms : [],
-      }); // 알림이 있는 채팅방 목록
+const data = reactive({
+  alertRooms: [],
+});
+const emit = defineEmits(["close"]); // 부모로 선택된 책 정보를 전달
+const fetchAlertRooms = async () => {
+  try {
+    const response = await api.getAlertRooms();
+    // 임시로 hasNewMessage 속성 추가 (실제로는 API에서 받아와야 함)
+    data.alertRooms = response.data.map(room => ({
+      ...room,
+      hasNewMessage: true // 또는 서버에서 받은 실제 값
+    }));
+  } catch (error) {
+    console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
+    emit("close");
+  }
+};
 
-      const fetchAlertRooms = async () => {
-        try {
-          const response = await api.getAlertRooms();
-          data.alertRooms = response.data;
-        } catch (error) {
-          console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
-        }
-      };
+onMounted(fetchAlertRooms);
+
+const openChat = (roomId) => {
+  sessionStorage.setItem('chat.roomId', roomId);
+  const chatWindow = window.open(
+    'http://localhost:5173/chat/room',
+    '채팅방',
+    'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+  );
+  emit("close");
   
-      onMounted(fetchAlertRooms);
-
-
+}
 </script>
 
-<style scope>
+<style scoped>
 .alert-rooms {
-  padding: 20px;
-  max-width: 800px;
+  width: 400px;
   margin: 0 auto;
 }
 
+.notification-box {
+  width : 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.notification-title {
+  padding: 16px;
+  margin: 0;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
 .alert-rooms ul {
+  width: 100%;
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-gap: 20px;
+  max-height: 500px;
+  overflow-y: auto;
 }
-
+.room-items{
+  width: 100%;
+  align-items: center;
+}
 .room-item {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #eaeaea;
+  width: 90%;
+  padding: 12px 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
 }
 
 .room-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background-color: #f8f9fa;
+  transform: translateX(2px);
 }
 
-.room-item h3 {
-  margin: 0 0 12px 0;
+.chat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-container {
+  position: relative;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background-color: #ff4757;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  animation: pulse 2s infinite;
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 500;
   color: #333;
-  font-size: 1.2rem;
-  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+  max-width: 200px;
 }
 
-.room-item p {
-  margin: 8px 0;
-  color: #666;
-  font-size: 0.95rem;
-  line-height: 1.4;
+.notification-indicator {
+  font-size: 12px;
+  color: #ff4757;
+  background-color: #ffe0e3;
+  padding: 4px 8px;
+  border-radius: 12px;
 }
 
-.alert-rooms p:empty {
-  color: #999;
+.empty-state {
+  padding: 24px;
   text-align: center;
-  padding: 40px 0;
-  font-size: 1rem;
+  color: #999;
+  font-size: 14px;
 }
 
-@media (max-width: 768px) {
+
+
+@media (max-width: 480px) {
   .alert-rooms {
-    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
   }
   
-  .room-item {
-    padding: 15px;
+  .text {
+    max-width: 150px;
+  }
+  
+  .notification-indicator {
+    font-size: 11px;
+    padding: 2px 6px;
   }
 }
 </style>
