@@ -4,6 +4,8 @@ import BoardInsert from '@/components/board/BoardInsert.vue';
 import BoardList from '@/components/board/BoardList.vue';
 import BoardRead from '@/components/board/BoardRead.vue';
 import BoardUpdate from '@/components/board/BoardUpdate.vue';
+import BookListSearch from '@/components/board/BookListSearch.vue';
+import BookDetail from '@/components/board/BookDetail.vue';
 import KakaoCallback from '@/components/user/KakaoCallback.vue';
 import SocialLogin from '@/components/user/SocialLoginModal.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
@@ -80,6 +82,8 @@ const router = createRouter({
                 loginGuard(to,from,next);
             }
         },
+        { path: '/book/list', component: BookListSearch},
+        { path: '/book/detail/:isbn', component: BookDetail},
         {path: '/chat/room/:dealId?',component: Chatting,
             beforeEnter: (to, from, next) => {
                 loginGuardForChat(to,from,next);
@@ -89,7 +93,7 @@ const router = createRouter({
             beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
             }
-        }
+        },        
     ]
 });
 
