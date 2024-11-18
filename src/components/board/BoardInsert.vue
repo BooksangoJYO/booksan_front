@@ -155,16 +155,21 @@
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
-        // 파일 객체 저장
-        imageFiles.value[index] = file;
-        
-        // 미리보기 생성
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          images.value[index] = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        const maxSize = 10 * 1024 * 1024; // 10MB로 설정
+        // 이미지 파일 크기 확인 및 경고 메시지 표시
+        if (file.size > maxSize) {
+          alert("이미지 파일 크기가 10MB를 초과합니다. 다시 선택해주세요.");
+        } else {
+          // 파일 객체 저장
+          imageFiles.value[index] = file;
+          
+          // 미리보기 생성
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            images.value[index] = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
       }
     };
     input.click();
