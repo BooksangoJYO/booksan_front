@@ -29,13 +29,14 @@ const fetchReservationBoards = async () => {
     data.reservationBoards = response.data;
   } catch (error) {
     console.error("예약 목록을 가져오는 중 오류 발생:", error);
-    emit("close");
   }
 };
 
 function openRead(dealId) {
   router.push({ path: `/board/read/${dealId}` });
+  emit("close");
 }
+
 onMounted(fetchReservationBoards);
 
 
