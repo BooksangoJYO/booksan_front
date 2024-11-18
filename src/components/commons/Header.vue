@@ -6,7 +6,7 @@
             </RouterLink>
             <nav class="nav-links">
                 <RouterLink to="/board/list" class="nav-link">중고책 찾기</RouterLink>
-                <RouterLink to="/board/list" class="nav-link">도서 검색</RouterLink>
+                <RouterLink to="/book/list" class="nav-link">도서 검색</RouterLink>
             </nav>
         </div>
         <div class="header-right">

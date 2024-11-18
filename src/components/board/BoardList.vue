@@ -96,6 +96,8 @@ const categories = ref([
   { id:10, name: "기타", icon: "others.png" },
 ]);
 
+const isbn = ref('');
+
 const setCategory = (categoryId) => {
   selectedCategoryId.value = categoryId; // 선택된 카테고리 ID 저장
   paginationData.page = 1;
@@ -141,13 +143,15 @@ const search = () => {
 
 // 게시글 목록 가져오기
 const fetchBoardList = async () => {
+  console.log("현재 isbn 값: ", keyword.value);
   try {
       const response = await api.getBoardList(
       paginationData.page, 
       paginationData.size, 
       keyword.value || '', 
       availableOnly.value,
-      selectedCategoryId.value || 0 //선택된 카테고리 ID 전달
+      selectedCategoryId.value || 0, //선택된 카테고리 ID 전달
+      isbn.value || '' //ISBN 값 추가
     );
 
     if (response.data && response.data.data && response.data.data.dtoList) {
