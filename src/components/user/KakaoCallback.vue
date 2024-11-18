@@ -5,11 +5,15 @@
 <script setup>
 // import axios from 'axios';
 import api from '@/api/api';
+import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
 const router = useRouter();
 const route = useRoute();
+const store = useMainStore();
+const {doLogin} = store;
 
 onMounted(async () => {
     const code = route.query.code;
@@ -35,8 +39,8 @@ onMounted(async () => {
                     secure: true
                 });
                 sessionStorage.setItem('userEmail',responseData.userEmail);
-
-                router.push('/');
+                doLogin();
+                router.replace('/');
                 //그전 url이 있으면 전페이지로 이동, 없으면 메인페이지
             } else if(responseData.type === 'new'){
                 // 신규 회원이거나 탈퇴했던 회원인 경우

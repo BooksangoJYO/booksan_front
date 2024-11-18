@@ -5,7 +5,6 @@ import BoardList from '@/components/board/BoardList.vue';
 import BoardRead from '@/components/board/BoardRead.vue';
 import BoardUpdate from '@/components/board/BoardUpdate.vue';
 import KakaoCallback from '@/components/user/KakaoCallback.vue';
-import LogoutTest from '@/components/user/LogoutTest.vue';
 import SocialLogin from '@/components/user/SocialLoginModal.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
 import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
@@ -51,8 +50,6 @@ const router = createRouter({
         { path: '/', component: Main },
         { path: '/login', name: 'login', component: SocialLogin },
         { path: '/signup', name: 'signup', component: SocialSignup },
-        { path: '/logout', name: 'LogoutTest', component: LogoutTest },
-
         { path: '/mypage', name: 'mypage', component: Mypage,
          beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
