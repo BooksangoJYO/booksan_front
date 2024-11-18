@@ -15,7 +15,7 @@
                     <img :src="noticeIcon" alt="알림" ref="noticeImg">
                 </button>
                 <Transition name="dropdown">
-                    <BoardReservationList v-if="viewBoardReservationList" class="dropdown-content"/>
+                    <BoardReservationList v-if="viewBoardReservationList" class="dropdown-content" @close="closeBoardReservationList()"/>
                 </Transition>
             </div>
             <div class="dropdown-container">
@@ -23,7 +23,7 @@
                     <img :src="chatNoticeIcon" alt="메시지" ref="chatImg">
                 </button>
                 <Transition name="dropdown">
-                    <ChatAlertRoomList v-if="viewChatAlertList" class="dropdown-content"/>
+                    <ChatAlertRoomList v-if="viewChatAlertList" class="dropdown-content" @close="closeAlertList()"/>
                 </Transition>
             </div>
             <RouterLink to="/main/chatPage">채팅</RouterLink>
@@ -80,6 +80,13 @@ const openChatWindow = () => {
             }
         };
     }
+}
+const closeBoardReservationList = () => {
+    viewBoardReservationList.value = !viewBoardReservationList.value;
+}
+
+const closeAlertList = () => {
+    viewChatAlertList.value = !viewBoardReservationList.value;
 }
 
 const toggleBoardReservationList = () => {

@@ -1,19 +1,21 @@
 <template>
-  <div class="chat-container">
-    <ChatRoomSellerList
-      v-if="dealId"
-      v-show="isWideScreen"
-      :dealId="dealId"
-      @enterChatRoom="enterChatRoom"
-      ref="chatRoomRef"
-    />
-    <ChatRoomList
-      v-else
-      v-show="isWideScreen"
-      @enterChatRoom="enterChatRoom"
-      ref="chatRoomRef"
-    />
-    <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
+  <div class="main-chat">
+    <div class="chat-container">
+      <ChatRoomSellerList
+        v-if="dealId"
+        v-show="isWideScreen"
+        :dealId="dealId"
+        @enterChatRoom="enterChatRoom"
+        ref="chatRoomRef"
+      />
+      <ChatRoomList
+        v-else
+        v-show="isWideScreen"
+        @enterChatRoom="enterChatRoom"
+        ref="chatRoomRef"
+      />
+      <ChatRoom :data="chatRoomData" @sendMessage="sendMessage" @exitChat="exitChat"/>
+    </div>
   </div>
 </template>
 
@@ -93,7 +95,6 @@ const stompClient = new StompJs.Client({
     router.replace('/');
   },
   onWebSocketClose: () => {
-    window.alert('웹소켓 연결이 종료되었습니다.');
     window.close();
   },
 });
@@ -235,27 +236,15 @@ const enterChatRoom = async () => {
 </script>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: #f4f4f4;
-}
-
-#app {
-  width: 100%;
-  height: 100%;
-  min-width: 300px; /* 최소 너비 설정 */
+.main-chat {
+  width: 85%; /* 메인 영역의 전체 너비를 화면의 80%로 조정 */
+  margin: 30px auto; /* 헤더와 간격을 위해 상단 마진 추가 */
+  max-width: 1200px; /* 너무 큰 화면에서 제한 */
+  height: 80vh; /* 화면 높이의 80%로 설정 */
+  background-color: #f9f9f9; /* 배경색 (필요하면 변경) */
+  border-radius: 10px; /* 모서리 둥글게 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
 }
 
 .chat-container {

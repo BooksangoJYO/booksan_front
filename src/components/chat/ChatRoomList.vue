@@ -14,21 +14,21 @@
 			@click="enterRoom(room.roomId)"
             class="room-item"
 			>
-                <div class="chat-item">
-                    <div class="avatar"></div>
-                    <div class="message">
-                        <div class="text">{{ room.name }}</div>
-                        <div v-if="getUserRole(room)">
-                            <span 
-                            class="type-tag"
-                            :class="{
-                                'purchase': getUserRole(room) === '구매',
-                                'sale': getUserRole(room) === '판매'
-                            }"
-                            >{{getUserRole(room)}}</span>
-                        </div>
-                    </div>
+        <div class="chat-item">
+            <div class="avatar"></div>
+            <div class="message">
+                <div class="text">{{ room.name }}</div>
+                <div v-if="getUserRole(room)">
+                    <span 
+                    class="type-tag"
+                    :class="{
+                        'purchase': getUserRole(room) === '구매',
+                        'sale': getUserRole(room) === '판매'
+                    }"
+                    >{{getUserRole(room)}}</span>
                 </div>
+            </div>
+        </div>
 			</li>
 		</ul>
     </div>
@@ -82,7 +82,7 @@ ul {
 .chat-left {
     flex : 3;
   width: 100%;
-  height: 100%;
+  height: 95%;
   padding: 20px;
   overflow-y: auto;
   background: white;
