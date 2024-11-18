@@ -98,7 +98,7 @@ import api from '@/api/api';
 
 const router = useRouter();
 const userInfo = ref(null);
-// const bookmarks = ref([]); // 게시글 목록
+const bookmarks = ref([]); // 게시글 목록
 const showOnlySoldOut = ref(false);
 const pageInfo = ref({
     page: 1,
@@ -112,49 +112,6 @@ const pageInfo = ref({
 const error = ref(null);
 const loading = ref(false);
 
-// // 더미데이터 임시
-// const bookmarks = ref([
-//     {
-//         id: 1,
-//         image_url: '/default-book.jpg',
-//         created_at: '2024-03-14T10:00:00',
-//         is_sold: false,
-//         title: '[미개봉] 객체지향의 사실과 오해',
-//         price: 15000
-//     },
-//     {
-//         id: 2,
-//         image_url: '/default-book.jpg',
-//         created_at: '2024-03-13T15:30:00',
-//         is_sold: true,
-//         title: '클린 코드 - 절판된 버전',
-//         price: 35000
-//     },
-//     {
-//         id: 3,
-//         image_url: '/default-book.jpg',
-//         created_at: '2024-03-13T09:15:00',
-//         is_sold: false,
-//         title: '[A급] 이펙티브 자바 Effective Java 3/E',
-//         price: 25000
-//     },
-//     {
-//         id: 4,
-//         image_url: '/default-book.jpg',
-//         created_at: '2024-03-12T14:20:00',
-//         is_sold: false,
-//         title: '모던 자바스크립트 Deep Dive - 새책급',
-//         price: 32000
-//     },
-//     {
-//         id: 5,
-//         image_url: '/default-book.jpg',
-//         created_at: '2024-03-12T11:45:00',
-//         is_sold: false,
-//         title: '[필기X] 리팩터링 2판',
-//         price: 28000
-//     },
-// ]);
 
 // 페이지 번호 배열 계산
 const pageNumbers = computed(() => {
@@ -166,14 +123,6 @@ const pageNumbers = computed(() => {
 });
 
 
-
-// 판매중인 항목만 필터링하는 computed 속성
-const bookmarks = computed(() => {
-    if (showOnlySoldOut.value) {
-        return bookmarks.value.filter(board => !board.is_sold);
-    }
-    return bookmarks.value;
-});
 
 // 페이지 변경 함수
 const changePage = async (page) => {
@@ -192,7 +141,8 @@ const loadBookmarks = async (page = 1) => {
         });
         console.log('북마크 응답:', response);
 
-        if (response.data.status === 'success') {
+        // 데이터가 있는 경우 (200 OK)
+        if (response.status === 200 && response.data?.data) {
             const boardList = response.data.data;
             bookmarks.value = boardList.dtoList;
             pageInfo.value = {
@@ -204,8 +154,17 @@ const loadBookmarks = async (page = 1) => {
                 prev: boardList.prev,
                 next: boardList.next
             };
-        } else {
-            error.value = response.data.message || '북마크 목록을 불러오는데 실패했습니다.';
+        } else { // 204 NO_CONTENT 또는 데이터가 없는 경우
+            bookmarks.value = [];
+            pageInfo.value = {
+                page: 1,
+                size: 10,
+                total: 0,
+                start: 1,
+                end: 1,
+                prev: false,
+                next: false
+            };
         }
     } catch (error) {
         console.error('북마크 로딩 에러:', error);
@@ -215,10 +174,12 @@ const loadBookmarks = async (page = 1) => {
     }
 };
 
-// showOnlySoldOut이 변경될 때 페이지를 1로 리셋하고 데이터를 다시 불러옴
+
 const filterBookmarks = () => {
-    pageInfo.value.page = 1; // 페이지 초기화
-    loadBookmarks(1);
+    if (showOnlySoldOut.value) {
+        bookmarks.value = bookmarks.value.filter(board => !board.is_sold);
+    }
+    loadBookmarks(1); // 페이지 초기화하고 데이터 다시 불러오기
 };
 
 onMounted(async () => {

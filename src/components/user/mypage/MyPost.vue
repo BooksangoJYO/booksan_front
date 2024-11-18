@@ -10,7 +10,7 @@
                         <nav class="nav flex-column">
                             <router-link class="nav-link text-secondary" to="/mypage">프로필</router-link>
                             <router-link class="nav-link text-secondary" to="/mypage/bookmarks">북마크</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/posts">내가 작성한 글</router-link>
+                            <router-link class="nav-link text-secondary" to="/mypage/myposts">내가 작성한 글</router-link>
                         </nav>
                     </div>
                 </div>
@@ -30,19 +30,37 @@
                             </div>
                         </div>
 
-                        <div class="posts-list">
-                            <div v-for="board in filteredPosts" :key="board.id" 
+                        <!-- 로딩 상태 표시 -->
+                        <div v-if="loading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+
+                        <!-- 에러 메시지 -->
+                        <div v-else-if="error" class="alert alert-danger">
+                            {{ error }}
+                        </div>
+
+                        <!-- 데이터가 없을 때 -->
+                        <div v-else-if="!posts.length" class="text-center py-5">
+                            <p class="text-muted">작성한 게시글이 없습니다.</p>
+                        </div>
+
+                        <!-- 게시글 목록 -->
+                        <div v-else class="posts-list">
+                            <div v-for="board in posts" :key="board.dealId" 
                                 class="post-item card border-0 shadow-sm mb-3"
                                 @click="goToDetail(board.id)">
                                 <div class="card-body d-flex align-items-center">
-                                    <img :src="board.image_url || '/default-book.jpg'" :alt="board.title" 
+                                    <img :src="board.imageFileDTOList?.[0]?.imgUuid" 
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted small">{{ formatDate(board.created_at) }}</span>
-                                            <span class="badge" :class="board.is_sold ? 'bg-secondary' : 'bg-custom-brown'">
-                                                {{ board.is_sold ? '판매완료' : '판매중' }}
+                                            <span class="text-muted small">{{ formatDate(board.insertDatetime) }}</span>
+                                            <span class="badge" :class="board.status === 'Y' ? 'bg-secondary' : 'bg-custom-brown'">
+                                                {{ board.status === 'Y' ? '판매완료' : '판매중' }}
                                             </span>
                                         </div>
                                         <h5 class="mt-2 mb-1">{{ board.title }}</h5>
@@ -51,6 +69,21 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- 페이지네이션 -->
+                        <nav v-if="pageInfo.total > 0" aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" :class="{ disabled: !pageInfo.prev }">
+                                    <a class="page-link" href="#" @click.prevent="changePage(pageInfo.start - 1)">이전</a>
+                                </li>
+                                <li class="page-item" v-for="pageNum in pageNumbers" :key="pageNum"
+                                    :class="{ active: pageNum === pageInfo.page }">
+                                    <a class="page-link" href="#" @click.prevent="changePage(pageNum)">{{ pageNum }}</a>
+                                </li>
+                                <li class="page-item" :class="{ disabled: !pageInfo.next }">
+                                    <a class="page-link" href="#" @click.prevent="changePage(pageInfo.end + 1)">다음</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -65,101 +98,35 @@ import api from '@/api/api';
 
 const router = useRouter();
 const userInfo = ref(null);
-// const posts = ref([]);
+const posts = ref([]);
 const showOnlySoldOut = ref(false);
-
-// 더미데이터 임시
-const posts = ref([
-    {
-        id: 1,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-14T10:00:00',
-        is_sold: false,
-        title: '[미개봉] 객체지향의 사실과 오해',
-        price: 15000
-    },
-    {
-        id: 2,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-13T15:30:00',
-        is_sold: true,
-        title: '클린 코드 - 절판된 버전',
-        price: 35000
-    },
-    {
-        id: 3,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-13T09:15:00',
-        is_sold: false,
-        title: '[A급] 이펙티브 자바 Effective Java 3/E',
-        price: 25000
-    },
-    {
-        id: 4,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-12T14:20:00',
-        is_sold: false,
-        title: '모던 자바스크립트 Deep Dive - 새책급',
-        price: 32000
-    },
-    {
-        id: 5,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-12T11:45:00',
-        is_sold: false,
-        title: '[필기X] 리팩터링 2판',
-        price: 28000
-    },
-    {
-        id: 6,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-11T16:30:00',
-        is_sold: true,
-        title: 'Real MySQL 8.0 (전2권)',
-        price: 45000
-    },
-    {
-        id: 7,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-11T13:20:00',
-        is_sold: false,
-        title: '[한 번 읽음] Node.js 교과서',
-        price: 22000
-    },
-    {
-        id: 8,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-10T17:10:00',
-        is_sold: false,
-        title: '도커/쿠버네티스 실전 개발 입문',
-        price: 27000
-    },
-    {
-        id: 9,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-10T09:45:00',
-        is_sold: true,
-        title: '[거의새책] 그림으로 배우는 HTTP & Network',
-        price: 18000
-    },
-    {
-        id: 10,
-        image_url: '/default-book.jpg',
-        created_at: '2024-03-09T14:30:00',
-        is_sold: false,
-        title: '스프링 부트와 AWS로 혼자 구현하는 웹 서비스',
-        price: 23000
-    }
-]);
-
-
-// 판매중인 항목만 필터링하는 computed 속성
-const filteredPosts = computed(() => {
-    if (showOnlySoldOut.value) {
-        return posts.value.filter(board => !board.is_sold);
-    }
-    return posts.value;
+const pageInfo = ref({
+    page: 1,
+    size: 10,
+    total: 0,
+    start: 1,
+    end: 1,
+    prev: false,
+    next: false
 });
+const error = ref(null);
+const loading = ref(false);
+
+// 페이지 번호 배열 계산
+const pageNumbers = computed(() => {
+    const numbers = [];
+    for(let i = pageInfo.value.start; i <= pageInfo.value.end; i++) {
+        numbers.push(i);
+    }
+    return numbers;
+});
+
+// 페이지 변경 함수
+const changePage = async (page) => {
+    console.log('changePage 호출됨:', page);
+    await loadPosts(page);
+};
+
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
@@ -176,8 +143,49 @@ const formatDate = (dateString) => {
 };
 
 // 상세 페이지로 이동
-const goToDetail = (boardId) => {
-    router.push(`/board/${boardId}`);
+const goToDetail = (dealId) => {
+    router.push(`/board/${dealId}`);
+};
+
+const loadPosts = async (page = 1) => {
+    loading.value = true;
+    error.value = null;
+    try {
+        console.log('loadPosts 호출됨 - page:', page);  // 로그 추가
+        const response = await api.getMyPosts({
+            page: page,
+            size: 10,
+            availableOnly: showOnlySoldOut.value
+        });
+        console.log('내 게시글 응답:', response);
+
+        if (response.status === 200 && response.data?.data) {
+            const boardList = response.data.data;
+            console.log('받아온 boardList:', boardList);  // 로그 추가
+            posts.value = boardList.dtoList;
+            pageInfo.value = {
+                page: boardList.page,  // 현재 페이지 번호가 제대로 설정되는지 확인
+                size: boardList.size,
+                total: boardList.total,
+                start: boardList.start,
+                end: boardList.end,
+                prev: boardList.prev,
+                next: boardList.next
+            };
+            console.log('pageInfo 업데이트됨:', pageInfo.value);  // 로그 추가
+        }
+    } catch (error) {
+        console.error('게시글 로딩 에러:', error);
+        error.value = '게시글 목록을 불러오는데 실패했습니다.';
+    } finally {
+        loading.value = false;
+    }
+};
+
+// 필터링 함수
+const filterPosts = () => {
+    pageInfo.value.page = 1; // 페이지 초기화
+    loadPosts(1);
 };
 
 onMounted(async () => {
@@ -186,9 +194,8 @@ onMounted(async () => {
         const userResponse = await api.getUserInfo();
         userInfo.value = userResponse.data;
 
-        // 내가 작성한 글 목록 가져오기
-        const postsResponse = await api.getMyPosts(userInfo.value.email);
-        posts.value = postsResponse.data;
+        // 게시글 목록 불러오기
+        await loadPosts(1);
     } catch (error) {
         console.error('데이터 조회 실패:', error);
     }

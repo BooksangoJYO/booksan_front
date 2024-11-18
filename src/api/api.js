@@ -98,8 +98,11 @@ export default {
   },
 
   getBookmarks() {
-    console.log('API 호출 파라미터:');
     return apiClient.get('/api/board/favorite/list');
+  },
+
+  getMyPosts(params) {
+    return apiClient.get('/api/board/mypage/list', {params});
   },
 
   updateProfile(userData) {

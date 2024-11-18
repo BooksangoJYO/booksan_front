@@ -6,7 +6,7 @@ import BoardRead from '@/components/board/BoardRead.vue';
 import BoardUpdate from '@/components/board/BoardUpdate.vue';
 import KakaoCallback from '@/components/user/KakaoCallback.vue';
 import LogoutTest from '@/components/user/LogoutTest.vue';
-import SocialLogin from '@/components/user/SocialLogin.vue';
+import SocialLogin from '@/components/user/SocialLoginModal.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
 import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
@@ -25,7 +25,7 @@ const router = createRouter({
         { path: '/logout', name: 'LogoutTest', component: LogoutTest },
         { path: '/mypage', name: 'mypage', component: Mypage },
         { path: '/mypage/bookmarks', name: 'bookmarks', component: Bookmarks },
-        { path: '/mypost', name: 'mypost', component: MyPost },
+        { path: '/mypage/myposts', name: 'mypost', component: MyPost },
         { path: '/profileInfo', name: 'profileInfo', component: ProfileInfo },
         { path: '/auth/kakao/callback', name: 'KakaoCallback', component: KakaoCallback },
         { path: '/board/insert', component: BoardInsert},
