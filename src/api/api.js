@@ -134,6 +134,7 @@ export default {
   //가판대 등록
   BoardInsert(boardData) {
     const url = '/api/board/insert';
+    console.log(boardData);
     return apiClient.post(url, boardData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -144,12 +145,12 @@ export default {
   //가판대 단건조회
   getBoardRead(dealId) {
     const url = `/api/board/read/${dealId}`;
-    return apiClient.get(url);
+    return apiClient.get(url);  
   },
 
   //가판대 목록 가져오기
-  getBoardList(page, size, keyword) {
-    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
+  getBoardList(page, size, keyword, availableOnly, booksCategoryId) {
+    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}`;
     return apiClient.get(url);
   },
 
@@ -167,7 +168,7 @@ export default {
     const url = `/api/chat/room/insert//${writerEmail}`;
     return apiClient.post(url,{name,dealId});
   },
-  
+
   //게시판 삭제
   deleteBoard(dealId, email) {
     const url = `/api/board/delete/${dealId}`;
@@ -202,13 +203,19 @@ export default {
     });
   },
 
+  //판매 상태 변경 API 메서드 추가
+  updateBoardStatus(dealId, status) {
+    const url = `/api/board/status/update`;
+    return apiClient.put(url, {dealId,status})
+  },
+
   insertFavorite(dealId) {
-    const url = '/api/board/favorite/list/'+dealId;
+    const url = '/api/board/favorite/insert/'+dealId;
     return apiClient.post(url);
   },
 
   getFavoriteList() {
-    const url = '/api/board/favorite/insert';
+    const url = '/api/board/favorite/list'
     return apiClient.get(url);
   },
 
@@ -222,14 +229,36 @@ export default {
     return apiClient.get(url);
   },
 
+  getRoomListByDealId(dealId){
+    const url = '/api/chat/rooms/seller/'+dealId;
+    console.log(url);
+    return apiClient.get(url);
+  },
+
   getPrevMessage(roomId) {
     const url = `/api/chat/prevMessage/${roomId}`;
     return apiClient.get(url);
   },
 
-  getAlarmRooms(email) {
-    const url = `/api/chat/rooms/alarm/${email}`;
+  getAlertRooms() {
+    const url = `/api/chat/rooms/alert`;
     return apiClient.get(url);
   },
+
+  getReservationBoards() {
+    const url = `/api/board/reservation/list`;
+    return apiClient.get(url);
+  },
+
+  insertFavoriteBook(isbn) {
+    const url = '/api/books/favorite/book/insert/'+isbn;
+    return apiClient.post(url);
+  },
+
+  getFavoriteBookList() {
+    const url = '/api/books/favorite/book/list'
+    return apiClient.get(url);
+  },
+
 };
 

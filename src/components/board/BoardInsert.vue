@@ -1,33 +1,15 @@
 <template>
     <div class="container">
-      <!-- 헤더 -->
-      <header class="header">
-        <div class="header-left">
-          <div class="shopping-bag">
-            <img alt="장바구니" />
-          </div>
-          <nav>
-            <span class="nav-item active">중고책 찾기</span>
-            <span class="nav-item">도서 검색</span>
-          </nav>
-        </div>
-        <div class="header-right">
-          <i class="notification-icon"></i>
-          <i class="user-icon"></i>
-        </div>
-      </header>
-  
+        
       <!-- 실물 이미지 업로드 -->
       <section class="image-upload-section">
         <h2 class="section-title">실물 이미지 업로드</h2>
         <div class="image-grid">
-          <div
-            v-for="(image, index) in images"
-            :key="index"
-            class="image-item"
-            @click="selectImage(index)"
-          >
-            <img v-if="image" :src="image" :alt="`업로드된 이미지 ${index + 1}`">
+          <div v-for="(image, index) in displaySlots" :key="index" class="image-item" @click="selectImage(index)">
+            <div v-if="images[index]">
+              <img :src="images[index]" :alt="`업로드된 이미지 ${index + 1}`">
+              <button @click.stop="removeImage(index)" class="remove-button">X</button>
+            </div>
             <div v-else class="image-placeholder">
               <span class="upload-icon">↑</span>
               <span class="upload-text">IMAGE</span>
@@ -136,7 +118,7 @@
 
   <script setup>
   import BookSearch from './BookSearch.vue';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import api from '@/api/api';
   import {useRouter} from 'vue-router';
 
@@ -145,14 +127,15 @@
   const selectedBook = ref(null);
   
     //이미지 파일 업로드 관련
-    const images = ref(Array(4).fill(null));
-    const imageFiles = ref(Array(4).fill(null));
+    const images = ref([]);
+    const imageFiles = ref([]);
 
   const form = ref({
     title: '',
     content: '',
     booksCategoryId: null,
     price: null,
+    
   });
   
   const categories = ref([]);
@@ -160,6 +143,10 @@
   const handleBookSelected = (book) => {
     selectedBook.value = book;
   };
+
+  const displaySlots = computed(() => {
+    return images.value.length + 1
+  })
   
   const selectImage = (index) => {
     const input = document.createElement('input');
@@ -182,7 +169,12 @@
     };
     input.click();
   };
-  
+
+  const removeImage = (index) => {
+    const imageFiles = images.value.filter((_, idx) => idx !== index)
+    images.value = imageFiles
+  }
+
   // FormData 생성
   const getFormData = () => {
     const formData = new FormData()
@@ -198,11 +190,12 @@
         formData.append('bookTitle', selectedBook.value.title || '');
         formData.append('bookWriter', selectedBook.value.author || '');
         formData.append('bookPublisher', selectedBook.value.publisher || '');
+        formData.append('bookImageUrl', selectedBook.value.image || '');
     }
 
     // 이미지 파일 추가
     imageFiles.value.forEach((file, index) => {
-        if (file) formData.append('files', file, `image_${index}.jpg`)
+        if (file) formData.append('files', file, file.name)
     })
 
     return formData
@@ -210,7 +203,8 @@
 
 
   const submitForm = async () => {
-    if (!imageFiles.value.some(file => file != null) || !form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
+    //!imageFiles.value.some(file => file != null) ||
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
 
       alert('모든 필드를 입력하세요.');
       return;
@@ -440,13 +434,14 @@
   }
   
   .description-textarea {
-    width: 100%;
-    height: 200px;
+    width: 100%; /* 입력창과 동일한 너비 설정 */
+    height: 300px;
     padding: 12px;
     border: 1px solid #DFE2E6;
     border-radius: 4px;
     font-size: 14px;
-    resize: vertical;
+    resize: none; /* 크기 조정 비활성화 */    
+    
   }
   
   /* 버튼 스타일 */

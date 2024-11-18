@@ -1,44 +1,45 @@
 <template>
     <div class="chat-left">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>채팅방 리스트</h3>
+      <div class="row">
+          <div class="col-md-12">
+              <h3>채팅방 리스트</h3>
+          </div>
+      </div>
+      <!-- 방 목록은 비동기로 서버에서 얻어 출력한다 -->
+      <ul id="roomList">
+      <li
+        v-if="data.chatRooms.length"
+        v-for="room in data.chatRooms"
+        :key="room.roomId"
+        @click="enterRoom(room.roomId)"
+        class="room-item"
+      >
+        <div class="chat-item">
+          <div class="avatar"></div>
+          <div class="message">
+            <div class="text">
+              <span class="room-name">{{ room.name }}</span>
             </div>
+            <div class="sub-text">{{ room.userCount }}</div>
+          </div>
         </div>
-        <!-- 방 목록은 비동기로 서버에서 얻어 출력한다 -->
-        <ul id="roomList">
-			<li
-            v-if="data.chatRooms.length"
-			v-for="room in data.chatRooms"
-			:key="room.roomId"
-			@click="enterRoom(room.roomId)"
-            class="room-item"
-			>
-                <div class="chat-item">
-                    <div class="avatar"></div>
-                    <div class="message">
-                        <div class="text">{{ room.name }}</div>
-                        <div v-if="getUserRole(room)">
-                            <span 
-                            class="type-tag"
-                            :class="{
-                                'purchase': getUserRole(room) === '구매',
-                                'sale': getUserRole(room) === '판매'
-                            }"
-                            >{{getUserRole(room)}}</span>
-                        </div>
-                    </div>
-                </div>
-			</li>
-		</ul>
-    </div>
+      </li>
+      <li v-else class="empty-state">현재 들어온 거래 요청이 없습니다.</li>
+    </ul>
+  </div>
 </template>
 
 <script setup>
 import api from "@/api/api";
-import { defineEmits, onMounted, reactive } from 'vue';
+import { defineEmits, defineProps, onMounted, reactive } from 'vue';
 
-    const email = sessionStorage.getItem('userEmail');
+    const props = defineProps({
+      dealId: {
+          type: Number,
+          required: true
+      }
+    });
+
     const emit = defineEmits();
     const data = reactive({
         chatRooms: []
@@ -49,16 +50,10 @@ import { defineEmits, onMounted, reactive } from 'vue';
         roomListOutput();
     })
 
-    const getUserRole= (room)=> {
-        const userType = room.userMap[email];
-      if (email && userType != null) {
-        return userType == "customer" ? "구매" : "판매";
-      }
-      return null; // 해당 이메일이 없으면 null 반환
-    }
 
     const roomListOutput = async () => {
-        const response = await api.getRoomList();
+      console.log("셀러챗룸");
+        const response = await api.getRoomListByDealId(props.dealId);
         data.chatRooms = response.data;  // 받아온 방 목록을 상태에 저장
     };
 
@@ -80,8 +75,8 @@ ul {
     padding-left: 0;         /* 왼쪽 여백도 제거 */
 }
 .chat-left {
-    flex : 3;
-  width: 100%;
+  flex : 3;
+  width: 100%;  
   height: 100%;
   padding: 20px;
   overflow-y: auto;
@@ -130,7 +125,7 @@ ul {
 }
 
 .room-name {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   color: #333;
 }
@@ -138,7 +133,7 @@ ul {
 .type-tag {
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
 }
 
