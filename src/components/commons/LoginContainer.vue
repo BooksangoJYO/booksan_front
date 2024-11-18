@@ -17,6 +17,7 @@
             </Transition>
         </div>
         <RouterLink to="/main/chatPage">채팅</RouterLink>
+        <RouterLink to="/mypage">마이페이지</RouterLink>
         <button class="icon-button" @click="doLogout">로그아웃</button>
         <p>{{loginInfo.nickName}}</p>
     </div>

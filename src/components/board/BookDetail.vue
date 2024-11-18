@@ -247,7 +247,7 @@ async function addComment(commentData) {
     }
 
     const insertFavoriteBook = async ()=>{ 
-      const response = await api.insertFavoriteBook(board.value.isbn); 
+      const response = await api.insertFavoriteBook(book.value.isbn); 
       if(response.data.status){ 
         console.log("책 북마크 성공"); 
       } else{ 

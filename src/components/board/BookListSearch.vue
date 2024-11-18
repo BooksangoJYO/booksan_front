@@ -60,8 +60,8 @@
 
 
 <script setup>
-import { ref, reactive, computed, defineEmits,onMounted } from "vue";
 import api from "@/api/api";
+import { computed, defineEmits, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router'; // useRoute 가져오기
 
 const route = useRoute();
@@ -124,8 +124,8 @@ const selectBook = (book) => {
 };
 
 onMounted(()=>{
-   keyword.value = route.params.keyword || ''
-   if(keyword.value.length){
+   keyword.value = route.query.keyword || ''
+   if(keyword.value){
     searchBook();
    }
 });
