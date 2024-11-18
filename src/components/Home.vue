@@ -32,11 +32,11 @@
   </template>
   
   <script setup>
-  import { reactive ,ref} from 'vue';
-  import MainLogo from '@/assets/images/mainLogo.png';
-  import SearchIcon from '@/assets/images/searchIcon.png';
   import SampleBook from '@/assets/images/bookSampleImage.png';
-  import { useRouter } from 'vue-router'
+import MainLogo from '@/assets/images/mainLogo.png';
+import SearchIcon from '@/assets/images/searchIcon.png';
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
   const router = useRouter();
   const searchQuery = ref('');
@@ -71,9 +71,9 @@ const data = reactive({
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
     router.push({
-      name: 'book/list',
-      query: { 
-        keyword: searchQuery.value.trim(),
+      path: '/book/list',
+      query: {  // params 대신 query 사용
+        keyword: searchQuery.value.trim()
       }
     })
   }

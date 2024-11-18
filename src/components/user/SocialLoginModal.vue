@@ -16,7 +16,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary" @click="$router.back()">
+                        <button type="button" class="btn btn-secondary" @click="$router.push('/')">
                             닫기
                         </button>
                     </div>
