@@ -97,6 +97,14 @@ export default {
     return apiClient.get('/api/users/mypage');
   },
 
+  getBookmarks() {
+    return apiClient.get('/api/board/favorite/list');
+  },
+
+  getMyPosts(params) {
+    return apiClient.get('/api/board/mypage/list', {params});
+  },
+
   updateProfile(userData) {
     return apiClient.post('/api/users/update', userData);
   },
