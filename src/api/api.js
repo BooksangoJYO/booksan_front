@@ -255,10 +255,9 @@ export default {
     return apiClient.post(url);
   },
 
-  getFavoriteBookList() {
-    const url = '/api/books/favorite/book/list'
+  getFavoriteBookList(page,size) {
+    const url = '/api/books/favorite/book/list?page='+page+'&size='+size
     return apiClient.get(url);
   },
-
 };
 

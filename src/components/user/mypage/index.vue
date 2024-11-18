@@ -3,18 +3,7 @@
         <h2 class="mb-4">마이페이지</h2>
         <div class="row" v-if="userInfo">
             <!-- 사이드바 -->
-            <div class="col-md-3">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <nav class="nav flex-column">
-                            <router-link class="nav-link text-secondary" to="/mypage">프로필</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/bookmarks">북마크</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/myposts">내가 작성한 글</router-link>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
+            <SideBar/>
             <!-- 메인 컨텐츠 -->
             <div class="col-md-9">
                 <!-- 프로필 섹션 -->
@@ -120,10 +109,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import api from '@/api/api';
 import Cookies from 'js-cookie';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import SideBar from './SideBar.vue';
 
 const router = useRouter();
 const userInfo = ref(null);
