@@ -1,20 +1,9 @@
 <template>
     <div class="container mt-5">
         <h2 class="mb-4">마이페이지</h2>
-        <div class="row" v-if="userInfo">
+        <div class="row" v-if="loginInfo">
             <!-- 사이드바 -->
-            <div class="col-md-3">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <nav class="nav flex-column">
-                            <router-link class="nav-link text-secondary" to="/mypage">프로필</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/bookmarks">북마크</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/myposts">내가 작성한 글</router-link>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
+            <SideBar/>
             <!-- 메인 컨텐츠 -->
             <div class="col-md-9">
                 <!-- 프로필 섹션 -->
@@ -35,8 +24,8 @@
                             <div class="col-md-8">
                                 <div class="user-info-container">
                                     <div class="user-info">
-                                        <h4 class="mb-2">{{ userInfo?.nickname }}</h4>
-                                        <p class="text-secondary mb-3">{{ userInfo?.email }}</p>
+                                        <h4 class="mb-2">{{ loginInfo?.nickname }}</h4>
+                                        <p class="text-secondary mb-3">{{ loginInfo?.email }}</p>
                                     </div>
                                     <!-- 버튼 클릭 이벤트 확인을 위한 콘솔 로그 추가 -->
                                     <button class="btn btn-outline-secondary" @click="openModal">
@@ -120,30 +109,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import api from '@/api/api';
+import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import SideBar from './SideBar.vue';
+
+const store = useMainStore();
+const {loginInfo} = storeToRefs(store);
 
 const router = useRouter();
-const userInfo = ref(null);
 const showModal = ref(false);
 const newNickname = ref('');
 const isAvailable = ref(false);
 const nicknameMessage = ref('');
 const isLoading = ref(false);
-
-onMounted(async () => {
-    try {
-        const response = await api.getUserInfo();
-        userInfo.value = response.data;
-        console.log('사용자 정보:', userInfo.value);
-        
-    } catch (error) {
-        console.error('사용자 정보 조회 실패:', error);
-        console.log('에러 상세:', error.response);
-    }
-});
 
 const deleteAccount = async () => {
     if(confirm('정말 탈퇴하시겠습니까?')) {
@@ -169,7 +151,7 @@ const deleteAccount = async () => {
 const openModal = () => {
     console.log('모달 열기 시도');
     showModal.value = true;
-    newNickname.value = userInfo.value?.nickname || '';
+    newNickname.value = loginInfo.value?.nickname || '';
     console.log('showModal 상태:', showModal.value);
 };
 
@@ -189,7 +171,7 @@ const checkNickname = async () => {
         return;
     }
 
-    if (newNickname.value === userInfo.value?.nickname) {
+    if (newNickname.value === loginInfo.value?.nickname) {
         nicknameMessage.value = '현재 닉네임과 동일합니다.';
         isAvailable.value = false;
         return;
@@ -224,7 +206,7 @@ const updateNickname = async () => {
         });
         
         // 성공 시 처리 (response.data가 없어도 성공으로 처리)
-        userInfo.value.nickname = newNickname.value;
+        loginInfo.value.nickname = newNickname.value;
         closeModal();
         alert("닉네임이 성공적으로 변경되었습니다.");
 

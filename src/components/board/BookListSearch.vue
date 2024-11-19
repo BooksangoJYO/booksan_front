@@ -61,12 +61,11 @@
 
 <script setup>
 import api from "@/api/api";
-import { computed, defineEmits, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router'; // useRoute 가져오기
 
 const route = useRoute();
 const router = useRouter();
-const emit = defineEmits(["book-selected"]);
 const keyword = ref("");
 const data = reactive({
   books: [],

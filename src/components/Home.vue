@@ -22,63 +22,61 @@
       <!-- 추천 도서 섹션 -->
       <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
       <div class="book-container">
-        <div v-for="board in data.boards" :key="board.id" class="book-card">
-          <img :src="board.image" :alt="board.title" class="book-image">
-          <h3 class="book-title">{{ board.title }}</h3>
-          <p class="book-author">{{ board.author }}</p>
+        <div v-for="book in books" :key="book.isbn" class="book-card">
+          <img :src="book.image" :alt="book.title" class="book-image">
+          <h3 class="book-title">{{ book.title }}</h3>
+          <p class="book-author">{{ book.author }}</p>
+          <p class="book-author">{{ book.publisher }}</p>
         </div>
       </div>
     </div>
   </template>
   
-  <script setup>
-  import SampleBook from '@/assets/images/bookSampleImage.png';
+<script setup>
 import MainLogo from '@/assets/images/mainLogo.png';
 import SearchIcon from '@/assets/images/searchIcon.png';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import api from '@/api/api';
 
-  const router = useRouter();
-  const searchQuery = ref('');
-const data = reactive({
-    boards : [
-    {
-    id: 1,
-    title: "제식주의자",
-    author: "한강 · 장비",
-    image: SampleBook
-    },
-    {
-    id: 2,
-    title: "제식주의자",
-    author: "한강 · 장비",
-    image: SampleBook
-    },
-    {
-    id: 3,
-    title: "제식주의자",
-    author: "한강 · 장비",
-    image: SampleBook
-    },
-    {
-    id: 4,
-    title: "제식주의자",
-    author: "한강 · 장비",
-    image: SampleBook
-    }
-]
-});
+const router = useRouter();
+const searchQuery = ref('');
+const books = ref([]);
+
 const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push({
-      path: '/book/list',
-      query: {  // params 대신 query 사용
-        keyword: searchQuery.value.trim()
-      }
-    })
-  }
+    if (searchQuery.value.trim()) {
+        router.push({
+        path: '/book/list',
+        query: {  // params 대신 query 사용
+            keyword: searchQuery.value.trim()
+        }
+        })
+    }
 }
-  </script>
+
+const getRecommendedIsbnList = async () => {
+    try {
+        const response = await api.getRecommendedIsbnList();
+        books.value = response.data;
+        console.log(response.data);
+    } catch (error) {
+        console.error('추천 도서 데이터를 불러오지 못함');
+    }
+};
+
+onMounted(async () => {
+    console.log("onMounted 호출됨");
+    await getRecommendedIsbnList();
+    for (let i = 0; i < books.value.length; i++) {
+        const isbn = books.value[i];
+        const response = await api.getBookInfo(isbn);
+        console.log(response.data.bookInfo);
+        books.value[i] = response.data.bookInfo;
+        console.log(books.value[i]);
+    }
+    console.log(books.value);
+})
+</script>
   
 <style scoped>
 .main-container {

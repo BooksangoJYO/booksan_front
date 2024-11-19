@@ -21,7 +21,7 @@
         <div class="board-info" v-if="board">
           <div class="board-header">
             <!-- 상품 이미지 슬라이더 -->
-            <div class="slider-container" v-if="board.image">
+            <div class="slider-container" v-if="images">
               <div class="slider-wrapper">
                 <div class="slides" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
                   <div v-for="(image, index) in images" :key="index" class="slide">
@@ -376,17 +376,17 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
       
     //게시물 정보 조회 함수
     async function getBoardRead(dealId) {
-    try{
-        const response = await api.getBoardRead(dealId);
-        console.log('게시물 정보 :', response.data);  //게시물 정보와 댓글 정보 확인
-        console.log('isWriter 값:', response.data.isWriter);  // 작성자 여부 확인
-        board.value = response.data.data; //게시물 데이터
-        images.value = board.value.imageFileDTOList; //이미지 데이터
-        book.value = response.data.bookData; //책 데이터
-        isWriter.value = response.data.isWriter; // 작성자인지 여부
-    } catch (error) {
-        console.error('게시물 정보를 가져오는 중 오류 발생:', error);
-    }
+      try{
+          const response = await api.getBoardRead(dealId);
+          console.log('게시물 정보 :', response.data);  //게시물 정보와 댓글 정보 확인
+          console.log('isWriter 값:', response.data.isWriter);  // 작성자 여부 확인
+          board.value = response.data.data; //게시물 데이터
+          images.value = board.value.imageFileDTOList; //이미지 데이터
+          book.value = response.data.bookData; //책 데이터
+          isWriter.value = response.data.isWriter; // 작성자인지 여부
+      } catch (error) {
+          console.error('게시물 정보를 가져오는 중 오류 발생:', error);
+      }
     }
     
 

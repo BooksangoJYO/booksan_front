@@ -1,20 +1,9 @@
 <template>
     <div class="container mt-5">
         <h2 class="mb-4">마이페이지</h2>
-        <div class="row" v-if="userInfo">
+        <div class="row" v-if="loginInfo">
             <!-- 사이드바 -->
-            <div class="col-md-3">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <h3 class="card-title mb-4">나의 정보</h3>
-                        <nav class="nav flex-column">
-                            <router-link class="nav-link text-secondary" to="/mypage">프로필</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/bookmarks">북마크</router-link>
-                            <router-link class="nav-link text-secondary" to="/mypage/myposts">내가 작성한 글</router-link>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            <SideBar/>
 
             <!-- 메인 컨텐츠 -->
             <div class="col-md-9">
@@ -92,12 +81,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import api from '@/api/api';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import SideBar from './SideBar.vue';
 
+const store = useMainStore();
+const {loginInfo} = storeToRefs(store);
 const router = useRouter();
-const userInfo = ref(null);
 const posts = ref([]);
 const showOnlySoldOut = ref(false);
 const pageInfo = ref({
@@ -188,18 +181,6 @@ const filterPosts = () => {
     loadPosts(1);
 };
 
-onMounted(async () => {
-    try {
-        // 사용자 정보 가져오기
-        const userResponse = await api.getUserInfo();
-        userInfo.value = userResponse.data;
-
-        // 게시글 목록 불러오기
-        await loadPosts(1);
-    } catch (error) {
-        console.error('데이터 조회 실패:', error);
-    }
-});
 </script>
 
 <style scoped>

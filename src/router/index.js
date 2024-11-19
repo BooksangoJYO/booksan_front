@@ -4,24 +4,25 @@ import BoardInsert from '@/components/board/BoardInsert.vue';
 import BoardList from '@/components/board/BoardList.vue';
 import BoardRead from '@/components/board/BoardRead.vue';
 import BoardUpdate from '@/components/board/BoardUpdate.vue';
-import BookListSearch from '@/components/board/BookListSearch.vue';
 import BookDetail from '@/components/board/BookDetail.vue';
+import BookListSearch from '@/components/board/BookListSearch.vue';
 import KakaoCallback from '@/components/user/KakaoCallback.vue';
 import SocialLogin from '@/components/user/SocialLoginModal.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
-import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
-import Chatting from '@/pages/chat/Chatting.vue';
-import MainChatting from '@/pages/chat/MainChatting .vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import Mypage from '@/components/user/mypage/index.vue';
+import BookMarkBooks from '@/components/user/mypage/BookMarkBooks.vue';
 import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
 import MyPost from '@/components/user/mypage/MyPost.vue';
-
+import Mypage from '@/components/user/mypage/index.vue';
+import Chatting from '@/pages/chat/Chatting.vue';
+import MainChatting from '@/pages/chat/MainChatting.vue';
+import { useMainStore } from '@/store/mainStore';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const loginGuard = (to,from,next) =>{
-    const login = sessionStorage.getItem('userEmail');
+    const store = useMainStore();
     let isAuthenticated = false;
-    if(login){
+    store.doLogin();
+    if(store.loginInfo?.email){
         isAuthenticated = true;
     }
     if (!isAuthenticated) {
@@ -34,9 +35,10 @@ const loginGuard = (to,from,next) =>{
 }
 
 const loginGuardForChat = (to,from,next) =>{
-    const login = sessionStorage.getItem('userEmail');
+    const store = useMainStore();
     let isAuthenticated = false;
-    if(login){
+    store.doLogin();
+    if(store.loginInfo?.email){
         isAuthenticated = true;
     }
     if (!isAuthenticated) {
@@ -64,11 +66,10 @@ const router = createRouter({
          beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
             }},
-        { path: '/profileInfo', name: 'profileInfo', component: ProfileInfo ,
-         beforeEnter: (to, from, next) => {
-                loginGuard(to,from,next);
-            }},
-
+        { path: '/mypage/bookmarkbooks', name: 'bookmarkbooks', component: BookMarkBooks ,
+            beforeEnter: (to, from, next) => {
+                    loginGuard(to,from,next);
+                }},
         { path: '/auth/kakao/callback', name: 'KakaoCallback', component: KakaoCallback },
         { path: '/board/insert', component: BoardInsert,
             beforeEnter: (to, from, next) => {
