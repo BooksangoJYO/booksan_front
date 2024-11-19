@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
         <h2 class="mb-4">마이페이지</h2>
-        <div class="row" v-if="userInfo">
+        <div class="row" v-if="loginInfo">
             <!-- 사이드바 -->
             <SideBar/>
 
@@ -82,12 +82,15 @@
 
 <script setup>
 import api from '@/api/api';
-import { computed, onMounted, ref } from 'vue';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
+const store = useMainStore();
+const {loginInfo} = storeToRefs(store);
 const router = useRouter();
-const userInfo = ref(null);
 const posts = ref([]);
 const showOnlySoldOut = ref(false);
 const pageInfo = ref({
@@ -178,18 +181,6 @@ const filterPosts = () => {
     loadPosts(1);
 };
 
-onMounted(async () => {
-    try {
-        // 사용자 정보 가져오기
-        const userResponse = await api.getUserInfo();
-        userInfo.value = userResponse.data;
-
-        // 게시글 목록 불러오기
-        await loadPosts(1);
-    } catch (error) {
-        console.error('데이터 조회 실패:', error);
-    }
-});
 </script>
 
 <style scoped>
