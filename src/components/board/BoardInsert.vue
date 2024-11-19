@@ -94,7 +94,10 @@
       <section class="recommend-price-section">
           <h2 class="section-title">추천 판매가</h2>
           <div class="recommended-price-wrapper">
-            <p v-if="recommendedPrice !== null">
+            <p v-if="discountValue === '0'">
+              가격 정보가 없습니다.
+            </p>
+            <p v-else-if="recommendedPrice !== null">
                 추천 판매가: <strong> {{ recommendedPrice.toLocaleString() }}</strong>원 입니다.
             </p>
             <p v-else>
@@ -152,9 +155,10 @@
   const router = useRouter();
   const selectedBook = ref(null); //선택된 책정보 변수
   const recommendedPrice = ref(null); //추천 가격 변수
-  
+  const discountValue = computed(() => selectedBook?.value?.discount || '0');
   //추천 가격 요청 api
   const getRecommendPrice = async () => {
+    console.log("출판일 입력 필드 값: " + form.value.publishDate); 
     try{
       if(selectedBook.value && form.value.publishDate && selectedBook.value.discount) {
         
@@ -211,7 +215,10 @@
 
     // 로그 추가
     console.log("선택된 책: ", book);
-    console.log("출판일 입력 필드 값: " + form.value.publishDate);   
+    console.log("discount 값:", selectedBook.value.discount);
+    console.log("price 값:", selectedBook.value.price);
+    console.log("discount 타입:", typeof selectedBook.value.discount);
+      
 };  
 
   const displaySlots = computed(() => {
