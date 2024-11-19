@@ -87,8 +87,6 @@ import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
-import { useMainStore } from '@/store/mainStore';
-import { storeToRefs } from 'pinia';
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
