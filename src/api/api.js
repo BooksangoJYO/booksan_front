@@ -123,6 +123,10 @@ export default {
     return apiClient.delete('/api/users/delete');
   },
 
+  getRecommendedBooks() {
+    return apiClient.get('/api/books/recommended');
+  },
+
   //네이버 책 검색 api(가판대 등록시 사용)
   getBooksInfo(searchTitle, page, size) {
     const url = `/api/books/searchAll/${searchTitle}/${page}/${size}`;
