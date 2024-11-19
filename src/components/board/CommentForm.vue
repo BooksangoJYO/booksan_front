@@ -1,6 +1,6 @@
 <template>
     <div class="review-form">
-      <h2>리뷰 작성</h2>
+      <h2>도서 리뷰 작성</h2>
       <form @submit.prevent="submitComment">
         <textarea v-model="commentContent" placeholder="리뷰 내용을 입력하세요..." required></textarea>
         <button type="submit">등록</button>
@@ -52,7 +52,7 @@ textarea:focus {
 
 /* .review-form 스타일 */
 .review-form {
-  margin: 20px auto; /* 중앙 정렬 및 여백 추가 */
+  margin: 50px auto; /* 중앙 정렬 및 여백 추가 */
   max-width: 800px; /* 최대 너비 설정 */
   text-align: center; /* 텍스트 중앙 정렬 */
 }

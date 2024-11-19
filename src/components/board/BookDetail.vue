@@ -19,7 +19,7 @@
         <!-- 게시글 목록 -->
         <div class="board-section">
             <template v-if="boards && boardsData.boards.length>0">
-                <h2>이 책 지금 바로 살 수 있어요</h2>
+                <h2>해당 책 가판대 목록</h2>
                 <div v-for="(board, index) in boardsData.boards" :key="index" class="board-item" @click="openRead(board.dealId)">
                 <p><strong>{{ board.title }}</strong></p>
                 <p>{{ board.postedTime }} 전</p>
@@ -42,6 +42,10 @@
             <button @click="goToPage(boardsData.page + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
         </div>
   
+
+
+      <hr>
+        
       <!-- 리뷰 섹션 -->
       <CommentForm @comment-submitted="addComment" />
       <CommentListForm
@@ -287,5 +291,59 @@ async function addComment(commentData) {
     border-radius: 8px;
     margin-bottom: 10px;
   }
+
+.board-section {
+  margin-top: 70px; /* 위쪽 간격 */
+  margin-bottom: 20px; /* 아래쪽 간격 */
+}
+
+.board-item {
+  padding: 10px;
+  margin-bottom: 15px; /* 게시글 간 간격 */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.board-item:hover {
+  transform: translateY(-3px);
+  border-color: #8b4513;
+}
+
+.pagination {
+  display: flex; /* 플렉스 박스 사용 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  gap: 5px; /* 버튼 간 간격 */
+  margin-top: 50px; /* 위쪽 간격 */
+  margin-bottom: 50px; /* 위쪽 간격 */
+}
+
+.pagination-button {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-button:hover {
+  background-color: #8b4513;
+  color: #fff;
+}
+
+.pagination-button.active {
+  background-color: #693610;
+  color: #fff;
+}
+
+.pagination-button:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+
   </style>
   

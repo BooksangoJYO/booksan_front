@@ -272,4 +272,19 @@ const filterPosts = () => {
         text-align: center !important;
     }
 }
+
+/* 페이지네이션 스타일  */
+.page-link {
+    color: #8B4513;
+}
+
+.page-item.active .page-link {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    color: white;
+}
+
+.page-link:hover {
+    color: #A25D0D;
+}
 </style>

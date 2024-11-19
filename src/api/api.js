@@ -123,6 +123,10 @@ export default {
     return apiClient.delete('/api/users/delete');
   },
 
+  getRecommendedBooks() {
+    return apiClient.get('/api/books/recommended');
+  },
+
   //네이버 책 검색 api(가판대 등록시 사용)
   getBooksInfo(searchTitle, page, size) {
     const url = `/api/books/searchAll/${searchTitle}/${page}/${size}`;
@@ -219,6 +223,16 @@ export default {
     return apiClient.put(url, {dealId,status})
   },
 
+  //추천 가격 요청 API 요청
+  getRecommendPrice(isbn, publishDate, bookOriginalPrice) {
+    const url = '/api/books/recommendPrice';
+    return apiClient.post(url, {
+      isbn: isbn,
+      publishDate: publishDate,
+      bookOriginalPrice: bookOriginalPrice,
+      });
+  },
+
   insertFavorite(dealId) {
     const url = '/api/board/favorite/insert/'+dealId;
     return apiClient.post(url);
@@ -269,5 +283,10 @@ export default {
     const url = '/api/books/favorite/book/list?page='+page+'&size='+size
     return apiClient.get(url);
   },
+
+  getRecommendedIsbnList() {
+    const url = '/api/board/recommend/books';
+    return apiClient.get(url);
+  }
 };
 
