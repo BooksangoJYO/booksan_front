@@ -1,7 +1,5 @@
 <template>
     <div class="container">
-      <h1>가판대 수정 페이지</h1>
-
       <!--첨부파일 들어가야 될 부분-->      
       <!-- 실물 이미지 업로드 -->
       <section class="image-upload-section">
@@ -34,13 +32,13 @@
       <!-- 선택된 책 정보 출력 -->
       <section class="selected-book-section">
         <h2 class="section-title">책 정보</h2>
-        <div v-if="selectedBook" class="selected-book-info">
+        <dl v-if="selectedBook" class="selected-book-info">
           <img
             :src="selectedBook.image"
             alt="책 이미지"
             class="selected-book-cover"
           />
-          <dl class="selected-book-details">
+          <div class="selected-book-details">
             <div class="book-field">
               <dt class="field-label">책 제목:</dt>
               <dd class="field-value">{{ selectedBook.title }}</dd>
@@ -80,13 +78,13 @@
                 </select>
               </dd>
             </div>
-          </dlv>
+          </div>
 
-        </div>
+        </dl>
       </section>
 
       <!-- 수평선 추가 -->
-      <hr class="section-divider" />
+      <!-- <hr class="section-divider" /> -->
   
       <!-- 판매가 섹션 -->
       <section class="price-section">
@@ -105,13 +103,17 @@
       <section class="description-section">
         <h2 class="section-title">판매글 작성</h2>
         <div class="description-wrapper">
+          <label for="title" class="field-label">제목:</label>
           <input
+            id="title"
             type="text"
             v-model="form.title"
             class="title-input"
             placeholder="제목을 입력하세요"
           >
+          <label for="content" class="field-label">내용:</label>
           <textarea
+            id="content"
             v-model="form.content"
             class="description-textarea"
             placeholder="내용을 입력하세요"
@@ -362,11 +364,43 @@
     padding: 20px;
   }
 
+  /* 판매글 작성 섹션 */
+  .description-section {
+    margin-top: 20px;
+  }
+
+  .title-input,
+  .description-textarea {
+    width: 100%;
+    border: 1px solid #e0e0e0; /* 연한 테두리 */
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9; /* 연한 배경색 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 미세한 그림자 */
+  }
+
+  .title-input:focus,
+  .description-textarea:focus {
+    outline: none;
+    border: 1px solid #8b4513; /* 포커스 시 테두리 색상 변경 */
+  }
+
+  textarea.description-textarea {
+    height: 150px;
+    resize: none; /* 크기 조정 불가능 */
+  }
+
+  
+
   .selected-book-cover {
   width: 150px; /* 이미지 너비 설정 */
   height: auto; /* 비율 유지 */
   object-fit: contain; /* 이미지 비율 유지 및 잘리지 않도록 설정 */
   margin-right: 20px; /* 이미지와 텍스트 간 여백 추가 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }  
 
 .form-textarea {
@@ -385,6 +419,9 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
+  color: #8b4513;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 5px;
 }
 
 .form-group {
@@ -393,7 +430,12 @@
 
 .field-label {
   font-weight: bold;
-  margin-right: 10px;
+  color: #8b4513;
+  width: 100px;
+}
+
+.field-value {
+  color: #333;
 }
 
 .form-input,
@@ -407,21 +449,26 @@
 }
 
 .radio-group label {
-  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;  
 }
 
 .button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  display: flex;  
+  gap: 10px;  
 }
 
 .submit-button,
 .cancel-button {
   flex: 1;
-  padding: 10px 20px;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
 }
 
@@ -435,11 +482,87 @@
   color: white;
 }
 
+.cancel-button:hover {
+  background-color: #495057;
+}
+
 .section-divider {
 border: none;
-height: 2px;
-background-color: #ccc;
+height: 1px;
+background-color: #e0e0e0;
 margin: 20px 0; /* 위아래 간격 */
 }
+
+/* 이미지 업로드 섹션 */
+.image-upload-section {
+  margin-bottom: 30px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 자동 조정 */
+  gap: 15px;
+}
+
+.image-item {
+  position: relative;
+  border: 1px solid #ccc; /* 이미지 테두리 */
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9f9f9; /* 배경색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-item img {
+  width: 100%;
+  height: auto;
+}
+
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ccc; /* 연한 색상 */
+  font-size: 14px;
+}
+
+.remove-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #d32f2f;
+}
+
+/* 선택된 책 정보 */
+.selected-book-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.selected-book-details {
+  flex: 1;
+}
+
+.book-field {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+
 </style>
   
