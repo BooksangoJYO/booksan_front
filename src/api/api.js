@@ -259,5 +259,10 @@ export default {
     const url = '/api/books/favorite/book/list?page='+page+'&size='+size
     return apiClient.get(url);
   },
+
+  getRecommendedIsbnList() {
+    const url = '/api/board/recommend/books';
+    return apiClient.get(url);
+  }
 };
 
