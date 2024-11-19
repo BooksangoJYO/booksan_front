@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
         <h2 class="mb-4">마이페이지</h2>
-        <div class="row" v-if="userInfo">
+        <div class="row" v-if="loginInfo">
             <!-- 사이드바 -->
             <SideBar/>
 
@@ -82,12 +82,15 @@
 
 <script setup>
 import api from '@/api/api';
-import { computed, onMounted, ref } from 'vue';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
+const store = useMainStore();
+const {loginInfo} = storeToRefs(store);
 const router = useRouter();
-const userInfo = ref(null);
 const bookmarks = ref([]); // 게시글 목록
 const showOnlySoldOut = ref(false);
 const pageInfo = ref({
@@ -171,19 +174,6 @@ const filterBookmarks = () => {
     }
     loadBookmarks(1); // 페이지 초기화하고 데이터 다시 불러오기
 };
-
-onMounted(async () => {
-    try {
-        // 사용자 정보 가져오기
-        const userResponse = await api.getUserInfo();
-        userInfo.value = userResponse.data;
-
-        // 북마크 목록은 loadBookmarks 함수 재사용
-        await loadBookmarks(1);
-    } catch (error) {
-        console.error('데이터 조회 실패:', error);
-    }
-});
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {

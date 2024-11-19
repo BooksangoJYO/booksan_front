@@ -12,16 +12,16 @@ import SocialSignup from '@/components/user/SocialSignup.vue';
 import BookMarkBooks from '@/components/user/mypage/BookMarkBooks.vue';
 import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
 import MyPost from '@/components/user/mypage/MyPost.vue';
-import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
 import Mypage from '@/components/user/mypage/index.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
-import MainChatting from '@/pages/chat/MainChatting .vue';
+import MainChatting from '@/pages/chat/MainChatting.vue';
 import { useMainStore } from '@/store/mainStore';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const loginGuard = (to,from,next) =>{
     const store = useMainStore();
     let isAuthenticated = false;
+    store.doLogin();
     if(store.loginInfo?.email){
         isAuthenticated = true;
     }
@@ -35,9 +35,10 @@ const loginGuard = (to,from,next) =>{
 }
 
 const loginGuardForChat = (to,from,next) =>{
-    const login = sessionStorage.getItem('userEmail');
+    const store = useMainStore();
     let isAuthenticated = false;
-    if(login){
+    store.doLogin();
+    if(store.loginInfo?.email){
         isAuthenticated = true;
     }
     if (!isAuthenticated) {
@@ -62,10 +63,6 @@ const router = createRouter({
                 loginGuard(to,from,next);
             }},
         { path: '/mypage/myposts', name: 'mypost', component: MyPost,
-         beforeEnter: (to, from, next) => {
-                loginGuard(to,from,next);
-            }},
-        { path: '/profileInfo', name: 'profileInfo', component: ProfileInfo ,
          beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
             }},

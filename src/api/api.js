@@ -1,4 +1,5 @@
 import router from '@/router';
+import { useMainStore } from '@/store/mainStore';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -11,7 +12,7 @@ function getCookie(name) {
 
 
 const apiClient = axios.create({
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
@@ -35,6 +36,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if(error.response?.status === 500){router.replace('/');}
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
       
@@ -43,25 +45,37 @@ apiClient.interceptors.response.use(
         
         // 인증 서버로 직접 refresh 요청
         const refreshToken = getCookie('refreshToken');
-        const { data } = await apiClient.post('/api/users/refresh', {
-          refreshToken
-        });
+        const { data } = await apiClient.post(
+          '/api/users/refresh',
+          {}, // 요청 바디가 비어있다면 빈 객체로 보냄
+          {
+            headers: {
+              refreshToken: refreshToken // 헤더에 리프레시 토큰 추가
+            }
+          }
+        );
         
         // 새 access token으로 원래 요청 재시도
         const newAccessToken = data.accessToken;
-        console.log("새로운 엑세스 토큰 "+ newAccessToken);
+        const newRefreshToken = data.refreshToken;
         Cookies.set('accessToken', newAccessToken, { 
           httpOnly: false, 
           secure: true 
         });
-        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+        if(newRefreshToken){
+          console.log("새로운 리플레쉬 토큰",newRefreshToken);
+          Cookies.set('refreshToken', newRefreshToken, { 
+            httpOnly: false, 
+            secure: true 
+          });
+        }
+        error.config.headers.accesstoken = newAccessToken;
         return apiClient(error.config);
-      } catch (error) {
+      } catch (error) { 
         // refresh 실패시 로그인으로
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        sessionStorage.removeItem("userData");
-        router.replace({ path: '/login' });
+        const store = useMainStore();
+        store.doLogout();
+        router.replace('/login');
       }
     }
     return Promise.reject(error);
@@ -89,12 +103,8 @@ export default {
     return apiClient.get(`/api/users/checkNickname?nickname=${nickname}`);
   },
 
-  logout() {
-    return apiClient.post('/api/users/logout');
-  },
-
   getUserInfo() {
-    return apiClient.get('/api/users/mypage');
+    return apiClient.get('/api/users/loginInfo');
   },
 
   getBookmarks() {
