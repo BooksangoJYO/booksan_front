@@ -13,6 +13,7 @@ import BookMarkBooks from '@/components/user/mypage/BookMarkBooks.vue';
 import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
 import MyPost from '@/components/user/mypage/MyPost.vue';
 import Mypage from '@/components/user/mypage/index.vue';
+import DashBoard from '@/pages/admin/DashBoard.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
 import MainChatting from '@/pages/chat/MainChatting.vue';
 import { useMainStore } from '@/store/mainStore';
@@ -94,7 +95,8 @@ const router = createRouter({
             beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
             }
-        },        
+        },
+        { path: '/admin/dashBoard', component: DashBoard },
     ]
 });
 
