@@ -20,6 +20,15 @@
       </div>
   
       <!-- 추천 도서 섹션 -->
+      <h2 class="recommendation-title">책 추천</h2>
+      <div class="book-container">
+        <div v-for="book in books" :key="book.isbn" class="book-card">
+          <img :src="book.image" :alt="book.title" class="book-image">
+          <h3 class="book-title">{{ book.title }}</h3>
+          <p class="book-author">{{ book.author }}</p>
+          <p class="book-author">{{ book.publisher }}</p>
+        </div>
+      </div>
       <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
       <div class="book-container">
         <div v-for="book in books" :key="book.isbn" class="book-card">
@@ -30,7 +39,8 @@
         </div>
       </div>
     </div>
-  </template>
+    
+</template>
   
 <script setup>
 import MainLogo from '@/assets/images/mainLogo.png';
@@ -41,6 +51,33 @@ import api from '@/api/api';
 
 const router = useRouter();
 const searchQuery = ref('');
+const data = reactive({
+    boards: []  // 빈 배열로 초기화
+});
+
+// 추천 도서 로드
+const loadRecommendedBooks = async () => {
+    try {
+        const response = await api.getRecommendedBooks();
+        if (response.data?.status === 'success') {
+            data.boards = response.data.data.map(book => ({
+                id: book.isbn,
+                title: book.bookTitle,
+                author: `${book.bookWriter} · ${book.bookPublisher}`,
+                image: book.bookImageUrl || '/default-book.jpg'
+            }));
+        }
+    } catch (error) {
+        console.error('추천 도서 로딩 실패:', error);
+    }
+}
+
+onMounted(() => {
+    loadRecommendedBooks();
+});
+
+
+
 const books = ref([]);
 
 const handleSearch = () => {
@@ -142,18 +179,17 @@ onMounted(async () => {
 .book-container {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  gap: 50px;
 }
 
 .book-card {
-  width: 160px; /* 카드 크기 축소 */
+  width: 140px; /* 카드 크기 축소 */
   text-align: center;
 }
 
 .book-image {
-  width: 100%;
-  height: auto;
+  width: 160px;
+  height: 240px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;

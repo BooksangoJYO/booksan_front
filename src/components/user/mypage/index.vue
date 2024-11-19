@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
         <h2 class="mb-4">마이페이지</h2>
-        <div class="row" v-if="loginInfo">
+        <div class="row" v-if="loginInfo.email">
             <!-- 사이드바 -->
             <SideBar/>
             <!-- 메인 컨텐츠 -->
@@ -117,10 +117,10 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
-const store = useMainStore();
-const {loginInfo} = storeToRefs(store);
 
 const router = useRouter();
+const store = useMainStore();
+const { loginInfo } = storeToRefs(store);
 const showModal = ref(false);
 const newNickname = ref('');
 const isAvailable = ref(false);

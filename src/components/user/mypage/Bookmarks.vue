@@ -82,10 +82,10 @@
 
 <script setup>
 import api from '@/api/api';
-import { useMainStore } from '@/store/mainStore';
-import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
 import SideBar from './SideBar.vue';
 
 const store = useMainStore();
@@ -197,7 +197,7 @@ const goToDetail = (boardId) => {
 </script>
 
 <style scoped>
-/* 기존 스타일에 페이지네이션 스타일 추가 */
+/* 페이지네이션 스타일  */
 .page-link {
     color: #8B4513;
 }
