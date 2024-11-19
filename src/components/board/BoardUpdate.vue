@@ -81,10 +81,7 @@
           </div>
 
         </dl>
-      </section>
-
-      <!-- 수평선 추가 -->
-      <!-- <hr class="section-divider" /> -->
+      </section>      
   
       <!-- 판매가 섹션 -->
       <section class="price-section">
