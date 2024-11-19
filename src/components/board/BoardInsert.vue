@@ -75,6 +75,33 @@
           </div>
         </div>
       </section>
+
+      <!--출판일 입력-->
+      <section class="publish-date-section">
+        <h2 class="section-title">출판일 입력</h2>
+        <div class="publish-date-wrapper">
+          <input 
+            type="date"
+            v-model="form.publishDate"
+            
+            class="publish-date-input"
+            placeholder="출판일을 입력해주세요"
+          />
+        </div>
+      </section>
+
+      <!--추천 가격 표시-->
+      <section class="recommend-price-section">
+          <h2 class="section-title">추천 판매가</h2>
+          <div class="recommended-price-wrapper">
+            <p v-if="recommendedPrice !== null">
+                추천 판매가: <strong> {{ recommendedPrice.toLocaleString() }}</strong>원 입니다.
+            </p>
+            <p v-else>
+              추천 판매가를 확인하려면 도서 선택과 출판일을 입력하세요.
+            </p>
+          </div>
+      </section>
   
       <!-- 판매가 설정 -->
       <section class="price-section">
@@ -118,13 +145,42 @@
 
   <script setup>
   import BookSearch from './BookSearch.vue';
-  import { ref, onMounted, computed } from 'vue';
+  import { ref, onMounted, computed, watch } from 'vue';
   import api from '@/api/api';
   import {useRouter} from 'vue-router';
 
   const router = useRouter();
+  const selectedBook = ref(null); //선택된 책정보 변수
+  const recommendedPrice = ref(null); //추천 가격 변수
+  
+  //추천 가격 요청 api
+  const getRecommendPrice = async () => {
+    try{
+      if(selectedBook.value && form.value.publishDate && selectedBook.value.discount) {
+        
+        const response = await api.getRecommendPrice(
+          selectedBook.value.isbn,
+          form.value.publishDate,
+          selectedBook.value.discount, //책 원가 전달
+        );
 
-  const selectedBook = ref(null);
+        
+
+        if (response.data && response.data.recommendedPrice) {
+          recommendedPrice.value = response.data.recommendedPrice; //추천 가격 설정
+          console.log("추천 판매가: ", recommendedPrice.value);
+        } else {
+          recommendedPrice.value =null; //추천가격 초기화
+        }
+      } else {
+          console.error('추천 가격 요청 실패: 필요 정보 누락')
+        }
+      } catch(error) {
+        console.error('추천 가격 요청 중 오류 발생: ', error);
+      }
+    };
+  
+
   
     //이미지 파일 업로드 관련
     const images = ref([]);
@@ -135,14 +191,28 @@
     content: '',
     booksCategoryId: null,
     price: null,
-    
+    publishDate: '', //하나의 String 값으로 관리    
   });
   
   const categories = ref([]);
+
+  // 값 감시
+  watch(
+    () => [form.value.publishDate, selectedBook.value],
+    ([newPublishDate, newSelectedBook]) => {
+      if(newPublishDate && newSelectedBook?.discount) {
+        getRecommendPrice();
+      }
+    }
+  );
   
   const handleBookSelected = (book) => {
     selectedBook.value = book;
-  };
+
+    // 로그 추가
+    console.log("선택된 책: ", book);
+    console.log("출판일 입력 필드 값: " + form.value.publishDate);   
+};  
 
   const displaySlots = computed(() => {
     return images.value.length + 1
@@ -196,7 +266,13 @@
         formData.append('bookWriter', selectedBook.value.author || '');
         formData.append('bookPublisher', selectedBook.value.publisher || '');
         formData.append('bookImageUrl', selectedBook.value.image || '');
+
     }
+
+    //출판일 추가
+    // if(form.value.publishDate) {
+    //   formData.append('publishDate', form.value.publishDate); //날짜 필드 추가
+    // }
 
     // 이미지 파일 추가
     imageFiles.value.forEach((file, index) => {

@@ -140,7 +140,7 @@ onMounted(()=>{
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px; /* 검색창과의 간격 */
-  margin: 100px 0 20px; /* 헤더와 간격 추가 (40px 위쪽, 20px 아래쪽) */
+  margin: 30px 0 0; /* 헤더와 간격 추가*/
   color: #693610; /* 제목 색상 */
 }
 
@@ -158,7 +158,7 @@ onMounted(()=>{
   gap: 10px;
   max-width: 600px; /* 검색창의 최대 너비를 제한 */
   width: 100%;
-  margin-bottom: 30px; /* 검색창과 그리드 사이의 간격 추가 */
+  margin-bottom: 0px; /* 검색창과 그리드 사이의 간격 추가 */
 }
 
 .search-input {
@@ -191,12 +191,12 @@ onMounted(()=>{
   gap: 20px; /* 카드 간 간격 */
   width: 100%; /* 그리드 너비 조정 */
   max-width: 1200px; /* 그리드 최대 너비 */
-  margin-top: 20px; /* 위쪽 여백 추가 */
+  margin-top: 10px; /* 위쪽 여백 추가 */
 }
 
 .book-grid-item {
   background-color: #f9f9f9;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   text-align: center;
@@ -211,20 +211,20 @@ onMounted(()=>{
 
 .book-image {
   width: 100%; /* 이미지 크기 자동 조정 */
-  max-width: 120px; /* 최대 너비 제한 */
+  max-width: 100px; /* 최대 너비 제한 */
   height: auto;
   object-fit: cover;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   border-radius: 4px;
 }
 
 .book-title {
-  font-size: 14px;
-  margin: 10px 0 5px;
+  font-size: 13px;
+  margin: 8px 0 4px;
 }
 
 .book-author {
-  font-size: 12px;
+  font-size: 11px;
   color: #555;
 }
 
