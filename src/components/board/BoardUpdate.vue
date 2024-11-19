@@ -33,6 +33,10 @@
               <span class="field-label">ISBN:</span>
               <span class="field-value">{{ selectedBook.isbn }}</span>
             </p>
+            <p class="book-field">
+              <span class="field-label">출판일:</span>
+              <span class="field-value">{{ form.publishDate }}</span>
+            </p>
           </div>
         </div>
       </section>
@@ -141,7 +145,8 @@
     booksCategoryId: null,
     price: null,
     status: "N", // 기본값을 'N'으로 설정하여 판매중 상태로 초기화
-    email: ""
+    email: "",
+    publishDate: "" //출판일 추가
   });
   const categories = ref([]);
   
@@ -158,7 +163,8 @@
         booksCategoryId: boardData.booksCategoryId,
         price: boardData.price,
         status: boardData.status,
-        email: boardData.email
+        email: boardData.email,
+        publishDate: boardData.publishDate 
       };
     } catch (error) {
       console.error("게시글 데이터를 불러오는 중 오류 발생:", error);
@@ -211,11 +217,21 @@
     router.push(`/board/read/${dealId}`); // 단건 조회 페이지 경로로 이동
   };
   
-  onMounted(() => {
-    const bookInfoQuery = route.query.bookInfo;
-    if (bookInfoQuery) {
-      selectedBook.value = JSON.parse(bookInfoQuery);
+  onMounted(async () => {
+    const isbn = route.query.isbn; //조회페이지에서 전달받은 isbn 가져오기
+    const dealId = route.params.dealId; //dealId가져오기
+
+    //isbn으로 책정보 가져오기
+    if(isbn) {
+      try {
+        //ISBN을 통해 도서 정보를 가져오는 API 요청
+        const bookResponse = await api.getBookInfo(isbn);
+        selectedBook.value =bookResponse.data.bookInfo;                         
+      } catch (error) {
+        console.error("데이터를 가져오는 중 오류 발생:",error);
+      }
     }
+    
     fetchBoardData();
     getBookCategories();
   });

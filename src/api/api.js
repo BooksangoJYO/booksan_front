@@ -209,6 +209,16 @@ export default {
     return apiClient.put(url, {dealId,status})
   },
 
+  //추천 가격 요청 API 요청
+  getRecommendPrice(isbn, publishDate, bookOriginalPrice) {
+    const url = '/api/books/recommendPrice';
+    return apiClient.post(url, {
+      isbn: isbn,
+      publishDate: publishDate,
+      bookOriginalPrice: bookOriginalPrice,
+      });
+  },
+
   insertFavorite(dealId) {
     const url = '/api/board/favorite/insert/'+dealId;
     return apiClient.post(url);

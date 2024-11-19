@@ -1,9 +1,6 @@
 <template>
   <div class="page-container">
-    <!-- 홈 버튼을 상단 왼쪽에 위치 -->
-    <div class="top-bar">
-      <button class="home-button" @click="goToHome">홈으로</button>      
-    </div>   
+      
 
     <!-- 검색 입력 및 버튼 -->
     <div class="search-container">
@@ -243,15 +240,6 @@ div {
   color: #333;
 }
 
-/* 상단 바 스타일 */
-.top-bar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 0 20px;
-}
-
 /* 검색 및 카테고리 스타일 */
 .search-container {
   display: flex;
@@ -325,11 +313,51 @@ div {
   margin-right: auto; /* 중앙 정렬 */
 }
 
+
 /* 체크박스와 라벨 정렬 */
 .left-section {
   display: flex;
   align-items: center; /* 세로 중앙 정렬 */
-  gap: 5px; /* 체크박스와 라벨 간 간격 */
+  gap: 10px; /* 체크박스와 라벨 간 간격 */
+}
+
+/* 기본 체크박스 숨김 */
+.left-section input[type="checkbox"] {
+  display: none; /* 기본 체크박스를 숨깁니다 */
+}
+
+/* 커스텀 체크박스 스타일 */
+.left-section label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333; /* 텍스트 색상 */
+}
+
+.left-section label::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #8B4513; /* 테두리 갈색 */
+  border-radius: 4px; /* 둥근 모서리 */
+  background-color: #fff; /* 기본 흰색 배경 */
+  display: inline-block;
+  margin-right: 8px; /* 텍스트와의 간격 */
+  transition: all 0.3s ease; /* 애니메이션 효과 */
+}
+
+/* 체크된 상태의 스타일 */
+.left-section input[type="checkbox"]:checked + label::before {
+  background-color: #8B4513; /* 체크 시 배경 갈색 */
+  border-color: #8B4513; /* 테두리 갈색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  content: '✔'; /* 체크 표시 */
+  color: #fff; /* 체크 표시 흰색 */
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .right-align {

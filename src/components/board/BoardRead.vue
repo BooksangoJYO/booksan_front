@@ -363,7 +363,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
             router.push({
                 path: `/board/update/${dealId}`,
                 query: {
-                    bookInfo: JSON.stringify(book.value) //bookInfo를 JSON 문자열로 전달
+                    isbn: book.value.isbn //ISBN만 전달
                 }
             });
         }
@@ -466,7 +466,10 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
   width: 24px; /* 아이콘 크기 */
   height: 24px;
   cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease; /* 부드러운 애니메이션 */
 }
+
+
 
 .board-info {
   display: flex;
