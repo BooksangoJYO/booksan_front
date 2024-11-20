@@ -11,7 +11,7 @@
     <div v-for="(category, index) in categories" :key="index" class="category-item" @click="setCategory(category.id)">
       <img
         v-if="category.icon"
-        :src="`https://cdn-icons-png.flaticon.com/512/2933/2933275.png`"
+        :src="BookMarkIcon"
         alt="Category Icon"
         class="category-icon"
       />
@@ -70,9 +70,9 @@
 
 <script setup>
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
+import BookMarkIcon from '@/assets/images/BookMarkIcon.svg';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 // 상태 정의
 const router = useRouter();
 const keyword = ref('');
