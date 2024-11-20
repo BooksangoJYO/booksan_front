@@ -22,8 +22,9 @@
         <p>{{loginInfo.nickName}}</p>
     </div>
     <div class="header-right" v-else>
-        <button class="icon-button" @click="doLogin">로그인</button>
+        <button class="icon-button" @click="showModal = true">로그인</button>
     </div>
+    <SocialLoginModal :is-open="showModal" @close="showModal = false" />
 </template>
 
 <script setup>
@@ -34,13 +35,15 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import BoardReservationList from '../board/BoardReservationList.vue';
 import ChatAlertRoomList from '../chat/ChatAlertRoomList.vue';
+import SocialLoginModal from '../user/SocialLoginModal.vue';
 
 let viewChatAlertList = ref(false);
 let viewBoardReservationList = ref(false);
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
-const {doLogin,doLogout} = store;
+const {doLogout} = store;
+const showModal = ref(false);
 
 const closeBoardReservationList = () => {
     viewBoardReservationList.value = !viewBoardReservationList.value;

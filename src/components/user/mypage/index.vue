@@ -259,7 +259,6 @@ const updateNickname = async () => {
 /* 전체 레이아웃 중앙 배치 */
 .container {
     max-width: 900px;
-    min-height: 100vh; /* 전체 뷰포트 높이 사용 */
     display: flex;
     flex-direction: column;
     justify-content: center; /* 세로 중앙 정렬 */

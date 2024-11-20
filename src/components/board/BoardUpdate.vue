@@ -80,7 +80,7 @@
                 </select>
               </dd>
             </div>
-          </dlv>
+          </dl>
 
         </div>
       </section>
