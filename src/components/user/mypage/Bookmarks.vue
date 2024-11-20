@@ -21,7 +21,7 @@
 
                         <!-- 로딩 상태 표시 -->
                         <div v-if="loading" class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
+                            <div class="spinner-border custom-spinner" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
@@ -38,9 +38,9 @@
 
                         <!-- 북마크 목록 -->
                         <div class="bookmark-list">
-                            <div v-for="board in bookmarks" :key="board.id" 
+                            <div v-for="board in bookmarks" :key="board" 
                                 class="bookmark-item card border-0 shadow-sm mb-3"
-                                @click="goToDetail(board.id)">
+                                @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
                                     <img :src="board.image_url || '/default-book.jpg'" :alt="board.title" 
                                         class="book-cover me-3" 
@@ -82,7 +82,7 @@
 
 <script setup>
 import api from '@/api/api';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
@@ -116,6 +116,9 @@ const pageNumbers = computed(() => {
 });
 
 
+onMounted(() => {
+    loadBookmarks(1);
+});
 
 // 페이지 변경 함수
 const changePage = async (page) => {
@@ -126,17 +129,24 @@ const loadBookmarks = async (page = 1) => {
     loading.value = true;
     error.value = null;
     try {
-        console.log('loadBookmarks 호출:', page);
-        const response = await api.getBookmarks({
-            page: page,
+        console.log('북마크 요청 파라미터:', {
+            page,
             size: 10,
             soldOnly: showOnlySoldOut.value
         });
-        console.log('북마크 응답:', response);
-
-        // 데이터가 있는 경우 (200 OK)
+        
+        const response = await api.getBookmarks({
+            page,
+            size: 10,
+            soldOnly: showOnlySoldOut.value
+        });
+        
+        console.log('북마크 응답 전체:', response);
+        
         if (response.status === 200 && response.data?.data) {
+            console.log('북마크 데이터:', response.data.data);
             const boardList = response.data.data;
+            // 여기서 실제로 데이터를 할당합니다
             bookmarks.value = boardList.dtoList;
             pageInfo.value = {
                 page: boardList.page,
@@ -160,8 +170,9 @@ const loadBookmarks = async (page = 1) => {
             };
         }
     } catch (error) {
-        console.error('북마크 로딩 에러:', error);
+        console.error('북마크 로딩 에러 상세:', error);
         error.value = '북마크 목록을 불러오는데 실패했습니다.';
+        bookmarks.value = [];  // 에러 시 북마크 목록 초기화
     } finally {
         loading.value = false;
     }
@@ -190,8 +201,8 @@ const formatDate = (dateString) => {
 };
 
 // 상세 페이지로 이동
-const goToDetail = (boardId) => {
-    router.push(`/board/${boardId}`);
+const goToDetail = (board) => {
+    router.push(`/board/read/${board.dealId}`);
 };
 
 </script>
@@ -215,7 +226,6 @@ const goToDetail = (boardId) => {
 /* 전체 레이아웃 중앙 배치 */
 .container {
     max-width: 900px;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -283,6 +293,11 @@ const goToDetail = (boardId) => {
 
 .bg-custom-brown {
     background-color: #A25D0D !important;
+}
+
+/* 스피너 커스텀 스타일 추가 */
+.custom-spinner {
+    color: #8B4513;  /* 시그니처 브라운 색상 */
 }
 
 /* 반응형 스타일 */
