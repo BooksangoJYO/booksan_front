@@ -78,7 +78,7 @@
 
       <!--출판일 입력-->
       <section class="publish-date-section">
-        <h2 class="section-title">출판일 입력</h2>
+        <h2 class="section-title">인쇄일 입력</h2>
         <div class="publish-date-wrapper">
           <input 
             type="date"
@@ -88,20 +88,22 @@
             placeholder="출판일을 입력해주세요"
           />
         </div>
-      </section>
-
-      <!--추천 가격 표시-->
-      <section class="recommend-price-section">
+        <!--추천 가격 표시-->
+        <div class="recommend-price-wrapper">
           <h2 class="section-title">추천 판매가</h2>
-          <div class="recommended-price-wrapper">
-            <p v-if="recommendedPrice !== null">
+          <div>
+            <p v-if="discountValue === '0'">
+              가격 정보가 없습니다.
+            </p>
+            <p v-else-if="recommendedPrice !== null">
                 추천 판매가: <strong> {{ recommendedPrice.toLocaleString() }}</strong>원 입니다.
             </p>
             <p v-else>
               추천 판매가를 확인하려면 도서 선택과 출판일을 입력하세요.
             </p>
           </div>
-      </section>
+        </div>
+      </section>      
   
       <!-- 판매가 설정 -->
       <section class="price-section">
@@ -136,10 +138,29 @@
   
       <!-- 등록/취소 버튼 -->
       <div class="button-group">
-        <button @click="submitForm" class="submit-button">등록하기</button>
+        <button @click="openModal" class="submit-button">등록하기</button>
         <button @click="goToBoardList" class="cancel-button">취소</button>
       </div>
     </div>
+
+    <!--등록데이터 확인 모달-->
+    <!-- 부모 컴포넌트 -->
+  <BoardInsertCheck
+    :visible="isModalVisible"
+    :selectedCategory="selectedCategory" 
+    @confirm="submitForm"
+    @cancel="closeModal"
+  >
+    <h3>등록 내용을 확인하세요</h3>
+    <ul>
+      <li><strong>제목:</strong> {{ form.title }}</li>
+      <li><strong>내용:</strong> {{ form.content }}</li>
+      <li><strong>카테고리:</strong> {{ selectedCategory }}</li>
+      <li><strong>판매가:</strong> {{ form.price }}</li>
+      <li><strong>출판일:</strong> {{ form.publishDate }}</li>
+      <li><strong>선택된 책:</strong> {{ selectedBook?.title || '선택 안됨' }}</li>
+    </ul>
+  </BoardInsertCheck>
   </template>
   
 
@@ -148,13 +169,70 @@
   import { ref, onMounted, computed, watch } from 'vue';
   import api from '@/api/api';
   import {useRouter} from 'vue-router';
+  import BoardInsertCheck from './BoardInsertCheck.vue';
+
 
   const router = useRouter();
   const selectedBook = ref(null); //선택된 책정보 변수
   const recommendedPrice = ref(null); //추천 가격 변수
-  
+  const discountValue = computed(() => selectedBook?.value?.discount || '0');
+
+  //모달 열기
+  const openModal = () => {
+    isModalVisible.value = true;
+  };
+  //모달 닫기
+  const closeModal = () => {
+    isModalVisible.value = false;
+  };
+
+  //카테고리명 가져오기
+  const selectedCategory = computed(() => {
+    const category = categories.value.find(
+        (cat) => cat.booksCategoryId === form.value.booksCategoryId
+    );
+    return category ? category.booksCategoryName : '선택되지 않음';
+});
+
+  //등록 요청
+  const submitForm = async () => {
+    //필수 필드 검증
+    if (!form.value.title || !form.value.content || !form.value.booksCategoryId) {
+      alert('모든 필드를 입력하세요.');
+      return;
+    }
+    
+    try {
+      //FormData 생성
+      const formData = getFormData();
+
+      //API 요청
+      const response = await api.BoardInsert(formData);
+      if(response.data.status === 'success'){
+        alert('등록이 완료되었습니다!');
+
+        //모달 닫기
+        closeModal();
+
+        //페이지 이동
+        router.push('/board/list');
+      } else {
+        alert('등록 실패: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('등록 중 문제가 발생했습니다:', error);
+      if (error.status === 401) {
+        alert('로그인이 필요한 기능입니다.')
+      } else {
+        alert('데이터 전송에 문제가 발생했습니다.');
+      }      
+    }
+  };
+
+  const isModalVisible = ref(false);
   //추천 가격 요청 api
   const getRecommendPrice = async () => {
+    console.log("출판일 입력 필드 값: " + form.value.publishDate); 
     try{
       if(selectedBook.value && form.value.publishDate && selectedBook.value.discount) {
         
@@ -162,9 +240,7 @@
           selectedBook.value.isbn,
           form.value.publishDate,
           selectedBook.value.discount, //책 원가 전달
-        );
-
-        
+        );        
 
         if (response.data && response.data.recommendedPrice) {
           recommendedPrice.value = response.data.recommendedPrice; //추천 가격 설정
@@ -211,7 +287,10 @@
 
     // 로그 추가
     console.log("선택된 책: ", book);
-    console.log("출판일 입력 필드 값: " + form.value.publishDate);   
+    console.log("discount 값:", selectedBook.value.discount);
+    console.log("price 값:", selectedBook.value.price);
+    console.log("discount 타입:", typeof selectedBook.value.discount);
+      
 };  
 
   const displaySlots = computed(() => {
@@ -269,11 +348,6 @@
 
     }
 
-    //출판일 추가
-    // if(form.value.publishDate) {
-    //   formData.append('publishDate', form.value.publishDate); //날짜 필드 추가
-    // }
-
     // 이미지 파일 추가
     imageFiles.value.forEach((file, index) => {
         if (file) formData.append('files', file, file.name)
@@ -281,33 +355,7 @@
 
     return formData
   }
-
-
-  const submitForm = async () => {
-    //!imageFiles.value.some(file => file != null) ||
-    if (!form.value.title || !form.value.content || !form.value.booksCategoryId || !form.value.price) {
-
-      alert('모든 필드를 입력하세요.');
-      return;
-    }
   
-    try {
-      const response = await api.BoardInsert(getFormData());
-      if (response.data.status == 'success') {
-        alert(response.data.message);
-        router.push({ path: '/board/list' });
-      } else {
-        alert(response.data.message);
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.status === 401) {
-            alert('로그인이 필요한 기능입니다.');
-        } else {
-            alert('데이터 전송에 문제가 발생했습니다.');
-        }      
-    }
-  };
   
   const goToBoardList = () => {
     router.push('/board/list');
@@ -317,6 +365,7 @@
     try {
       const response = await api.getBookCategories();
       categories.value = response.data.booksCategories;
+      console.log("카테고리정보:", categories.value);
     } catch (error) {
       console.error('카테고리 데이터를 가져오는 중 오류가 발생했습니다.', error);
     }
@@ -325,6 +374,8 @@
   onMounted(() => {
     getBookCategories();
   });
+
+  
   </script>
   
   <style scoped>
@@ -345,6 +396,30 @@
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 40px;
   }
+
+  /* 인쇄일 및 추천 판매가를 같은 줄에 배치 */
+  .publish-and-recommend-section {
+    display: flex;
+    align-items: center; /* 수직 정렬 */
+    justify-content: space-between; /* 좌우 정렬 */
+    gap: 20px; /* 항목 간격 */
+    margin-bottom: 20px; /* 하단 여백 */
+  }
+
+  .publish-date-wrapper,
+  .recommend-price-wrapper {
+    flex: 1; /* 각 항목이 동일한 비율로 차지 */
+  }
+
+  .publish-date-input {
+    width: 100%; /* 입력 필드 너비 설정 */
+  }
+
+  .recommend-price-wrapper p {
+    margin: 5px 0; /* 추천 판매가 텍스트 간격 */
+    font-size: 14px; /* 추천 판매가 텍스트 크기 */
+  }
+
   
   .header-left {
     display: flex;

@@ -17,8 +17,8 @@
             </Transition>
         </div>
         <RouterLink to="/main/chatPage">채팅</RouterLink>
-        <RouterLink to="/mypage">마이페이지</RouterLink>
         <button class="icon-button" @click="doLogout">로그아웃</button>
+        <RouterLink to="/mypage"><img :src="UserIcon" alt="마이페이지" /></RouterLink>
         <p>{{loginInfo.nickName}}</p>
     </div>
     <div class="header-right" v-else>
@@ -28,8 +28,9 @@
 </template>
 
 <script setup>
-import chatNoticeIcon from '@/assets/images/chatNotice.png';
+import chatNoticeIcon from '@/assets/images/chatNotice.svg';
 import noticeIcon from '@/assets/images/notice.png';
+import UserIcon from '@/assets/images/userIcon.svg';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';

@@ -10,6 +10,6 @@ import Header from './components/commons/Header.vue';
 
 const route = useRoute();
 
-const hiddenPaths = ['/login', '/signup','/logout','/auth','/chat']; 
+const hiddenPaths = ['/login', '/signup','/logout','/auth','/chat','/admin']; 
 const isHidden = computed(() => hiddenPaths.some(path => route.path.startsWith(path) || route.path === path));
 </script>

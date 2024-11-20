@@ -3,7 +3,7 @@
       <!-- 로고 섹션 -->
       <div class="logo-container">
         <img :src="MainLogo" alt="북산장터 로고" class="logo">
-        <h1 class="title">북산장터</h1>
+        <h1 class="title">북싼장터</h1>
         <p class="subtitle">Booksan Market</p>
       </div>
   
@@ -42,11 +42,11 @@
 </template>
   
 <script setup>
+import api from '@/api/api';
 import MainLogo from '@/assets/images/mainLogo.png';
-import SearchIcon from '@/assets/images/searchIcon.png';
+import SearchIcon from '@/assets/images/searchIcon.svg';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '@/api/api';
 
 const router = useRouter();
 const searchQuery = ref('');

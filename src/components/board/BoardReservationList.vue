@@ -1,16 +1,32 @@
 <template>
-    <div class="reservation-boards">
-      <ul v-if="data.reservationBoards.length">
-        <li v-for="board in data.reservationBoards" :key="board.dealId" class="board-item">
-          <img :src="board.image"/>
-          <p>책 이름: {{ board.bookTitle }}</p>
-          <p @click="openRead(board.dealId)">게시글 제목: {{ board.title}}</p>
-        </li>
-      </ul>
-      <p v-else>현재 알림이 없습니다.</p>
+  <div class="alert-boards">
+    <div class="notification-box">
+      <h3 class="notification-title">예약 알림</h3>
+      <div class="board-items">
+        <ul>
+          <li
+            v-if="data.reservationBoards.length"
+            v-for="board in data.reservationBoards"
+            :key="board.dealId"
+            class="board-item"
+          >
+            <div class="book-item" @click="openRead(board.dealId)">
+              <div class="image-container">
+                <img :src="board.image" class="book-image"/>
+              </div>
+              <div class="message">
+                <div class="book-title">{{ board.bookTitle }}</div>
+                <div class="board-title">{{ board.title }}</div>
+              </div>
+            </div>
+          </li>
+          <li v-else class="empty-state">현재 새로운 예약 알림이 없습니다.</li>
+        </ul>
+      </div>
     </div>
-  </template>
-  
+  </div>
+</template>
+
 <script setup>
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
@@ -20,8 +36,8 @@ const router = useRouter();
 const emit = defineEmits(["close"]);
 
 const data = reactive({
-  reservationBoards : [],
-}); // 알림이 있는 채팅방 목록
+  reservationBoards: [],
+});
 
 const fetchReservationBoards = async () => {
   try {
@@ -38,80 +54,119 @@ function openRead(dealId) {
 }
 
 onMounted(fetchReservationBoards);
-
-
 </script>
 
-<style scope>
-.reservation-boards {
-  padding: 20px;
-  max-width: 1200px;
+<style scoped>
+.alert-boards {
+  width: 400px;
   margin: 0 auto;
 }
 
-.reservation-boards ul {
+.notification-box {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.notification-title {
+  padding: 16px;
+  margin: 0;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.board-items ul {
+  width: 100%;
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 .board-item {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #eaeaea;
+  width: 90%;
+  padding: 12px 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
 }
 
 .board-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  background-color: #f8f9fa;
+  transform: translateX(2px);
 }
 
-.board-item img {
+.book-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.image-container {
+  width: 60px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.book-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
-  border-bottom: 1px solid #eaeaea;
+  border-radius: 4px;
 }
 
-.board-item p {
-  margin: 0;
-  padding: 12px 16px;
-  color: #333;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.message {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.board-item p:first-of-type {
+.book-title {
+  font-size: 14px;
   font-weight: 600;
-  color: #2c3e50;
-  padding-bottom: 8px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.reservation-boards > p {
-  text-align: center;
+.board-title {
+  font-size: 13px;
   color: #666;
-  padding: 40px 0;
-  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (max-width: 768px) {
-  .reservation-boards {
-    padding: 15px;
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .alert-boards {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
   }
   
-  .reservation-boards ul {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+  .image-container {
+    width: 50px;
+    height: 70px;
   }
   
-  .board-item img {
-    height: 160px;
+  .book-title, .board-title {
+    max-width: 200px;
   }
 }
 </style>
