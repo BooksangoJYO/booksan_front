@@ -8,6 +8,8 @@ const { doLogout } = store;
 
 const handleLogout = () => {
     doLogout();
+    router.replace('/');
+
 };
 
 const handleSiteOut = () => {
