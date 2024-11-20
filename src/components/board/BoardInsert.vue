@@ -77,13 +77,12 @@
       </section>
 
       <!--출판일 입력-->
-      <section class="publish-date-section">
-        <h2 class="section-title">인쇄일 입력</h2>
+      <section class="publish-and-recommend-section">
         <div class="publish-date-wrapper">
+          <h2 class="section-title">인쇄일 입력</h2>        
           <input 
             type="date"
-            v-model="form.publishDate"
-            
+            v-model="form.publishDate"            
             class="publish-date-input"
             placeholder="출판일을 입력해주세요"
           />
@@ -400,24 +399,39 @@
   /* 인쇄일 및 추천 판매가를 같은 줄에 배치 */
   .publish-and-recommend-section {
     display: flex;
-    align-items: center; /* 수직 정렬 */
+    align-items: flex-start; /* 상단 정렬 */
     justify-content: space-between; /* 좌우 정렬 */
     gap: 20px; /* 항목 간격 */
     margin-bottom: 20px; /* 하단 여백 */
   }
 
-  .publish-date-wrapper,
+  .publish-date-wrapper {
+    flex: 1; /* 인쇄일이 왼쪽에서 공간 차지 */
+  }
+
+  
   .recommend-price-wrapper {
     flex: 1; /* 각 항목이 동일한 비율로 차지 */
+    text-align: right; /* 텍스트를 오른쪽 정렬 */
   }
 
   .publish-date-input {
-    width: 100%; /* 입력 필드 너비 설정 */
+    width: 60%; /* 입력 필드 너비 설정 */
+    max-width: 300px; /* 최대 너비 */
+    padding: 8px; /* 내부 여백 */
+    font-size: 14px; /* 글자 크기 */
   }
 
   .recommend-price-wrapper p {
     margin: 5px 0; /* 추천 판매가 텍스트 간격 */
-    font-size: 14px; /* 추천 판매가 텍스트 크기 */
+    font-size: 16px; /* 추천 판매가 텍스트 크기 */
+    font-weight: bold; /* 굵게 표시 */
+  }
+
+  /* 추천 판매가 텍스트 스타일 */
+  .recommend-price-wrapper h2 {
+    font-size: 18px; /* 추천 판매가 제목 크기 */
+    font-weight: bold; /* 굵게 표시 */
   }
 
   
