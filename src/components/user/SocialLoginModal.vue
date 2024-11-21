@@ -83,6 +83,7 @@ const handleKakaoLogin = () => {
 
 .modal {
     z-index: 1045;
+    position: absolute;
 }
 
 .modal-header {

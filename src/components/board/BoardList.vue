@@ -3,9 +3,16 @@
       
 
     <!-- 검색 입력 및 버튼 -->
+    <h4 class="bookList-title"> 중고책 찾기 </h4>
     <div class="search-container">
-      <input v-model="keyword" placeholder="책 찾아보기" @keyup.enter="search()" class="search-input" />
-      <button @click="fetchBoardList" class="search-button">검색</button>
+      <input 
+          type="text" 
+          class="search-input" 
+          placeholder="가판대 찾아보기"
+          v-model="keyword"
+          @keyup.enter="search()"
+      >
+      <img :src="SearchIcon" alt="검색" class="search-icon" @click="fetchBoardList">
     </div>
     <div class="category-container">
 
@@ -54,7 +61,7 @@
             </button>
             <div class="board-item-status" :class="{ available: board.status === 'N' }">{{ board.status === 'N' ? '판매 중' : '판매 완료' }}</div>            
             <h3 class="board-title">{{ board.title }}</h3>            
-            <p class="board-price">{{ board.status === 'N' ? board.price + '원' : 'SOLD OUT' }}</p>
+            <p class="board-price">{{ board.status === 'N' ? formatPrice(board.price) : 'SOLD OUT' }}</p>
             
             
           </div>
@@ -94,6 +101,7 @@ import literature from '@/assets/images/literature.png';
 import history from '@/assets/images/history.png';
 import others from '@/assets/images/others.png';
 import entire from '@/assets/images/entire.png';
+import SearchIcon from '@/assets/images/searchIcon.svg';
 
 
 // 상태 정의
@@ -138,6 +146,11 @@ const paginationData = reactive({
   prev: false,
   next: false
 });
+
+// 가격 표시
+const formatPrice = (price) => {
+    return `${price.toLocaleString('ko-KR')}원`;
+};
 
 // 판매 중인 것만 보기 체크박스 상태에 따른 필터링
 const filteredBoardList = computed(() => {
@@ -258,32 +271,41 @@ const goToHome = () => {
   box-sizing: border-box; /* 패딩 포함 크기 계산 */
 }
 
+.bookList-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px; /* 검색창과의 간격 */
+  margin: 30px 0 30px; /* 헤더와 간격 추가*/
+  color: #8B4513; /* 제목 색상 */
+}
+
 /* 검색 및 카테고리 스타일 */
 .search-container {
+  max-width: 800px;
+  margin: 0 auto 50px;
   display: flex;
-  align-items: center;
-  justify-content: center; /* 검색 창 중앙 정렬 */
-  margin-bottom: 30px;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: -35px; /* 아이콘을 input 안으로 넣기 위해 음수값 사용 */
 }
 
 .search-input {
-  width: 500px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-right: 20px;
-  font-size: 1.2em;
+  width: 100%;
+  padding: 15px 45px 15px 20px; /* 오른쪽에 아이콘 들어갈 공간 */
+  border: 3px solid #8B4513;
+  border-radius: 25px;
+  font-size: 17px;
+  outline: none;
 }
 
-.search-button {
-  padding: 15px 25px;
-  background-color: #5a321f;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2em;
+.search-icon {
+  width: 30px;
+  height: 30px;
   cursor: pointer;
+  margin-left: -50px; /* 아이콘을 input 안으로 이동 */
 }
+
+
 
 /* 카테고리 스타일 */
 .category-container {
@@ -299,11 +321,12 @@ const goToHome = () => {
   align-items: center; /* 중앙 정렬 */
   text-align: center;
   width: 70px; /* 모든 카테고리의 너비를 동일하게 고정 */
+  cursor: pointer;
 }
 
 /* 선택된 카테고리 스타일 */
 .category-item.selected .category-text {
-  border-bottom: 2px solid #5a321f; /* 선택된 글씨 밑줄 */
+  border-bottom: 3px solid #7b4f22; /* 선택된 글씨 밑줄 */
   font-weight: bold; /* 강조 */
 }
 
@@ -396,7 +419,7 @@ const goToHome = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 98%;
   max-width: 1000px; /* 동일한 너비 설정 */
   margin: 0 auto; /* 목록 중앙 정렬 */
 }
@@ -458,15 +481,15 @@ const goToHome = () => {
 
 .board-title {
   color:#5a321f;
-  font-size: 1.7em;
-  font-weight: bold;
+  font-size: 1.4em;
+  font-weight: 500;
   margin-bottom: 5px;
   margin-top: 5px
 }
 
 .board-price {
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 800;
   color: #5a321f !important;
   margin-bottom: 0px;  
   margin-top: 15px;
@@ -480,14 +503,19 @@ const goToHome = () => {
 .board-item-status {
   display: inline-block;
   padding: 5px 10px;
-  font-size: 0.9em;
+  font-size: 0.9rem;
   border-radius: 8px;
   color: #ffffff;
-  background-color: #ffcc80; 
+  background-color: #ffcc80;
+  width: 80px;
+  height: 30px;
+  text-align: center;
 }
 
 .board-item-status.available {
   background-color: #ba7933; /* 판매 중 색상 */
+  text-align: center;
+  font-size: 0.93rem !important;
 }
 
 .board-item-status:not(.available) {
@@ -517,10 +545,9 @@ const goToHome = () => {
 }
 
 .pagination-button {
-  margin: 0 5px;
   padding: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 0.5px solid #ccc;
+  border-radius: 1px;
   background-color: #f0f0f0;
   cursor: pointer;
 }

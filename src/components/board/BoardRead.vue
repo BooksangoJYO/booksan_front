@@ -75,7 +75,7 @@
                 </li>
                 <li><strong>카테고리:</strong> {{ categoryName }}</li>
                 <li><strong>판매자:</strong> {{ board.email }}</li>
-                <li><strong>판매가:</strong> {{ board.price }}원</li>
+                <li><strong>판매가:</strong> {{ board.price.toLocaleString() }}원</li>
               </ul>            
               <div class="button-group">
                 <!-- 작성자인 경우 -->

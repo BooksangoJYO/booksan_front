@@ -18,7 +18,7 @@
       </div>
   
       <!-- 추천 도서 섹션 -->
-      <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
+      <h2 class="recommendation-title">오직 당신만을 위한 AI큐레이션</h2>
       <div class="book-container">
         <div v-for="book in books" :key="book.isbn" class="book-card">
           <img :src="book.image" :alt="book.title" class="book-image">
@@ -27,9 +27,15 @@
           <p class="book-author">{{ book.publisher }}</p>
         </div>
       </div>
-      <h2 class="recommendation-title">AI가 추천하는 베스트셀러 도서</h2>
+      <h2 class="recommendation-title">베스트셀러 도서</h2>
       <div class="book-container">
-        <div v-for="board in data.boards" :key="board.id" class="book-card">
+        <div v-for="board in data.boards" 
+            :key="board.id" 
+            class="book-card"
+            @click="goToDetail(board.id)"
+            role="button"
+            style="cursor: pointer"
+          >
           <img :src="board.image" :alt="board.title" class="book-image">
           <h3 class="book-title">{{ board.title }}</h3>
           <p class="book-author">{{ board.author }}</p>
@@ -73,7 +79,9 @@ onMounted(() => {
     loadRecommendedBooks();
 });
 
-
+const goToDetail = (isbn) => {
+  router.push(`/book/detail/${isbn}`);
+};
 
 const books = ref([]);
 
@@ -124,7 +132,7 @@ onMounted(async () => {
 }
 
 .logo {
-  width: 130px;
+  width: 180px;
   height: auto;
 }
 
@@ -142,7 +150,7 @@ onMounted(async () => {
 }
 
 .search-container {
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto 30px;
   display: flex;
   align-items: center; /* 세로 중앙 정렬 */
@@ -159,17 +167,17 @@ onMounted(async () => {
 }
 
 .search-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  margin-left: -40px; /* 아이콘을 input 안으로 이동 */
+  margin-left: -50px; /* 아이콘을 input 안으로 이동 */
 }
 
 .recommendation-title {
   text-align: center;
   font-size: 20px;
   color: #333;
-  margin: 40px 0 30px; /* 위쪽 여백 추가 */
+  margin: 0 0 20px; /* 위쪽 여백 추가 */
 }
 
 .book-container {
@@ -179,13 +187,14 @@ onMounted(async () => {
 }
 
 .book-card {
-  width: 160px; /* 카드 크기 축소 */
+  width: 150px; /* 카드 크기 축소 */
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .book-image {
   width: 160px;
-  height: 250px;
+  height: 220px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;

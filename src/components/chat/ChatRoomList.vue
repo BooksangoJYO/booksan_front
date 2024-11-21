@@ -82,7 +82,7 @@ ul {
 .chat-left {
     flex : 3;
   width: 100%;
-  height: 95%;
+  height: 100%;
   padding: 20px;
   overflow-y: auto;
   background: white;

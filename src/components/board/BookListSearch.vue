@@ -4,17 +4,16 @@
         <h1 class="search-title">도서 검색</h1>
 
       <!-- 검색창 -->
-      <div class="search-input-wrapper">
-        <input
-          type="text"
-          v-model="keyword"
-          placeholder="책 제목을 입력해주세요"
-          @keydown.enter="searchBook"
-          class="search-input"
-        />
-        <button @click="searchBook" class="search-button">검색</button>
+      <div class="search-container">
+        <input 
+            type="text" 
+            class="search-input" 
+            placeholder="가판대 찾아보기"
+            v-model="keyword"
+            @keyup.enter="searchBook"
+        >
+        <img :src="SearchIcon" alt="검색" class="search-icon" @click="searchBook">
       </div>
-  
       <!-- 도서 리스트 그리드 -->
       <div class="book-grid-wrapper">
         <div
@@ -63,6 +62,7 @@
 import api from "@/api/api";
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router'; // useRoute 가져오기
+import SearchIcon from '@/assets/images/searchIcon.svg';
 
 const route = useRoute();
 const router = useRouter();
@@ -152,32 +152,29 @@ onMounted(()=>{
   padding: 0 20px; /* 좌우 여백 추가 */
 }
 
-/* 검색 입력 필드 스타일 */
-.search-input-wrapper {
+/* 검색 및 카테고리 스타일 */
+.search-container {
+  width: 800px;
+  margin: 0 auto 50px;
   display: flex;
-  gap: 10px;
-  max-width: 600px; /* 검색창의 최대 너비를 제한 */
-  width: 100%;
-  margin-bottom: 0px; /* 검색창과 그리드 사이의 간격 추가 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: -35px; /* 아이콘을 input 안으로 넣기 위해 음수값 사용 */
 }
 
 .search-input {
-  flex: 1;
-  padding: 8px; /* 내부 여백 줄이기 */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  width: 100%;
+  padding: 15px 45px 15px 20px; /* 오른쪽에 아이콘 들어갈 공간 */
+  border: 3px solid #8B4513;
+  border-radius: 25px;
+  font-size: 17px;
+  outline: none;
 }
 
-.search-button {
-  padding: 8px 15px; /* 버튼 크기 조절*/
-  font-size: 14px; /* 글씨 크기 줄이기 */
-  background-color: #8b4513;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
+.search-icon {
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  margin-left: -50px; /* 아이콘을 input 안으로 이동 */
 }
 
 .search-button:hover {
