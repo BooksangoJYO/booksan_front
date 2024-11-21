@@ -1,6 +1,11 @@
 <template>
     <div class="book-detail-container">
+      <div class="alarm-setting" :class="{ 'bookmarked': isBookMarkedBook }" @click="insertBookMarkBook">
+        <img :src="isBookMarkedBook ? AlarmIcon : NotAlarmIcon" alt="Alarm Icon" class="alarm-icon" />
+        <span class="alarm-text">알림 설정</span>
+      </div>
       <!-- 책 이미지와 정보 -->
+       
       <div class="book-info">
         <img :src="book.image" alt="책 이미지" class="book-image" />
         <div class="book-details">
@@ -8,7 +13,6 @@
           <p>저자: {{ book.author }}</p>
           <p>출판사: {{ book.publisher }}</p>
           <p>ISBN: {{ book.isbn }}</p>
-          <button class="action-button" @click="insertBookMarkBook">책갈피</button>
         </div>
       </div>
       <h2>책 소개</h2>
@@ -58,12 +62,20 @@
   </template>
   
   <script setup>
-  import api from '@/api/api';
+import api from '@/api/api';
+import AlarmIcon from '@/assets/images/bell.svg';
+import NotAlarmIcon from '@/assets/images/bellNot.svg';
+import emitter from '@/emitter/emitter';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CommentForm from './CommentForm.vue';
 import CommentListForm from './CommentListForm.vue';
 
+  const store = useMainStore();
+  const {loginInfo} = storeToRefs(store);
+  const isBookMarkedBook = ref(false);
   const router = useRouter();
   const route = useRoute(); //라우터에서 파라미터 가져오기
   const book = ref({}); // 책 데이터를 저장할 ref 객체
@@ -80,7 +92,7 @@ onMounted(async () => {
     // 책 정보 가져오기
     const response = await api.getBookInfo(isbn);
     book.value = response.data.bookInfo;
-    console.log("책 정보:", book.value);
+    isBookMarkedBook.value = response.data.isBookMarkedBook;
     fetchBoards();
     getCommentList(isbn);
 });
@@ -251,12 +263,17 @@ async function addComment(commentData) {
     }
 
     const insertBookMarkBook = async ()=>{ 
-      const response = await api.insertBookMarkBook(book.value.isbn); 
-      if(response.data.status){ 
-        console.log("책 북마크 성공"); 
-      } else{ 
-        window.alert(response.data.message); 
-      } 
+      if(!loginInfo.value.email){
+        emitter.emit('show-modal');
+      }
+      else{
+        const response = await api.insertBookMarkBook(book.value.isbn); 
+        if(response.data.status == "success"){
+          isBookMarkedBook.value = !isBookMarkedBook.value;
+        } else{ 
+          window.alert(response.data.message); 
+        } 
+      }
     }
   </script>
   
@@ -344,6 +361,43 @@ async function addComment(commentData) {
   cursor: not-allowed;
 }
 
+.alarm-setting {
+display: flex;
+align-items: center;
+justify-content: flex-end;
+cursor: pointer;
+margin-top: 1.5%;
+margin-bottom: 1.5%;
+background-color: #f0f0f0;
+border-radius: 20px;
+padding: 8px 12px;
+width: fit-content;
+height: 32px;
+margin-left: auto;
+}
 
+.alarm-icon {
+width: 18px;
+height: 18px;
+margin-right: 8px;
+}
+
+.alarm-text {
+font-size: 14px;
+color: #333;
+font-weight: bold;
+}
+
+.alarm-setting.bookmarked {
+background-color: #daa681;
+}
+
+.alarm-setting.bookmarked .alarm-text {
+  color: #ffffff; /* 선택되었을 때 텍스트 색상을 흰색으로 변경 */
+}
+
+.alarm-setting:not(.bookmarked) {
+opacity: 0.7;
+}
   </style>
   
