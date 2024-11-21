@@ -200,8 +200,7 @@
 
       //API 요청
       const response = await api.BoardInsert(formData);
-      if(response.data.status === 'success'){
-        alert('등록이 완료되었습니다!');
+      if(response.data.status === 'success'){        
 
         //모달 닫기
         closeModal();
@@ -695,5 +694,23 @@
       max-width: 200px;
     }
   }
+
+  .dropdown-wrapper {
+  display: flex;
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  align-items: center; /* 세로 정렬 */
+  width: 100%; /* 부모 컨테이너의 너비를 채움 */
+}
+
+.category-dropdown {
+  width: auto; /* 드롭다운 너비 자동 조정 */
+  min-width: 150px; /* 최소 너비 설정 */
+  padding: 8px; /* 내부 여백 */
+  border: 1px solid #DFE2E6;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: left; /* 드롭다운 텍스트 왼쪽 정렬 */
+  background-color: #F8F9FA;
+}
   </style>
   
