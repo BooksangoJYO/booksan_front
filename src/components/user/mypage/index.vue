@@ -74,7 +74,7 @@
                                                     <button type="button" class="btn btn-secondary" @click="closeModal">취소</button>
                                                     <button 
                                                         type="button" 
-                                                        class="btn btn-primary" 
+                                                        class="btn btn-button" 
                                                         @click="updateNickname"
                                                         :disabled="!isAvailable || isLoading"
                                                     >
@@ -91,17 +91,19 @@
                     </div>
                 </div>
                 <!-- 회원탈퇴 섹션 -->
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="">회원탈퇴</h6>
-                        <p class="text-secondary mb-0" style="font-size: 0.8rem">
-                            회원탈퇴시 삭제된데이터는 복구가 불가능합니다.<br>
-                            회원 탈퇴 후에는 서비스를 이용하실 수 없습니다.
-                        </p>
+                <div class="card withdrawal-section">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="">회원탈퇴</h6>
+                            <p class="text-secondary mb-0" style="font-size: 0.8rem">
+                                회원탈퇴시 삭제된데이터는 복구가 불가능합니다.<br>
+                                회원 탈퇴 후에는 서비스를 이용하실 수 없습니다.
+                            </p>
+                        </div>
+                        <button class="btn" style="font-size: 12px;" @click="deleteAccount">
+                            탈퇴하기
+                        </button>
                     </div>
-                    <button class="btn" style="font-size: 12px;" @click="deleteAccount">
-                        탈퇴하기
-                    </button>
                 </div>
             </div>
         </div>
@@ -244,6 +246,7 @@ const updateNickname = async () => {
     left: 0;
     right: 0;
     bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -251,9 +254,24 @@ const updateNickname = async () => {
 }
 
 .modal-dialog {
-    margin: 0;
+    position: relative;
+    margin: auto;
     width: 90%;
     max-width: 500px;
+    transform: none !important;
+}
+
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    outline: 0;
 }
 
 /* 전체 레이아웃 중앙 배치 */
@@ -289,9 +307,30 @@ const updateNickname = async () => {
     align-items: flex-start;
 }
 
+.withdrawal-section {
+    margin-top: 450px !important; /* 위쪽 여백 강제 적용 */
+    margin-bottom: 50px;
+}
+
 /* 편집하기 버튼 */
 .btn-outline-secondary {
     margin-left: auto; /* 버튼을 오른쪽으로 밀기 */
+}
+
+.btn-button {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    color: #fff;
+}
+
+.btn-button:hover {
+    background-color: #733A0F;  /* 살짝 더 어두운 갈색 */
+    border-color: #733A0F;
+}
+
+.btn-button:disabled {
+    background-color: #B88E6F;  /* 좀 더 연한 갈색 */
+    border-color: #B88E6F;
 }
 
 /* 나머지 스타일 */

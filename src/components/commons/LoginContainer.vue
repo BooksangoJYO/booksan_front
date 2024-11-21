@@ -16,9 +16,9 @@
                 <ChatAlertRoomList v-if="viewChatAlertList" class="dropdown-content" @close="closeAlertList()"/>
             </Transition>
         </div>
-        <RouterLink to="/main/chatPage">채팅</RouterLink>
-        <RouterLink to="/mypage">마이페이지</RouterLink>
-        <button class="icon-button" @click="doLogout">로그아웃</button>
+        <RouterLink to="/main/chatPage" class="nav-link">채팅창</RouterLink>
+        <RouterLink to="/mypage" class="nav-link">마이페이지</RouterLink>
+        <button class="icon-button" @click="handleLogout">로그아웃</button>
         <p>{{loginInfo.nickName}}</p>
     </div>
     <div class="header-right" v-else>
@@ -36,6 +36,7 @@ import { onMounted, ref } from 'vue';
 import BoardReservationList from '../board/BoardReservationList.vue';
 import ChatAlertRoomList from '../chat/ChatAlertRoomList.vue';
 import SocialLoginModal from '../user/SocialLoginModal.vue';
+import { useRouter } from 'vue-router';
 
 let viewChatAlertList = ref(false);
 let viewBoardReservationList = ref(false);
@@ -44,6 +45,7 @@ const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
 const {doLogout} = store;
 const showModal = ref(false);
+const router = useRouter();
 
 const closeBoardReservationList = () => {
     viewBoardReservationList.value = !viewBoardReservationList.value;
@@ -79,7 +81,11 @@ onMounted(() => {
     document.addEventListener('click', handleClickOutside);
 });
 
-
+// 로그아웃시 메인페이지로 돌아가기
+const handleLogout = async () => {
+    await doLogout();  // 기존 로그아웃 함수 실행
+    router.push('/');  // 메인 페이지로 이동
+};
 </script>
 
 <style scoped>
@@ -106,6 +112,11 @@ onMounted(() => {
     width: 24px;
     height: 24px;
     object-fit: contain;
+}
+
+.nav-link {
+    border-bottom: none;
+    color: black;
 }
 
 .dropdown-content {
