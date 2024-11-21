@@ -21,7 +21,7 @@
 
                         <!-- 로딩 상태 표시 -->
                         <div v-if="loading" class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
+                            <div class="spinner-border custom-spinner" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
@@ -259,6 +259,11 @@ const filterPosts = () => {
 
 .bg-custom-brown {
     background-color: #A25D0D !important;
+}
+
+/* 스피너 커스텀 스타일 */
+.custom-spinner {
+    color: #8B4513;
 }
 
 /* 반응형 스타일 */

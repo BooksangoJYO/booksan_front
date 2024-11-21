@@ -37,7 +37,7 @@ import LoginContainer from './LoginContainer.vue';
 }
 
 .logo-image {
-    height: 30px;
+    height: 35px;
     width: auto;
 }
 
