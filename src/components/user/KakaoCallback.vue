@@ -1,5 +1,7 @@
 <template>
-    <div>카카오 로그인 처리중...</div>
+    <div class="loading-spinner">
+        <p>Loading...</p>
+    </div>
 </template>
 
 <script setup>
@@ -7,13 +9,14 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
-import { onMounted } from 'vue';
+import { onMounted,ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
 const store = useMainStore();
 const {doLogin} = store;
+const isLoading = ref(true);
 
 onMounted(async () => {
     const code = route.query.code;
@@ -62,3 +65,27 @@ onMounted(async () => {
     }
 });
 </script>
+
+<style scoped>
+/* 스피너 커스텀 스타일 */
+.loading-spinner {
+   position: fixed;
+   top: 20px;  
+   left: 20px; 
+   width: 60px;  /* 크기 키움 */
+   height: 60px;
+   border: 4px solid #f3f3f3;
+   border-top: 4px solid #8B4513;
+   border-radius: 50%;
+   animation: spin 1s linear infinite;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+p {
+    margin: 0;
+    font-size: 12px;
+    color: #8B4513;
+}
+</style>

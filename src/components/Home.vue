@@ -18,21 +18,27 @@
       </div>
   
       <!-- 추천 도서 섹션 -->
-      <h2 class="recommendation-title">책 추천</h2>
-      <div class="book-container">
-        <div v-for="board in data.boards" :key="board.id" class="book-card">
-          <img :src="board.image" :alt="board.title" class="book-image">
-          <h3 class="book-title">{{ board.title }}</h3>
-          <p class="book-author">{{ board.author }}</p>
-        </div>
-      </div>
-      <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
+      <h2 class="recommendation-title">오직 당신만을 위한 AI큐레이션</h2>
       <div class="book-container">
         <div v-for="book in books" :key="book.isbn" class="book-card">
           <img :src="book.image" :alt="book.title" class="book-image">
           <h3 class="book-title">{{ book.title }}</h3>
           <p class="book-author">{{ book.author }}</p>
           <p class="book-author">{{ book.publisher }}</p>
+        </div>
+      </div>
+      <h2 class="recommendation-title">베스트셀러 도서</h2>
+      <div class="book-container">
+        <div v-for="board in data.boards" 
+            :key="board.id" 
+            class="book-card"
+            @click="goToDetail(board.id)"
+            role="button"
+            style="cursor: pointer"
+          >
+          <img :src="board.image" :alt="board.title" class="book-image">
+          <h3 class="book-title">{{ board.title }}</h3>
+          <p class="book-author">{{ board.author }}</p>
         </div>
       </div>
     </div>
@@ -73,7 +79,9 @@ onMounted(() => {
     loadRecommendedBooks();
 });
 
-
+const goToDetail = (isbn) => {
+  router.push(`/book/detail/${isbn}`);
+};
 
 const books = ref([]);
 
@@ -116,16 +124,15 @@ onMounted(async () => {
 .main-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .logo-container {
   text-align: center;
-  margin: 80px 0 60px; /* 로고 위치를 아래로 내림 */
+  margin: 30px 0 30px; /* 로고 위치를 아래로 내림 */
 }
 
 .logo {
-  width: 120px;
+  width: 180px;
   height: auto;
 }
 
@@ -143,8 +150,8 @@ onMounted(async () => {
 }
 
 .search-container {
-  max-width: 600px;
-  margin: 0 auto 60px;
+  max-width: 850px;
+  margin: 0 auto 30px;
   display: flex;
   align-items: center; /* 세로 중앙 정렬 */
   gap: -35px; /* 아이콘을 input 안으로 넣기 위해 음수값 사용 */
@@ -153,24 +160,24 @@ onMounted(async () => {
 .search-input {
   width: 100%;
   padding: 15px 45px 15px 20px; /* 오른쪽에 아이콘 들어갈 공간 */
-  border: 2px solid #8B4513;
+  border: 3px solid #8B4513;
   border-radius: 25px;
-  font-size: 16px;
+  font-size: 17px;
   outline: none;
 }
 
 .search-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
-  margin-left: -40px; /* 아이콘을 input 안으로 이동 */
+  margin-left: -50px; /* 아이콘을 input 안으로 이동 */
 }
 
 .recommendation-title {
   text-align: center;
   font-size: 20px;
   color: #333;
-  margin: 40px 0 30px; /* 위쪽 여백 추가 */
+  margin: 0 0 20px; /* 위쪽 여백 추가 */
 }
 
 .book-container {
@@ -180,13 +187,14 @@ onMounted(async () => {
 }
 
 .book-card {
-  width: 140px; /* 카드 크기 축소 */
+  width: 150px; /* 카드 크기 축소 */
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .book-image {
   width: 160px;
-  height: 240px;
+  height: 220px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
@@ -201,6 +209,14 @@ onMounted(async () => {
   font-size: 16px;
   font-weight: bold;
   color: #333;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 2.4em;
+  line-height: 1.2em;
 }
 
 .book-author {

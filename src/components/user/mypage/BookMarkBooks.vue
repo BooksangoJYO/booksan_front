@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-      <h2 class="mb-4">마이페이지</h2>
+      <h2 class="mypage mb-4">마이페이지</h2>
       <div class="row" v-if="loginInfo.email">
           <!-- 사이드바 -->
           <SideBar/>
@@ -10,7 +10,7 @@
               <div class="card mb-4 border-0 shadow-sm">
                   <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center mb-4">
-                          <h3 class="m-0">도서 북마크</h3>
+                          <h3 class="m-0">책갈피한 서재</h3>
                       </div>
 
                       <!-- 북마크 도서 목록 -->
@@ -70,7 +70,7 @@ const router = useRouter();
 const data = reactive({
   books: [],
   page: 1,
-  size: 10, 
+  size: 5, 
   totalPages: 1,
   start: 1,
   end: 5,
@@ -131,6 +131,12 @@ const selectBook = (book) => {
 
 
 <style scoped>
+.mypage {
+    font-weight: 700;
+    color: #8B4513;
+    margin-left: 20px;
+}
+
 /* 페이지네이션 스타일  */
 .page-link {
     color: #8B4513;

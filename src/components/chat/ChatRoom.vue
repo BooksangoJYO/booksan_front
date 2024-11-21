@@ -15,24 +15,6 @@
                 <p class="title" @click="">{{ data.boardInfo.price }}원</p>
               </div>
             </div>
-            
-            <div class="menu-wrapper">
-              <button 
-                class="menu-button" 
-                @click="toggleMenu"
-                aria-label="Menu"
-              >
-                ⋮
-              </button>
-              <div 
-                v-if="showMenu" 
-                class="dropdown-menu"
-              >
-                <button @click="exitChat" class="exit-button">
-                  나가기
-                </button>
-              </div>
-            </div>
           </div>
         </div>
           <div class="messages-container">

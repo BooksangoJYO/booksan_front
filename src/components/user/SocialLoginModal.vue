@@ -5,13 +5,13 @@
             <div class="modal show d-block" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header border-0">
+                        <div class="modal-header mt-2 border-0" style="margin: auto;">
                             소셜 로그인
                         </div>
-                        <div class="modal-body border-0">
+                        <div class="modal-body mt-3 border-0">
                             <div class="text-center">
                                 <button id="kakao-login-btn" @click="handleKakaoLogin" style="border: none; background-color: white;">
-                                    <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" 
+                                    <img :src="kakaoIcon" 
                                          width="222" 
                                          alt="카카오 로그인" />
                                 </button>
@@ -31,6 +31,8 @@
 </template>
 
 <script setup>
+import kakaoIcon from '@/assets/images/kakaoLogin.png';
+
 const props = defineProps({
     isOpen: {
         type: Boolean,
@@ -81,10 +83,43 @@ const handleKakaoLogin = () => {
 
 .modal {
     z-index: 1045;
+    position: absolute;
 }
 
 .modal-header {
-    font-size: 25px;
+    font-size: 27px;
     text-align: center;
+    font-weight: 800;
+    color: #A25D0D;
+    padding: 1.5rem 1rem;
+}
+
+.modal-dialog {
+    max-width: 400px !important; /* 원하는 크기로 조정 */
+    width: 400px !important;
+    margin: 1.75rem auto;
+}
+
+.modal-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 1 / 1;
+}
+
+.modal-body {
+    flex: 1; /* 남은 공간 채우기 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-footer {
+    padding: 1rem; /* 여백 조정 */
+}
+
+.btn-secondary {
+    width: 200px;
+    margin: auto;
 }
 </style>
