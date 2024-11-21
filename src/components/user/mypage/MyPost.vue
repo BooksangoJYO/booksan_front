@@ -1,6 +1,6 @@
 <template>
     <div class="container mt-5">
-        <h2 class="mb-4">마이페이지</h2>
+        <h2 class="mypage mb-4">마이페이지</h2>
         <div class="row" v-if="loginInfo">
             <!-- 사이드바 -->
             <SideBar/>
@@ -10,7 +10,7 @@
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h3 class="m-0">내가 작성한 글</h3>
+                            <h3 class="m-0">나의 도서 가판대</h3>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" v-model="showOnlySoldOut" id="soldOutCheck" @change="filterPosts">
                                 <label class="form-check-label" for="soldOutCheck">
@@ -151,7 +151,7 @@ const loadPosts = async (page = 1) => {
     try {
         const response = await api.getMyPosts({
             page,
-            size: 10,
+            size: 5,
         });
 
         if (response.status === 200 && response.data?.data) {
@@ -206,6 +206,12 @@ const filterPosts = () => {
     height: 1px;
     background-color: #8B4513;
     margin-bottom: 2rem;
+}
+
+.mypage {
+    font-weight: 700;
+    color: #8B4513;
+    margin-left: 20px;
 }
 
 /* 카드 스타일 */

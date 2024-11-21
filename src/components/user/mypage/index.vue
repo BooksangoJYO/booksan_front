@@ -1,6 +1,6 @@
 <template>
     <div class="container mt-5">
-        <h2 class="mb-4">마이페이지</h2>
+        <h2 class="mypage mb-4">마이페이지</h2>
         <div class="row" v-if="loginInfo.email">
             <!-- 사이드바 -->
             <SideBar/>
@@ -223,6 +223,12 @@ const updateNickname = async () => {
 </script>
 
 <style scoped>
+.mypage {
+    font-weight: 700;
+    color: #8B4513;
+    margin-left: 20px;
+}
+
 .user-info-container {
     display: flex;
     justify-content: space-between;

@@ -24,8 +24,6 @@ const isHidden = computed(() => hiddenPaths.some(path => route.path.startsWith(p
     color: #2c3e50;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    min-width: 1400px;
 }
 
 /* Headings */
