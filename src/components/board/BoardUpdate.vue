@@ -26,8 +26,7 @@
         </div>
       </section>
 
-      <!-- 수평선 추가 -->
-      <hr class="section-divider" />
+      
   
       <!-- 선택된 책 정보 출력 -->
       <section class="selected-book-section">
@@ -40,42 +39,29 @@
           />
           <div class="selected-book-details">
             <div class="book-field">
-              <dt class="field-label">책 제목:</dt>
+              <dt class="field-label">책 제목</dt>
               <dd class="field-value">{{ selectedBook.title }}</dd>
             </div>
             <div class="book-field">
-              <dt class="field-label">저자:</dt>
+              <dt class="field-label">저자</dt>
               <dd class="field-value">{{ selectedBook.author }}</dd>
             </div>
             <div class="book-field">
-              <dt class="field-label">출판사:</dt>
+              <dt class="field-label">출판사</dt>
               <dd class="field-value">{{ selectedBook.publisher }}</dd>
             </div>
             <div class="book-field">
-              <dt class="field-label">ISBN:</dt>
+              <dt class="field-label">ISBN</dt>
               <dd class="field-value">{{ selectedBook.isbn }}</dd>
             </div>
             <div class="book-field">
-              <span class="field-label">출판일:</span>
+              <span class="field-label">출판일</span>
               <span class="field-value">{{ form.publishDate }}</span>
             </div>
             <div class="book-field">
               <dt class="field-label">카테고리</dt>
-              <dd class="field-value">
-                <select
-                  id="category"
-                  v-model.number="form.booksCategoryId"
-                  class="category-dropdown"
-                >
-                  <option :value="null" disabled>카테고리를 선택하세요</option>
-                  <option
-                    v-for="category in categories"
-                    :key="category.booksCategoryId"
-                    :value="category.booksCategoryId"
-                  >
-                    {{ category.booksCategoryName }}
-                  </option>
-                </select>
+              <dd class="field-value">                
+                {{ categories.find(category => category.booksCategoryId === form.booksCategoryId)?.booksCategoryName || "알 수 없음" }}
               </dd>
             </div>
 
@@ -101,7 +87,7 @@
       <section class="description-section">
         <h2 class="section-title">판매글 작성</h2>
         <div class="description-wrapper">
-          <label for="title" class="field-label">제목:</label>
+          <label for="title" class="field-label-content">제목</label>
           <input
             id="title"
             type="text"
@@ -109,7 +95,7 @@
             class="title-input"
             placeholder="제목을 입력하세요"
           >
-          <label for="content" class="field-label">내용:</label>
+          <label for="content" class="field-label-content">내용</label>
           <textarea
             id="content"
             v-model="form.content"
@@ -122,15 +108,23 @@
       <!-- 판매 상태 선택 -->
       <section class="status-section">
         <div class="status-wrapper">
-          <label class="field-label">판매 상태:</label>
-          <div class="radio-group">
-            <label>
-              <input type="radio" value="Y" v-model="form.status" /> 판매 완료
-            </label>
-            <label>
-              <input type="radio" value="N" v-model="form.status" /> 판매 중
-            </label>
-          </div>
+          <label class="field-label">판매 상태</label>
+          <div class="status-button-group">            
+              <button 
+                :class="{ active: form.status === 'N', disabled: form.status === 'Y' }" 
+                @click="setStatus('N')"
+                :disabled="form.status === 'N'" 
+              > 
+                판매 중
+              </button>            
+              <button 
+                :class="{ active: form.status === 'Y', disabled: form.status === 'N' }"
+                @click="setStatus('Y')"
+                :disabled="form.status === 'Y'"
+              > 
+                판매 완료
+              </button>            
+          </div>           
         </div>
       </section>
 
@@ -166,7 +160,9 @@
     publishDate: "" //출판일 추가
   });
   const categories = ref([]);
-  
+  const setStatus = (status) => {
+    form.value.status = status; //상태를 변경
+  };  
   const existingImages = ref([]);
   const newImages = ref([]);
   const imageFiles = ref([]);
@@ -365,6 +361,7 @@
   /* 판매글 작성 섹션 */
   .description-section {
     margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .title-input,
@@ -374,7 +371,7 @@
     border-radius: 8px;
     padding: 10px;
     font-size: 16px;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
     background-color: #f9f9f9; /* 연한 배경색 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 미세한 그림자 */
   }
@@ -414,12 +411,12 @@
 }
 
 .section-title {
-  font-size: 16px;
+  font-size: 25px;  
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   color: #8b4513;
   border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 5px;
+  padding-bottom: 5px;  
 }
 
 .form-group {
@@ -427,13 +424,22 @@
 }
 
 .field-label {
+  flex-shrink: 0; /* 라벨 크기 고정 */
   font-weight: bold;
   color: #8b4513;
   width: 100px;
+  margin-bottom: 5px;
+  
+}
+
+.field-label-content {
+  margin-bottom:5px;
 }
 
 .field-value {
+  flex-grow: 1; /* 값 영역이 나머지 공간을 차지 */
   color: #333;
+  margin:0px;
 }
 
 .form-input,
@@ -493,7 +499,7 @@ margin: 20px 0; /* 위아래 간격 */
 
 /* 이미지 업로드 섹션 */
 .image-upload-section {
-  margin-bottom: 30px;
+  margin-bottom: 60px;
 }
 
 .image-grid {
@@ -548,7 +554,7 @@ margin: 20px 0; /* 위아래 간격 */
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 60px;
 }
 
 .selected-book-details {
@@ -556,11 +562,44 @@ margin: 20px 0; /* 위아래 간격 */
 }
 
 .book-field {
-  margin-bottom: 10px;
+  margin-bottom: 17px;
   display: flex;
   align-items: center;
+  gap: 10px;  
+}
+
+/* 판매 상태 버튼 그룹 */
+.status-button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 60px;
+}
+
+.status-button-group button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.status-button-group button.active {
+  background-color: #a98261; /* 활성화된 버튼 */
+  cursor: pointer;
+}
+
+.status-button-group button.disabled {
+  background-color: #d3d3d3; /* 비활성화된 버튼 */
+  
 }
 
 
+
+.price-section {
+  margin-bottom: 60px;
+}
 </style>
   
