@@ -3,8 +3,6 @@
       <!-- 로고 섹션 -->
       <div class="logo-container">
         <img :src="MainLogo" alt="북산장터 로고" class="logo">
-        <h1 class="title">북싼장터</h1>
-        <p class="subtitle">Booksan Market</p>
       </div>
   
       <!-- 검색창 -->
@@ -12,7 +10,7 @@
         <input 
             type="text" 
             class="search-input" 
-            placeholder="책 찾아보기"
+            placeholder="가판대 찾아보기"
             v-model="searchQuery"
             @keyup.enter="handleSearch"
         >

@@ -1,7 +1,7 @@
 <template>
   <div class="alert-boards">
     <div class="notification-box">
-      <h3 class="notification-title">예약 알림</h3>
+      <h3 class="notification-title">관심 등록한 책이 올라왔습니다</h3>
       <div class="board-items">
         <ul>
           <li

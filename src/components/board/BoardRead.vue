@@ -90,7 +90,7 @@
                   <button
                     :class="[
                       'action-button',
-                      !isBookmarked && 'not-bookmarked'
+                      !isBookMarked && 'not-bookmarked'
                     ]"
                     @click="toggleBookmark"
                   ><img :src="BookMarkIcon" alt="북마크" />
@@ -173,7 +173,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     const reviews = ref([]); // 리뷰 정보
     const isModalVisible = ref(false); //삭제 모달 표시 여부
     const isWriter = ref(false); // 작성자인지 여부
-    const isBookmarked = ref(false);
+    const isBookMarked = ref(false);
 
     const categoryMap = {
       1: "철학",
@@ -361,7 +361,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
           images.value = board.value.imageFileDTOList; //이미지 데이터
           book.value = response.data.bookData; //책 데이터
           isWriter.value = response.data.isWriter; // 작성자인지 여부
-          isBookmarked.value =  response.data.data.isFavorited === 'Y'
+          isBookMarked.value =  response.data.data.isBookMarked === 'Y'
       } catch (error) {
           console.error('게시물 정보를 가져오는 중 오류 발생:', error);
       }
@@ -412,7 +412,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         window.alert("로그인이 필요합니다");
         router.push('/login');
       }
-      const response = await api.insertFavorite(board.value.dealId); 
+      const response = await api.insertBookMark(board.value.dealId); 
       if(response.data.status){
         isBookmarked.value = !isBookmarked.value;
       } else{ 

@@ -79,7 +79,7 @@ const data = reactive({
 });
 
 onMounted(()=>{
-    getFavoriteBookList();
+    getBookMarkBookList();
 });
 // 페이지 목록 계산
 const pagesInCurrentBlock = computed(() => {
@@ -91,9 +91,9 @@ const pagesInCurrentBlock = computed(() => {
 });
 
 // 검색 API 호출
-const getFavoriteBookList = async () => {
+const getBookMarkBookList = async () => {
   try {
-    const response = await api.getFavoriteBookList(data.page, data.size);
+    const response = await api.getBookMarkBookList(data.page, data.size);
     const responseData = response.data.data;
     console.log(response.data);
     data.books = responseData.dtoList || [];
@@ -114,7 +114,7 @@ const getFavoriteBookList = async () => {
 const goToPage = (pageNum) => {
   if (pageNum < 1 || pageNum > data.totalPages) return;
   data.page = pageNum;
-  getFavoriteBookList();
+  getBookMarkBookList();
 };
 
 // 선택된 도서 데이터 전달

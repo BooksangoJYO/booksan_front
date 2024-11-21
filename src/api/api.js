@@ -107,8 +107,8 @@ export default {
     return apiClient.get('/api/users/loginInfo');
   },
 
-  getBookmarks() {
-    return apiClient.get('/api/board/favorite/list');
+  getBookMarks() {
+    return apiClient.get('/api/board/bookMark/list');
   },
 
   getMyPosts(params) {
@@ -233,13 +233,13 @@ export default {
       });
   },
 
-  insertFavorite(dealId) {
-    const url = '/api/board/favorite/insert/'+dealId;
+  insertBookMark(dealId) {
+    const url = '/api/board/bookMark/insert/'+dealId;
     return apiClient.post(url);
   },
 
-  getFavoriteList() {
-    const url = '/api/board/favorite/list'
+  getBookMarkList() {
+    const url = '/api/board/bookMark/list'
     return apiClient.get(url);
   },
 
@@ -274,13 +274,13 @@ export default {
     return apiClient.get(url);
   },
 
-  insertFavoriteBook(isbn) {
-    const url = '/api/books/favorite/book/insert/'+isbn;
+  insertBookMarkBook(isbn) {
+    const url = '/api/books/bookMark/book/insert/'+isbn;
     return apiClient.post(url);
   },
 
-  getFavoriteBookList(page,size) {
-    const url = '/api/books/favorite/book/list?page='+page+'&size='+size
+  getBookMarkBookList(page,size) {
+    const url = '/api/books/bookMark/book/list?page='+page+'&size='+size
     return apiClient.get(url);
   },
 
