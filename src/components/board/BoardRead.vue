@@ -1,15 +1,19 @@
 <template>
-    <div>
+    <div class="main-container">
       <div class="page-container">
-        <!--북마크와 판매여부 상태 변경 버튼-->
-        <div class="board-actions" v-if="board">
-          <button 
-            class="status-button" 
-            v-if="isWriter" 
-            @click="toggleSaleStatus"
-          >
-            {{ board.status === 'N' ? '판매 중' : '판매 완료' }}
-          </button>
+        <!-- 상단 버튼 영역 -->
+        <div class="top-actions" v-if="board">
+          <!-- 작성자인 경우와 아닌 경우를 하나의 div로 처리 -->
+          <div class="left-buttons">
+              <template v-if="isWriter">
+                  <button class="edit-button" @click="goToBoardUpdate">수정</button>
+                  <button class="delete-button" @click="showDeleteModal">삭제</button>
+              </template>
+          </div>
+          <!-- 목록으로 버튼은 항상 오른쪽에 -->
+          <div class="right-buttons">
+              <button @click="goToBoardList" class="secondary-button">목록으로</button>
+          </div>
         </div>
 
         <!-- 수평선 추가 -->
@@ -68,19 +72,23 @@
               <h1 class="board-title">{{ board.title }}</h1>
               <ul class="board-metadata">
                 <li class="aligned-item">
-                  <strong>상품명:</strong> <span>{{ book.title }}</span>
+                  <strong>상품명</strong> {{ book.title }}
+                  <button 
+                    v-if="isWriter"
+                    class="status-button" 
+                    @click="toggleSaleStatus"
+                  >
+                    {{ board.status === 'N' ? '판매 중' : '판매 완료' }}
+                  </button>
                 </li>
-                <li><strong>카테고리:</strong> {{ categoryName }}</li>
-                <li><strong>판매자:</strong> {{ board.email }}</li>
-                <li><strong>판매가:</strong> {{ board.price.toLocaleString() }}원</li>
+                <li><strong>카테고리</strong> {{ categoryName }}</li>
+                <li><strong>판매자</strong> {{ board.email }}</li>
+                <li><strong>판매가</strong> {{ board.price.toLocaleString() }}원</li>
               </ul>            
               <div class="button-group">
                 <!-- 작성자인 경우 -->
                 <div v-if="isWriter">
-                  <button class="edit-button" @click="goToBoardUpdate">수정하기</button>
-                  <button class="delete-button" @click="showDeleteModal">삭제하기</button>
                   <button class="action-button" @click="openSellerChat"><img :src="ChatIcon" alt="북마크" />  북싼챗</button>
-                  <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
                 <!-- 작성자가 아닌 경우 -->
                 <div v-else>
@@ -94,7 +102,6 @@
                     책갈피
                   </button>
                   <button class="action-button" @click="openChat"><img :src="ChatIcon" alt="채팅" />  북싼챗</button>
-                  <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
             </div>
           </div>
@@ -113,7 +120,7 @@
 
         <!-- 상품 내용 섹션 -->
         <div class="content-section" v-if="board">
-          <strong>상품 내용:</strong>
+          <strong>상품 내용</strong>
           <textarea class="content-textarea" readonly>{{ board.content }}</textarea>
         </div>
 
@@ -128,11 +135,14 @@
             </div>
             <div class="book-details">
               <h2>도서 정보</h2>
-              <p><strong>책 제목:</strong> {{ book.title }}</p>
-              <p><strong>저자:</strong> {{ book.author }}</p>
-              <p><strong>출판사:</strong> {{ book.publisher }}</p>
-              <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-              <p><strong>책 소개:</strong> {{ book.description }}</p>
+              <p><strong>책 제목</strong> {{ book.title }}</p>
+              <p><strong>저자</strong> {{ book.author }}</p>
+              <p><strong>출판사</strong> {{ book.publisher }}</p>
+              <p><strong>ISBN</strong> {{ book.isbn }}</p>
+              <p class="book-description">
+                <strong>책 소개</strong>
+                <span class="description-text">{{ book.description }}</span>
+              </p>
             </div>
           </div>
         </section>     
@@ -380,6 +390,32 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 </script>
   
 <style scoped>
+.main-container {
+  max-width: 1150px;
+  width: 100%;
+  margin: 0 auto;  /* 중앙 정렬을 위해 필수 */
+}
+
+.top-actions {
+  display: flex;
+  justify-content: space-between;  /* 양끝 정렬 */
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.left-buttons {
+  display: flex;
+  font-size: 14px;
+  gap: 5px;
+}
+
+.right-buttons {
+  margin-left: auto;  /* 오른쪽으로 밀기 */
+  font-size: 14px;
+}
+
 .board-actions {
   display: flex;
   align-items: center;
@@ -421,11 +457,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 .board-header {
   display: flex;
   align-items: flex-start;
-  gap: 150px; /* 이미지와 텍스트 사이의 간격 */
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 40%; /* 부모 컨테이너 너비에 맞춤 (더 넓게 설정) */
-  margin: 0 auto; /* 중앙 정렬 */
+  margin: 0 100px 0 0;
   position: relative; /* 버튼 위치를 고정하기 위해 사용 */
 }
 
@@ -434,6 +466,11 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
   height: auto; /* 비율 유지 */
   border-radius: 8px; /* 둥근 모서리 */
   border: 1px solid #ccc; /* 테두리 */
+}
+
+.book-image .image {
+  height: 540px;
+  width: 350px;
 }
 
 .board-details {
@@ -460,7 +497,14 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 .aligned-item {
   display: flex; /* 플렉스 박스로 설정 */
   align-items: flex-start; /* 항목을 위쪽 정렬 */
-  gap: 10px; /* "상품명:"과 값 사이의 간격 */
+}
+
+.aligned-item .status-button {
+  margin-left: 20px;
+  padding: 5px 15px;
+  font-size: 0.9em;
+  height: 30px;
+  min-width: 80px;
 }
 
 .aligned-item strong {
@@ -662,7 +706,7 @@ ul.board-metadata {
   max-width: 100%; /* 부모 요소 너비에 맞게 제한 */
   font-size: 1.1em; /* 글자 크기 */
   text-align: left; /* 텍스트 왼쪽 정렬 */
-  color: #4E342E; /* 텍스트 색상 */
+  color: #8B4513; /* 텍스트 색상 */
   white-space: normal; /* 줄 바꿈 허용 */
   word-wrap: break-word; /* 단어가 너무 길 경우 줄 바꿈 */
   overflow-wrap: break-word; /* 단어가 화면을 넘어갈 경우 줄 바꿈 */
@@ -672,9 +716,8 @@ ul.board-metadata {
 .button-group {
   display: flex;
   gap: 10px;
-  margin-top: 150px; /* 버튼과 텍스트 사이의 간격 */
+  margin-top: 47px; /* 버튼과 텍스트 사이의 간격 */
   justify-content: flex-start;
-  margin-left: 0px; /* 버튼 부분 왼쪽 이동 */
 }
 
 /* 기본 버튼 스타일 */
@@ -686,7 +729,6 @@ button {
   cursor: pointer;
   font-weight: bold;
   color: #ffffff;
-  margin-right:10px;
 }
 .action-button.not-bookmarked {
   opacity: 0.5;
@@ -696,15 +738,17 @@ button {
 
 /* 버튼별 색상 설정 */
 .edit-button {
-  background-color: #FFA726; /* 주황색 */
+  background-color: #808080;
 }
 
 .delete-button {
-  background-color: #E53935; /* 빨간색 */
+  background-color: #808080;
 }
 
 .action-button {
   background-color: #8D6E63; /* 갈색 */
+  width: 294px;
+  margin-left: 1px;
 }
 .action-button:hover {
   background-color: #6D4C41; /* 좀 더 진한 갈색 */
@@ -712,6 +756,7 @@ button {
 .secondary-button {
   background-color: #D7CCC8; /* 밝은 베이지 */
   color: #000;
+  margin-left: 600px;
 }
 
 /* 목록으로 버튼 스타일 */
@@ -724,8 +769,8 @@ button.secondary-button {
   border: none;
   height: 2px;
   background-color: #ccc;
-  margin: 30px auto; /* 수평선 위아래 간격 및 중앙 정렬 */
-  width: 80%; /* 수평선의 길이를 80%로 줄임 */
+  margin: 10px auto; /* 수평선 위아래 간격 및 중앙 정렬 */
+  width: 100%;
 }
 
 .content-section {
@@ -750,6 +795,27 @@ button.secondary-button {
   max-width: 1200px; /* 위의 컨텐츠와 동일한 넓이 설정 */
   margin-left: auto; /* 좌우 중앙 정렬 */
   margin-right: auto; /* 좌우 중앙 정렬 */
+}
+
+
+.book-description strong {
+  color: #8D6E63;
+  font-size: 1.1em;
+  display: block;
+}
+
+.description-text {
+  margin-top: 14px;
+  display: block;
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  line-height: 1.6;
+  font-size: 17px;
+  color: #333;
 }
 </style>
 
