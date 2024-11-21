@@ -82,10 +82,10 @@
 
 <script setup>
 import api from '@/api/api';
-import { computed, ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
 const store = useMainStore();
@@ -135,7 +135,7 @@ const loadBookmarks = async (page = 1) => {
             soldOnly: showOnlySoldOut.value
         });
         
-        const response = await api.getBookmarks({
+        const response = await api.getBookMarks({
             page,
             size: 10,
             soldOnly: showOnlySoldOut.value

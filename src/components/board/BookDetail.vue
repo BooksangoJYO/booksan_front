@@ -8,7 +8,7 @@
           <p>저자: {{ book.author }}</p>
           <p>출판사: {{ book.publisher }}</p>
           <p>ISBN: {{ book.isbn }}</p>
-          <button class="action-button" @click="insertFavoriteBook">책갈피</button>
+          <button class="action-button" @click="insertBookMarkBook">책갈피</button>
         </div>
       </div>
       <h2>책 소개</h2>
@@ -250,8 +250,8 @@ async function addComment(commentData) {
       }
     }
 
-    const insertFavoriteBook = async ()=>{ 
-      const response = await api.insertFavoriteBook(book.value.isbn); 
+    const insertBookMarkBook = async ()=>{ 
+      const response = await api.insertBookMarkBook(book.value.isbn); 
       if(response.data.status){ 
         console.log("책 북마크 성공"); 
       } else{ 

@@ -8,16 +8,24 @@
       <button @click="fetchBoardList" class="search-button">검색</button>
     </div>
     <div class="category-container">
-    <div v-for="(category, index) in categories" :key="index" class="category-item" @click="setCategory(category.id)">
-      <img
-        v-if="category.icon"
-        :src="`https://cdn-icons-png.flaticon.com/512/2933/2933275.png`"
-        alt="Category Icon"
-        class="category-icon"
-      />
-      <span class="category-text">{{ category.name }}</span>
+
+      <div 
+        v-for="(category, index) in categories" 
+        :key="index" 
+        class="category-item" 
+        @click="setCategory(category.id)"
+        :class="{ selected: selectedCategoryId === category.id }"
+      >
+        <img
+          v-if="category.icon"
+          :src="category.icon"
+          alt="Category Icon"
+          class="category-icon"
+        />
+        <span class="category-text">{{ category.name }}</span>
+      </div>
+
     </div>
-  </div>
 
   <div class="filter-container">
     <!-- 체크박스와 라벨 -->
@@ -35,19 +43,20 @@
     <!-- 게시글 목록 출력 -->
     <div v-if="filteredBoardList.length > 0" class="board-list">
       <div v-for="(board, index) in filteredBoardList" :key="index" class="board-item" @click="goToBoardRead(board.dealId)">        
-        <div class="board-item-image">
-          <button @click.stop="toggleBookmark(board.dealId)" class="bookmark-button">
-            <img :src="isBookmarked(board.dealId) ? 'images/bookmark_filled.png' : 'images/bookmark_empty.png'" alt="Bookmark Icon" class="bookmark-icon" />
-          </button>
+        <div class="board-item-image">         
           <img :src="board.imageUrl ? board.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKC5SbJx2Wf9ewguE1uvgE3zc5TRnX1XfOsA&s'" alt="Book Image" />
         </div>
         <div class="board-item-details">
           <div class="board-item-info">
-            <span class="board-item-time">{{ formatTimeAgo(board.insertDatetime) }} 전</span>            
+            <span class="board-item-time">{{ formatTimeAgo(board.insertDatetime) }} 전</span>
+            <button @click.stop="toggleBookmark(board.dealId)" class="bookmark-button">
+              <img :src="isBookmarked(board.dealId) ? 'images/bookmark_filled.png' : 'images/bookmark_empty.png'" alt="Bookmark Icon" class="bookmark-icon" />
+            </button>
+            <div class="board-item-status" :class="{ available: board.status === 'N' }">{{ board.status === 'N' ? '판매 중' : '판매 완료' }}</div>            
             <h3 class="board-title">{{ board.title }}</h3>            
             <p class="board-price">{{ board.status === 'N' ? board.price + '원' : 'SOLD OUT' }}</p>
-            <p class="board-condition">[ISBN: {{ board.isbn }}]</p>
-            <span class="board-item-status" :class="{ available: board.status === 'N' }">{{ board.status === 'N' ? '판매 중' : '판매 완료' }}</span>
+            
+            
           </div>
           
         </div>
@@ -70,8 +79,22 @@
 
 <script setup>
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
+import BookMarkIcon from '@/assets/images/BookMarkIcon.svg';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+import Philosophy from '@/assets/images/philosophy.png';
+import religion from '@/assets/images/religion.png';
+import socialScience from '@/assets/images/socialScience.png';
+import pureScience from '@/assets/images/pureScience.png';
+import technicalScience from '@/assets/images/technicalScience.png';
+import art from '@/assets/images/art.png';
+import language from '@/assets/images/language.png';
+import literature from '@/assets/images/literature.png';
+import history from '@/assets/images/history.png';
+import others from '@/assets/images/others.png';
+import entire from '@/assets/images/entire.png';
+
 
 // 상태 정의
 const router = useRouter();
@@ -79,18 +102,19 @@ const keyword = ref('');
 const availableOnly = ref(false);
 const boardList = ref([]);
 const bookmarkedDeals = ref(new Set());
-const selectedCategoryId = ref(null);
+const selectedCategoryId = ref(0);
 const categories = ref([
-  { id:1, name: "철학", icon: "philosophy.png" },
-  { id:2, name: "종교", icon: "religion.png" },
-  { id:3, name: "사회 과학", icon: "social_science.png" },
-  { id:4, name: "순수 과학", icon: "pure_science.png" },
-  { id:5, name: "기술 과학", icon: "technical_science.png" },
-  { id:6, name: "예술", icon: "art.png" },
-  { id:7, name: "언어", icon: "language.png" },
-  { id:8, name: "문학", icon: "literature.png" },
-  { id:9, name: "역사", icon: "history.png" },
-  { id:10, name: "기타", icon: "others.png" },
+  { id:0, name:"전체", icon:entire},
+  { id:1, name: "철학", icon: Philosophy },
+  { id:2, name: "종교", icon: religion },
+  { id:3, name: "사회 과학", icon: socialScience },
+  { id:4, name: "순수 과학", icon: pureScience },
+  { id:5, name: "기술 과학", icon: technicalScience },
+  { id:6, name: "예술", icon: art },
+  { id:7, name: "언어", icon: language },
+  { id:8, name: "문학", icon: literature },
+  { id:9, name: "역사", icon: history },
+  { id:10, name: "기타", icon: others },
 ]);
 
 const isbn = ref('');
@@ -99,7 +123,7 @@ const setCategory = (categoryId) => {
   selectedCategoryId.value = categoryId; // 선택된 카테고리 ID 저장
   paginationData.page = 1;
   paginationData.size = 10;
-  console.log(`Selected Category ID: ${categoryId}`);
+  console.log(`Selected Category ID: ${categoryId}`);  
   fetchBoardList(); // 선택한 카테고리에 따라 게시글 목록 새로고침
 };
 
@@ -234,12 +258,6 @@ const goToHome = () => {
   box-sizing: border-box; /* 패딩 포함 크기 계산 */
 }
 
-/* 전체 스타일 */
-div {
-  font-family: 'Arial', sans-serif;
-  color: #333;
-}
-
 /* 검색 및 카테고리 스타일 */
 .search-container {
   display: flex;
@@ -280,11 +298,18 @@ div {
   flex-direction: column; /* 아이콘과 텍스트를 세로로 배치 */
   align-items: center; /* 중앙 정렬 */
   text-align: center;
+  width: 70px; /* 모든 카테고리의 너비를 동일하게 고정 */
+}
+
+/* 선택된 카테고리 스타일 */
+.category-item.selected .category-text {
+  border-bottom: 2px solid #5a321f; /* 선택된 글씨 밑줄 */
+  font-weight: bold; /* 강조 */
 }
 
 .category-icon {
-  width: 50px; /* 아이콘 크기 조정 */
-  height: 50px;
+  width: 40px; /* 아이콘 크기 조정 */
+  height: 40px;
   object-fit: contain; /* 아이콘 비율 유지 */
   margin-bottom: 5px;
 }
@@ -332,7 +357,6 @@ div {
   align-items: center;
   cursor: pointer;
   font-size: 16px;
-  color: #333; /* 텍스트 색상 */
 }
 
 .left-section label::before {
@@ -354,11 +378,13 @@ div {
   display: flex;
   align-items: center;
   justify-content: center;
-  content: '✔'; /* 체크 표시 */
-  color: #fff; /* 체크 표시 흰색 */
+  content: '✓'; /* 다른 체크 표시 문자 사용 */
+  color: white !important; /* 체크 표시 색상 강제 지정 */
   font-size: 14px;
   font-weight: bold;
 }
+
+
 
 .right-align {
   display: flex;
@@ -383,7 +409,7 @@ div {
   align-items: center; /* 세로 중앙 정렬 */
   width: 100%;
   margin-bottom: 20px;
-  padding: 20px;
+  padding:10px 20px 0px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   background-color: #fff;
@@ -419,41 +445,49 @@ div {
 /* 텍스트 세부 정보 */
 .board-item-info {
   max-width: 75%; /* 텍스트 영역 너비 제한 */
+  text-align: rigth;
+  width: 100%;  
 }
 
 .board-item-time {
   font-size: 1em;
   color: #888;
   margin-bottom: 10px;
+  margin-right: 10px;
 }
 
 .board-title {
-  font-size: 1.4em;
+  color:#5a321f;
+  font-size: 1.7em;
   font-weight: bold;
   margin-bottom: 5px;
+  margin-top: 5px
 }
 
 .board-price {
+  font-size: 25px;
   font-weight: bold;
-  color: #e84343;
-  margin-bottom: 10px;
+  color: #5a321f !important;
+  margin-bottom: 0px;  
+  margin-top: 15px;
+  text-align: right;
+  width: 100%;
+  padding: 0 !important;
 }
 
-.board-condition {
-  color: #6c757d;
-  margin-bottom: 10px;
-}
+
 
 .board-item-status {
   display: inline-block;
   padding: 5px 10px;
   font-size: 0.9em;
-  border-radius: 15px;
-  color: #fff;
+  border-radius: 8px;
+  color: #ffffff;
+  background-color: #ffcc80; 
 }
 
 .board-item-status.available {
-  background-color: #28a745; /* 판매 중 색상 */
+  background-color: #ba7933; /* 판매 중 색상 */
 }
 
 .board-item-status:not(.available) {
@@ -466,6 +500,7 @@ div {
   border: none;
   cursor: pointer;
   margin-bottom: 10px; /* 북마크 버튼과 이미지 간 여백 */
+  margin-right: 10px;
 }
 
 .bookmark-icon {
@@ -527,5 +562,19 @@ div {
 .register-button:hover {
   background-color: #b57836;
 }
+
+.no-board-message {
+  text-align: center;
+  font-size: 1.5rem; /* 글씨 크기 */
+  color: #888; /* 색상 */
+  margin-top: 50px; /* 상단 여백 */
+  font-weight: bold; /* 글씨 강조 */
+  padding: 20px; /* 내부 여백 */
+  border: 1px solid #ddd; /* 테두리 추가 */
+  border-radius: 8px; /* 둥근 모서리 */
+  background-color: #f9f9f9; /* 부드러운 배경 색 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
 </style>
 

@@ -28,8 +28,9 @@
 </template>
 
 <script setup>
-import chatNoticeIcon from '@/assets/images/chatNotice.png';
+import chatNoticeIcon from '@/assets/images/chatNotice.svg';
 import noticeIcon from '@/assets/images/notice.png';
+import UserIcon from '@/assets/images/userIcon.svg';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
