@@ -14,6 +14,7 @@
         :key="index" 
         class="category-item" 
         @click="setCategory(category.id)"
+        :class="{ selected: selectedCategoryId === category.id }"
       >
         <img
           v-if="category.icon"
@@ -101,7 +102,7 @@ const keyword = ref('');
 const availableOnly = ref(false);
 const boardList = ref([]);
 const bookmarkedDeals = ref(new Set());
-const selectedCategoryId = ref(null);
+const selectedCategoryId = ref(0);
 const categories = ref([
   { id:0, name:"전체", icon:entire},
   { id:1, name: "철학", icon: Philosophy },
@@ -122,7 +123,7 @@ const setCategory = (categoryId) => {
   selectedCategoryId.value = categoryId; // 선택된 카테고리 ID 저장
   paginationData.page = 1;
   paginationData.size = 10;
-  console.log(`Selected Category ID: ${categoryId}`);
+  console.log(`Selected Category ID: ${categoryId}`);  
   fetchBoardList(); // 선택한 카테고리에 따라 게시글 목록 새로고침
 };
 
@@ -297,11 +298,18 @@ const goToHome = () => {
   flex-direction: column; /* 아이콘과 텍스트를 세로로 배치 */
   align-items: center; /* 중앙 정렬 */
   text-align: center;
+  width: 70px; /* 모든 카테고리의 너비를 동일하게 고정 */
+}
+
+/* 선택된 카테고리 스타일 */
+.category-item.selected .category-text {
+  border-bottom: 2px solid #5a321f; /* 선택된 글씨 밑줄 */
+  font-weight: bold; /* 강조 */
 }
 
 .category-icon {
-  width: 50px; /* 아이콘 크기 조정 */
-  height: 50px;
+  width: 40px; /* 아이콘 크기 조정 */
+  height: 40px;
   object-fit: contain; /* 아이콘 비율 유지 */
   margin-bottom: 5px;
 }
@@ -554,5 +562,19 @@ const goToHome = () => {
 .register-button:hover {
   background-color: #b57836;
 }
+
+.no-board-message {
+  text-align: center;
+  font-size: 1.5rem; /* 글씨 크기 */
+  color: #888; /* 색상 */
+  margin-top: 50px; /* 상단 여백 */
+  font-weight: bold; /* 글씨 강조 */
+  padding: 20px; /* 내부 여백 */
+  border: 1px solid #ddd; /* 테두리 추가 */
+  border-radius: 8px; /* 둥근 모서리 */
+  background-color: #f9f9f9; /* 부드러운 배경 색 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
 </style>
 
