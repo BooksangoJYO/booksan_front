@@ -9,8 +9,13 @@
   </template>
 
 <script setup>
+import emitter from '@/emitter/emitter';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
+const store = useMainStore();
+const{loginInfo} = storeToRefs(store);
 const commentContent=ref('');
 const emit = defineEmits(['comment-submitted']); //comment-submitted 이벤트 정의
 
@@ -21,12 +26,17 @@ const submitComment = () => {
         alert('댓글 내용을 입력하세요.');
         return;
     }
+    if(!loginInfo.value.email){
+        emitter.emit('show-modal');
+    }
+    else{
+      //댓글 내용을 부모 컴포넌트로 전달
+      emit('comment-submitted', {content: commentContent.value});
+      
+      //입력 필드 초기화    
+      commentContent.value = ''; 
+    }
 
-    //댓글 내용을 부모 컴포넌트로 전달
-    emit('comment-submitted', {content: commentContent.value});
-    
-    //입력 필드 초기화    
-    commentContent.value = ''; 
 };
 </script>
 

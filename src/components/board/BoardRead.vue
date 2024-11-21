@@ -3,9 +3,6 @@
       <div class="page-container">
         <!--북마크와 판매여부 상태 변경 버튼-->
         <div class="board-actions" v-if="board">
-          <div class="bookmark-icon" v-if="!isWriter">
-            <img :src="BookMarkIcon" alt="북마크" />
-          </div>
           <button 
             class="status-button" 
             v-if="isWriter" 
@@ -82,7 +79,7 @@
                 <div v-if="isWriter">
                   <button class="edit-button" @click="goToBoardUpdate">수정하기</button>
                   <button class="delete-button" @click="showDeleteModal">삭제하기</button>
-                  <button class="action-button" @click="openSellerChat"><img :src="ChatIcon" alt="북마크" />북싼챗</button>
+                  <button class="action-button" @click="openSellerChat"><img :src="ChatIcon" alt="북마크" />  북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
                 <!-- 작성자가 아닌 경우 -->
@@ -93,10 +90,10 @@
                       !isBookMarked && 'not-bookmarked'
                     ]"
                     @click="toggleBookmark"
-                  ><img :src="BookMarkIcon" alt="북마크" />
+                  ><img :src="isBookMarked ? BookMarkIcon : NoneBookMarkIcon" alt="북마크" />
                     책갈피
                   </button>
-                  <button class="action-button" @click="openChat"><img :src="ChatIcon" alt="채팅" />북싼챗</button>
+                  <button class="action-button" @click="openChat"><img :src="ChatIcon" alt="채팅" />  북싼챗</button>
                   <button @click="goToBoardList" class="secondary-button">목록으로</button>
                 </div>
             </div>
@@ -145,8 +142,6 @@
           v-if="book && book.isbn" 
           :reviews = "reviews"
           :isbn = "book.isbn"
-          @updateBookComment = "updateBookComment"
-          @deleteBookComment = "deleteBookComment"
         />
 
         
@@ -156,8 +151,10 @@
   
 <script setup>
 import api from '@/api/api'; //api.js파일 import
-import BookMarkIcon from '@/assets/images/bookMarkIcon.svg';
-import ChatIcon from '@/assets/images/chatIcon.svg';
+import NoneBookMarkIcon from '@/assets/images/bookMarkWhite.svg';
+import BookMarkIcon from '@/assets/images/bookMarkWhiteFill.svg';
+import ChatIcon from '@/assets/images/chatWhite.svg';
+import emitter from '@/emitter/emitter';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
@@ -252,51 +249,6 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
       }
     }
 
-    //댓글 수정 함수
-    async function updateBookComment({commentId, newContent, email}) {
-      try {
-        console.log("댓글 수정 요청 데이터: ", {commentId,newContent, email});
-
-        //책 리뷰 수정 요청
-        const response = await api.updateBookComment(commentId, newContent, email);
-        if( response.data.status === 'success') {
-          alert('댓글이 성공적으로 수정되었습니다.');
-          await getCommentList(book.value.isbn); //수정 후 댓글 목록 갱신
-        } else {
-          alert('댓글 수정 실패:' + response.data.message);
-        }
-      } catch (error) {
-        console.error('댓글 수정 중 오류 발생:', error);
-        if(error.status === 401){
-            alert('로그인이 필요한 기능입니다.')
-        }
-        else{
-            alert('삭제에 실패했습니다.')
-        }
-      }
-    }
-
-    //댓글 삭제 함수
-    async function deleteBookComment({commentId,email}) {
-      try{
-        const response = await api.deleteBookComment(commentId,email);
-        if (response.data.status === 'success') {
-          alert('댓글이 성공적으로 삭제되었습니다.');
-          await getCommentList(book.value.isbn,email); //삭제후 댓글 목록 갱신
-        } else {
-          alert('댓글 삭제 실패: ' + response.data.message);
-        }        
-      } catch (error) {
-        console.error('댓글 삭제 중 오류 발생:', error);
-        if(error.status === 401){
-            alert('로그인이 필요한 기능입니다.')
-        }
-        else{
-            alert('삭제에 실패했습니다.')
-        }
-      }
-    }
-
     
     
 
@@ -327,7 +279,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         }
         else{
             alert('삭제에 실패했습니다.')
-        }        
+        }
       } finally{
         closeModal(); // 모달 닫기
       }
@@ -352,7 +304,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     function goToBoardList() {
         router.push('/board/list');
     }
-      
+  
     //게시물 정보 조회 함수
     async function getBoardRead(dealId) {
       try{
@@ -375,28 +327,33 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
         await getBoardRead(dealId); //게시글 단건조회
         if (board.value && board.value.isbn) {
-            await getCommentList(book.value.isbn); //책리뷰 목록 가져오기       
+            await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
         }
     });
   
     //채팅방 생성후 이동
     const openChat = async () =>{
-        console.log("오픈챗실행");
-        const writerEmail = board.value.email;
-        const dealId = board.value.dealId;
-        await api.postChatRoom(board.value.title,dealId,writerEmail)
-        .then(response => {
-            const chatRoom = response.data; // 서버에서 반환된 데이터
-            sessionStorage.setItem('chat.roomId',chatRoom.roomId);
-            window.open(
-              'http://localhost:5173/chat/room',
-              '채팅방',
-              'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
-            );
-        })
-        .catch(err => {
-            alert("서버 오류입니다. 다시시도해주세요");
-        });
+        if(!loginInfo.value.email){
+          emitter.emit('show-modal');
+        }
+        else{
+          console.log("오픈챗실행");
+          const writerEmail = board.value.email;
+          const dealId = board.value.dealId;
+          await api.postChatRoom(board.value.title,dealId,writerEmail)
+          .then(response => {
+              const chatRoom = response.data; // 서버에서 반환된 데이터
+              sessionStorage.setItem('chat.roomId',chatRoom.roomId);
+              window.open(
+                'http://localhost:5173/chat/room',
+                '채팅방',
+                'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+              );
+          })
+          .catch(err => {
+              alert("서버 오류입니다. 다시시도해주세요");
+          });
+        }
     }
 
     const openSellerChat = async () => {
@@ -408,16 +365,17 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     }
 
     const toggleBookmark = async ()=>{
-      if(!loginInfo){
-        window.alert("로그인이 필요합니다");
-        router.push('/login');
+      if(!loginInfo.value.email){
+        emitter.emit('show-modal');
       }
-      const response = await api.insertBookMark(board.value.dealId); 
-      if(response.data.status){
-        isBookmarked.value = !isBookmarked.value;
-      } else{ 
-        window.alert(response.data.message);
-      } 
+      else{
+        const response = await api.insertBookMark(board.value.dealId); 
+        if(response.data.status){
+          isBookMarked.value = !isBookMarked.value;
+        } else{ 
+          window.alert(response.data.message);
+        } 
+      }
     }
 </script>
   
@@ -731,7 +689,8 @@ button {
   margin-right:10px;
 }
 .action-button.not-bookmarked {
-  background-color: #A1887F;  /* 더 밝은 브라운 */
+  opacity: 0.5;
+  background-color: #8D6E63;  /* 더 밝은 브라운 */
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);  /* 안쪽 하얀 테두리 효과 */
 }
 

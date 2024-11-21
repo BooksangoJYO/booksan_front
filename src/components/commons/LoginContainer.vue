@@ -31,6 +31,7 @@
 import chatNoticeIcon from '@/assets/images/chatNotice.svg';
 import noticeIcon from '@/assets/images/notice.png';
 import UserIcon from '@/assets/images/userIcon.svg';
+import emitter from '@/emitter/emitter';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
@@ -45,6 +46,10 @@ const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
 const {doLogout} = store;
 const showModal = ref(false);
+
+emitter.on('show-modal', () => {
+  showModal.value = true
+})
 
 const closeBoardReservationList = () => {
     viewBoardReservationList.value = !viewBoardReservationList.value;
