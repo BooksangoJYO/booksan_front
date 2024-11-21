@@ -373,7 +373,6 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
         if(response.data.status){
           isBookMarked.value = !isBookMarked.value;
         } else{ 
-          window.alert(response.data.message);
         } 
       }
     }

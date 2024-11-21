@@ -56,8 +56,8 @@
         <div class="board-item-details">
           <div class="board-item-info">
             <span class="board-item-time">{{ formatTimeAgo(board.insertDatetime) }} 전</span>
-            <button @click.stop="toggleBookmark(board.dealId)" class="bookmark-button">
-              <img :src="isBookmarked(board.dealId) ? 'images/bookmark_filled.png' : 'images/bookmark_empty.png'" alt="Bookmark Icon" class="bookmark-icon" />
+            <button class="bookmark-button">
+              <img :src="board.isBookMarked == 'Y'? BookMarkIcon : NotBookMarkIcon" alt="Bookmark Icon" class="bookmark-icon" />
             </button>
             <div class="board-item-status" :class="{ available: board.status === 'N' }">{{ board.status === 'N' ? '판매 중' : '판매 완료' }}</div>            
             <h3 class="board-title">{{ board.title }}</h3>            
@@ -86,22 +86,23 @@
 
 <script setup>
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
-import BookMarkIcon from '@/assets/images/BookMarkIcon.svg';
+import BookMarkIcon from '@/assets/images/bookMarkFillIcon.svg';
+import NotBookMarkIcon from '@/assets/images/bookMarkIcon.svg';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import Philosophy from '@/assets/images/philosophy.png';
-import religion from '@/assets/images/religion.png';
-import socialScience from '@/assets/images/socialScience.png';
-import pureScience from '@/assets/images/pureScience.png';
-import technicalScience from '@/assets/images/technicalScience.png';
 import art from '@/assets/images/art.png';
+import entire from '@/assets/images/entire.png';
+import history from '@/assets/images/history.png';
 import language from '@/assets/images/language.png';
 import literature from '@/assets/images/literature.png';
-import history from '@/assets/images/history.png';
 import others from '@/assets/images/others.png';
-import entire from '@/assets/images/entire.png';
+import Philosophy from '@/assets/images/philosophy.png';
+import pureScience from '@/assets/images/pureScience.png';
+import religion from '@/assets/images/religion.png';
 import SearchIcon from '@/assets/images/searchIcon.svg';
+import socialScience from '@/assets/images/socialScience.png';
+import technicalScience from '@/assets/images/technicalScience.png';
 
 
 // 상태 정의
@@ -109,7 +110,7 @@ const router = useRouter();
 const keyword = ref('');
 const availableOnly = ref(false);
 const boardList = ref([]);
-const bookmarkedDeals = ref(new Set());
+
 const selectedCategoryId = ref(0);
 const categories = ref([
   { id:0, name:"전체", icon:entire},
@@ -224,20 +225,6 @@ function goToBoardRead(dealId) {
   router.push({ path: `/board/read/${dealId}` });
 }
 
-// 북마크 토글
-const toggleBookmark = (dealId) => {
-  if (bookmarkedDeals.value.has(dealId)) {
-    bookmarkedDeals.value.delete(dealId);
-  } else {
-    bookmarkedDeals.value.add(dealId);
-  }
-};
-
-// 북마크 여부 확인
-const isBookmarked = (dealId) => {
-  return bookmarkedDeals.value.has(dealId);
-};
-
 // 시간 포맷팅 함수
 function formatTimeAgo(datetime) {
   const date = new Date(datetime);
@@ -257,9 +244,6 @@ function formatTimeAgo(datetime) {
 
 onMounted(fetchBoardList);
 
-const goToHome = () => {
-  router.replace('/');
-};
 </script>
 
 <style scoped>

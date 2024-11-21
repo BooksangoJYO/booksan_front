@@ -1,7 +1,7 @@
 <template>
   <div class="alert-boards">
     <div class="notification-box">
-      <h3 class="notification-title">관심 등록한 책이 올라왔습니다</h3>
+      <h3 class="notification-title">관심 등록한 책에 대한 알림</h3>
       <div class="board-items">
         <ul>
           <li
@@ -15,8 +15,8 @@
                 <img :src="board.image" class="book-image"/>
               </div>
               <div class="message">
-                <div class="book-title">{{ board.bookTitle }}</div>
                 <div class="board-title">{{ board.title }}</div>
+                <div class="book-title">{{ board.bookTitle }}</div>
               </div>
             </div>
           </li>
@@ -130,17 +130,17 @@ onMounted(fetchReservationBoards);
 }
 
 .book-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-size: 13px;
+  color: #666;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .board-title {
-  font-size: 13px;
-  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

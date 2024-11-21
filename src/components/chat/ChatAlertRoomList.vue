@@ -56,6 +56,7 @@ const fetchAlertRooms = async () => {
 onMounted(fetchAlertRooms);
 
 const openChat = (roomId) => {
+  emit("close");
   sessionStorage.setItem('chat.roomId', roomId);
   const chatWindow = window.open(
     'http://localhost:5173/chat/room',

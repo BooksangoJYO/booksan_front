@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue'; // reactive 대신 ref 사용
 
 export const useMainStore = defineStore('mainStore', () => {
+
     const loginInfo = ref({}); // reactive 대신 ref 사용
     const doLogin = async () => {  
         try {
