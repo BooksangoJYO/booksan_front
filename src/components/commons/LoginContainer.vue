@@ -2,7 +2,7 @@
     <div class="header-right"  v-if="loginInfo.email">
         <div class="dropdown-container">
             <button class="icon-button" @click="toggleBoardReservationList">
-                <img :src="noticeIcon" alt="알림" ref="noticeImg">
+                <img :src="loginInfo.bookAlert > 0 ? bookNoticeIcon : bookIcon" alt="메시지" ref="noticeImg">
             </button>
             <Transition name="dropdown">
                 <BoardReservationList v-if="viewBoardReservationList" class="dropdown-content" @close="closeBoardReservationList()"/>
@@ -10,13 +10,13 @@
         </div>
         <div class="dropdown-container">
             <button class="icon-button" @click="toggleChatAlertList">
-                <img :src="chatNoticeIcon" alt="메시지" ref="chatImg">
+                <img :src="loginInfo.chatAlert > 0 ?chatNoticeIcon : chatIcon" alt="메시지" ref="chatImg">
             </button>
             <Transition name="dropdown">
                 <ChatAlertRoomList v-if="viewChatAlertList" class="dropdown-content" @close="closeAlertList()"/>
             </Transition>
         </div>
-        <RouterLink to="/main/chatPage" class="nav-link">채팅창</RouterLink>
+        <RouterLink to="/main/chatPage" class="nav-link">북싼챗</RouterLink>
         <RouterLink to="/mypage" class="nav-link">마이페이지</RouterLink>
         <button class="icon-button" @click="handleLogout">로그아웃</button>
         <p>{{loginInfo.nickName}}</p>
@@ -28,24 +28,25 @@
 </template>
 
 <script setup>
+import bookNoticeIcon from '@/assets/images/bell.svg';
+import bookIcon from '@/assets/images/bellNot.svg';
+import chatIcon from '@/assets/images/chatIcon.svg';
 import chatNoticeIcon from '@/assets/images/chatNotice.svg';
-import noticeIcon from '@/assets/images/notice.png';
-import UserIcon from '@/assets/images/userIcon.svg';
 import emitter from '@/emitter/emitter';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import BoardReservationList from '../board/BoardReservationList.vue';
 import ChatAlertRoomList from '../chat/ChatAlertRoomList.vue';
 import SocialLoginModal from '../user/SocialLoginModal.vue';
-import { useRouter } from 'vue-router';
 
 let viewChatAlertList = ref(false);
 let viewBoardReservationList = ref(false);
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
-const {doLogout} = store;
+const { doLogin,doLogout} = store;
 const showModal = ref(false);
 const router = useRouter();
 
@@ -54,10 +55,12 @@ emitter.on('show-modal', () => {
 })
 
 const closeBoardReservationList = () => {
+    doLogin();
     viewBoardReservationList.value = !viewBoardReservationList.value;
 }
 
 const closeAlertList = () => {
+    doLogin();
     viewChatAlertList.value = !viewBoardReservationList.value;
 }
 

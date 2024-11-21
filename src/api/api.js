@@ -75,7 +75,6 @@ apiClient.interceptors.response.use(
         // refresh 실패시 로그인으로
         const store = useMainStore();
         store.doLogout();
-        router.replace('/login');
       }
     }
     return Promise.reject(error);

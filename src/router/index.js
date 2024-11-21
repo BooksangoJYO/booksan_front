@@ -13,6 +13,7 @@ import BookMarkBooks from '@/components/user/mypage/BookMarkBooks.vue';
 import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
 import MyPost from '@/components/user/mypage/MyPost.vue';
 import Mypage from '@/components/user/mypage/index.vue';
+import emitter from '@/emitter/emitter';
 import DashBoard from '@/pages/admin/DashBoard.vue';
 import Chatting from '@/pages/chat/Chatting.vue';
 import MainChatting from '@/pages/chat/MainChatting.vue';
@@ -27,9 +28,8 @@ const loginGuard = (to,from,next) =>{
         isAuthenticated = true;
     }
     if (!isAuthenticated) {
-        next({
-            path: '/login/',
-            });
+        emitter.emit('show-modal');
+        next(false);
     } else {
         next();
     }
@@ -49,10 +49,19 @@ const loginGuardForChat = (to,from,next) =>{
     }
 }
 
+const updateLogin = (to,from,next) =>{
+    const store = useMainStore();
+    store.doLogin();
+    next();
+}
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: Main },
+        { path: '/', component: Main , 
+            beforeEnter: (to, from, next) => {
+                updateLogin(to,from,next);
+        }},
         { path: '/login', name: 'login', component: SocialLogin },
         { path: '/signup', name: 'signup', component: SocialSignup },
         { path: '/mypage', name: 'mypage', component: Mypage,
@@ -77,15 +86,23 @@ const router = createRouter({
                 loginGuard(to,from,next);
             }
         },
-        { path: '/board/list', component: BoardList},
-        { path: '/board/read/:dealId', component: BoardRead},
+        { path: '/board/list', component: BoardList, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        { path: '/board/read/:dealId', component: BoardRead, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
         { path: '/board/update/:dealId', component: BoardUpdate,
             beforeEnter: (to, from, next) => {
                 loginGuard(to,from,next);
             }
         },
-        { path: '/book/list', component: BookListSearch},
-        { path: '/book/detail/:isbn', component: BookDetail},
+        { path: '/book/list', component: BookListSearch, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        { path: '/book/detail/:isbn', component: BookDetail, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
         {path: '/chat/room/:dealId?',component: Chatting,
             beforeEnter: (to, from, next) => {
                 loginGuardForChat(to,from,next);
