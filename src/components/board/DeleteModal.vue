@@ -1,11 +1,13 @@
 <template>
     <div v-if="isVisible" class="modal-overlay">
         <div class="modal-content">
-            <h2>삭제 여부 확인 ...</h2>
-            <p>정말로 삭제 하시겠습니까? 삭제 내용은 복구 할수 없습니다.</p>
-            <button @click="$emit('confirmDelete')" class="confirm-button">삭제</button>
-            <button @click="$emit('cancelDelete')" class="cancel-button">취소</button>
-        </div>
+            <h2>삭제 여부 확인</h2>
+            <p>정말로 삭제 하시겠습니까? <br> 삭제 내용은 복구 할수 없습니다.</p>
+            <div class="button-container">
+              <button @click="$emit('confirmDelete')" class="confirm-button">삭제</button>
+              <button @click="$emit('cancelDelete')" class="cancel-button">취소</button>
+            </div>
+          </div>
     </div>
 </template>
 
@@ -70,5 +72,33 @@ h2 {
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* 버튼 간격 */
+  justify-content: center; /* 버튼들을 가운데 정렬 */
+}
+
+.confirm-button {
+  background-color: #ae5e0e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  flex: 1; /* 버튼 크기를 동일하게 */
+}
+
+.cancel-button {
+  background-color: white;
+  color: #333;
+  border: 1px solid #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  flex: 1; /* 버튼 크기를 동일하게 */
 }
 </style>
