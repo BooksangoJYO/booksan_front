@@ -8,6 +8,7 @@
       <button @click="fetchBoardList" class="search-button">검색</button>
     </div>
     <div class="category-container">
+
       <div 
         v-for="(category, index) in categories" 
         :key="index" 
@@ -22,6 +23,7 @@
         />
         <span class="category-text">{{ category.name }}</span>
       </div>
+
     </div>
 
   <div class="filter-container">
@@ -76,8 +78,10 @@
 
 <script setup>
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
+import BookMarkIcon from '@/assets/images/BookMarkIcon.svg';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
 import Philosophy from '@/assets/images/philosophy.png';
 import religion from '@/assets/images/religion.png';
 import socialScience from '@/assets/images/socialScience.png';
@@ -89,6 +93,7 @@ import literature from '@/assets/images/literature.png';
 import history from '@/assets/images/history.png';
 import others from '@/assets/images/others.png';
 import entire from '@/assets/images/entire.png';
+
 
 // 상태 정의
 const router = useRouter();

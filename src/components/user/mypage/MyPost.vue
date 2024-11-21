@@ -38,11 +38,12 @@
 
                         <!-- 게시글 목록 -->
                         <div v-else class="posts-list">
-                            <div v-for="board in posts" :key="board.dealId" 
+                            <div v-for="board in posts" :key="board" 
                                 class="post-item card border-0 shadow-sm mb-3"
-                                @click="goToDetail(board.id)">
+                                @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
-                                    <img :src="board.imageFileDTOList?.[0]?.imgUuid" 
+                                    <img 
+                                        :src="`/api/board/read/download/${board.dealId}`"  
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
@@ -84,9 +85,10 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
+
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
@@ -120,6 +122,9 @@ const changePage = async (page) => {
     await loadPosts(page);
 };
 
+onMounted(() => {
+    loadPosts(1); // 단순히 loadPosts 호출만 하기
+});
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
@@ -136,28 +141,26 @@ const formatDate = (dateString) => {
 };
 
 // 상세 페이지로 이동
-const goToDetail = (dealId) => {
-    router.push(`/board/${dealId}`);
+const goToDetail = (board) => {
+    router.push(`/board/read/${board.dealId}`);
 };
 
 const loadPosts = async (page = 1) => {
     loading.value = true;
     error.value = null;
     try {
-        console.log('loadPosts 호출됨 - page:', page);  // 로그 추가
         const response = await api.getMyPosts({
-            page: page,
+            page,
             size: 10,
-            availableOnly: showOnlySoldOut.value
         });
-        console.log('내 게시글 응답:', response);
 
         if (response.status === 200 && response.data?.data) {
             const boardList = response.data.data;
-            console.log('받아온 boardList:', boardList);  // 로그 추가
+            // 일단 이미지 관련 처리 제거하고 기본 데이터만 표시
             posts.value = boardList.dtoList;
+            
             pageInfo.value = {
-                page: boardList.page,  // 현재 페이지 번호가 제대로 설정되는지 확인
+                page: boardList.page,
                 size: boardList.size,
                 total: boardList.total,
                 start: boardList.start,
@@ -165,11 +168,13 @@ const loadPosts = async (page = 1) => {
                 prev: boardList.prev,
                 next: boardList.next
             };
-            console.log('pageInfo 업데이트됨:', pageInfo.value);  // 로그 추가
+            
+            console.log('페이지 정보:', pageInfo.value);
+            console.log('게시글 목록:', posts.value);
         }
     } catch (error) {
         console.error('게시글 로딩 에러:', error);
-        error.value = '게시글 목록을 불러오는데 실패했습니다.';
+        // 에러가 나도 기존 데이터 유지
     } finally {
         loading.value = false;
     }
@@ -187,7 +192,6 @@ const filterPosts = () => {
 /* 전체 레이아웃 중앙 배치 */
 .container {
     max-width: 900px;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

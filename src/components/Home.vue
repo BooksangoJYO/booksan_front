@@ -3,8 +3,6 @@
       <!-- 로고 섹션 -->
       <div class="logo-container">
         <img :src="MainLogo" alt="북산장터 로고" class="logo">
-        <h1 class="title">북산장터</h1>
-        <p class="subtitle">Booksan Market</p>
       </div>
   
       <!-- 검색창 -->
@@ -12,7 +10,7 @@
         <input 
             type="text" 
             class="search-input" 
-            placeholder="책 찾아보기"
+            placeholder="가판대 찾아보기"
             v-model="searchQuery"
             @keyup.enter="handleSearch"
         >
@@ -22,11 +20,10 @@
       <!-- 추천 도서 섹션 -->
       <h2 class="recommendation-title">책 추천</h2>
       <div class="book-container">
-        <div v-for="book in books" :key="book.isbn" class="book-card">
-          <img :src="book.image" :alt="book.title" class="book-image">
-          <h3 class="book-title">{{ book.title }}</h3>
-          <p class="book-author">{{ book.author }}</p>
-          <p class="book-author">{{ book.publisher }}</p>
+        <div v-for="board in data.boards" :key="board.id" class="book-card">
+          <img :src="board.image" :alt="board.title" class="book-image">
+          <h3 class="book-title">{{ board.title }}</h3>
+          <p class="book-author">{{ board.author }}</p>
         </div>
       </div>
       <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
@@ -43,11 +40,11 @@
 </template>
   
 <script setup>
+import api from '@/api/api';
 import MainLogo from '@/assets/images/mainLogo.png';
-import SearchIcon from '@/assets/images/searchIcon.png';
+import SearchIcon from '@/assets/images/searchIcon.svg';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '@/api/api';
 
 const router = useRouter();
 const searchQuery = ref('');
@@ -148,12 +145,14 @@ onMounted(async () => {
 .search-container {
   max-width: 600px;
   margin: 0 auto 60px;
-  position: relative;
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: -35px; /* 아이콘을 input 안으로 넣기 위해 음수값 사용 */
 }
 
 .search-input {
   width: 100%;
-  padding: 15px 20px;
+  padding: 15px 45px 15px 20px; /* 오른쪽에 아이콘 들어갈 공간 */
   border: 2px solid #8B4513;
   border-radius: 25px;
   font-size: 16px;
@@ -161,12 +160,10 @@ onMounted(async () => {
 }
 
 .search-icon {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   width: 20px;
   height: 20px;
+  cursor: pointer;
+  margin-left: -40px; /* 아이콘을 input 안으로 이동 */
 }
 
 .recommendation-title {

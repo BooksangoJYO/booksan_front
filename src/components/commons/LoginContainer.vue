@@ -17,30 +17,34 @@
             </Transition>
         </div>
         <RouterLink to="/main/chatPage">채팅</RouterLink>
-        <RouterLink to="/mypage">마이페이지</RouterLink>
         <button class="icon-button" @click="doLogout">로그아웃</button>
+        <RouterLink to="/mypage"><img :src="UserIcon" alt="마이페이지" /></RouterLink>
         <p>{{loginInfo.nickName}}</p>
     </div>
     <div class="header-right" v-else>
-        <button class="icon-button" @click="doLogin">로그인</button>
+        <button class="icon-button" @click="showModal = true">로그인</button>
     </div>
+    <SocialLoginModal :is-open="showModal" @close="showModal = false" />
 </template>
 
 <script setup>
-import chatNoticeIcon from '@/assets/images/chatNotice.png';
+import chatNoticeIcon from '@/assets/images/chatNotice.svg';
 import noticeIcon from '@/assets/images/notice.png';
+import UserIcon from '@/assets/images/userIcon.svg';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import BoardReservationList from '../board/BoardReservationList.vue';
 import ChatAlertRoomList from '../chat/ChatAlertRoomList.vue';
+import SocialLoginModal from '../user/SocialLoginModal.vue';
 
 let viewChatAlertList = ref(false);
 let viewBoardReservationList = ref(false);
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
-const {doLogin,doLogout} = store;
+const {doLogout} = store;
+const showModal = ref(false);
 
 const closeBoardReservationList = () => {
     viewBoardReservationList.value = !viewBoardReservationList.value;
