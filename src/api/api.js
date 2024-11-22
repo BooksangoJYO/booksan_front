@@ -118,6 +118,18 @@ export default {
     return apiClient.post('/api/users/update', userData);
   },
 
+  updateProfileImage(formData) {
+    return apiClient.put('/api/users/update/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+  
+  deleteProfileImage() {
+    return apiClient.delete('/api/users/delete/image');
+  },
+
   deleteAccount() {
     return apiClient.delete('/api/users/delete');
   },

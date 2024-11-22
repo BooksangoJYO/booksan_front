@@ -11,6 +11,8 @@ export const useMainStore = defineStore('mainStore', () => {
             const response = await api.getUserInfo();
             if(response.data != null) {
                 loginInfo.value = response.data; // .value 사용
+                console.log(response.data.nickname)
+                console.log(response.data.imgId)
             }
         }
         catch (error) {

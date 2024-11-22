@@ -11,13 +11,18 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <!-- 프로필 이미지 -->
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-4 text-center" @click="selectImage">
                                 <div class="position-relative d-inline-block">
                                     <div class="rounded-circle overflow-hidden" 
                                          style="width: 125px; height: 125px; background: #f8f9fa">
-                                        <img alt="프로필 이미지" class="w-100 h-100 object-fit-cover" />
+                                        <img :src="renderImage()" alt="프로필 이미지" class="w-100 h-100 object-fit-cover" />
                                     </div>
                                 </div>
+                                <div>
+                                    <button v-if="!renderImage() || renderImage().value !== defaultImage"
+                                            @click.stop="removeImage"
+                                            class="remove-button">X</button>
+                                </div>    
                             </div>
 
                             <!-- 사용자 정보 -->
@@ -115,7 +120,7 @@ import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
@@ -128,6 +133,9 @@ const newNickname = ref('');
 const isAvailable = ref(false);
 const nicknameMessage = ref('');
 const isLoading = ref(false);
+const defaultImage = `/api/users/read/download/514`
+const image = ref(null);
+const imageFile = ref({});
 
 const deleteAccount = async () => {
     if(confirm('정말 탈퇴하시겠습니까?')) {
@@ -220,6 +228,92 @@ const updateNickname = async () => {
         isLoading.value = false;
     }
 };
+
+const removeImage = () => {
+    image.value = defaultImage;
+    api.deleteProfileImage();
+}
+
+// 이미지 렌더링 함수
+const renderImage = () => {
+    return image.value;
+};
+
+const selectImage = () => {
+    const input = document.createElement("input");
+    input.type = 'file';
+    input.accept = 'image/*'; // 이미지 파일만 선택할 수 있도록 설정
+    input.onchange = (e) => {
+        const file = e.target.files[0]; // 선택한 파일 가져오기
+        if (file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB로 설정
+            // 이미지 파일 크기 확인 및 경고 메시지 표시
+            if (file.size > maxSize) {
+                alert("이미지 파일 크기가 10MB를 초과합니다. 다시 선택해주세요.");
+                return;
+            }
+            // 파일 객체 저장
+            imageFile.value = file;
+            console.log("Selected file:", file);
+
+            // 선택한 파일을 미리보기 이미지로 설정
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                image.value = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+        updateProfileImage();
+        imageFile.value = null;
+    }
+    input.click();
+}
+
+const getFormData = () => {
+    const formData = new FormData();
+    if (imageFile.value) {
+        formData.append('file', imageFile.value);
+        return formData;
+    } else {
+        formData.append('imgId', 514);
+    }
+    
+}
+
+const updateProfileImage = async () => {
+    try {
+        isLoading.value = true;
+        const formData = getFormData();
+        console.log("formData 생성 완료")
+        const response = await api.updateProfileImage(formData);
+        loginInfo.value.imgId = response.data.imgId;
+        alert("프로필 이미지가 성공적으로 변경되었습니다.");
+    } catch (error) {
+        console.error("프로필 이미지 업데이트 실패:", error);
+        alert("프로필 이미지 변경 중 오류가 발생했습니다.");
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+const readProfileImage = async () => {
+    try {
+        if(!loginInfo.value.imgId) {
+            console.log("loginfo에 imgId가 없을때")
+        } else {
+            image.value = `/api/users/read/download/${loginInfo.value.imgId}`;
+        }
+    } catch (error) {
+        console.error("프로필 데이터를 불러오는 중 오류 발생:", error);
+    }
+};
+
+watch(() => loginInfo.value, (newValue) => {
+    if (Object.keys(newValue).length > 0) { // loginInfo가 비어있지 않을 때만 실행
+        readProfileImage();
+    }
+});
+
 </script>
 
 <style scoped>
