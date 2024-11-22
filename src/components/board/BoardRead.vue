@@ -129,7 +129,7 @@
 
         <!-- 상품 내용 섹션 -->
         <div class="content-section" v-if="board">
-          <strong>상품 내용</strong>
+          <strong style="font-size: 20px;">상품 내용</strong>
           <textarea class="content-textarea" readonly>{{ board.content }}</textarea>
         </div>
 
@@ -140,16 +140,16 @@
         <section v-if="book">
           <div class="book-info">
             <div class="book-image">
-              <img :src="book.image" alt="책 이미지" class="image"/>
+              <img :src="book.image" alt="도서 이미지" class="image"/>
             </div>
             <div class="book-details">
-              <h2>도서 정보</h2>
-              <p><strong>책 제목</strong> {{ book.title }}</p>
+              <h2 style="color:#8b4513; font-size: 28px;">도서 정보</h2>
+              <p><strong>제목</strong> {{ book.title }}</p>
               <p><strong>저자</strong> {{ book.author }}</p>
               <p><strong>출판사</strong> {{ book.publisher }}</p>
               <p><strong>ISBN</strong> {{ book.isbn }}</p>
               <p class="book-description">
-                <strong>책 소개</strong>
+                <strong>도서 소개</strong>
                 <span class="description-text">{{ bookDescription }}</span>
               </p>
             </div>
@@ -642,7 +642,7 @@ const toggleBookmark = async ()=>{
 }
 
 .dot.active {
-  background-color: #4CAF50;
+  background-color: #8B4513;
 }
 /* 여기까지 */
 
@@ -860,7 +860,7 @@ button.secondary-button {
   min-height: 150px; /* 최소 높이 */
   margin-top: 10px; /* "상품 내용"과 텍스트 영역 간 간격 */
   padding: 10px; /* 내부 여백 */
-  font-size: 14px;
+  font-size: 18px;
   border: 1px solid #ccc; /* 테두리 */
   border-radius: 5px; /* 둥근 모서리 */
   background-color: #f9f9f9;
@@ -870,6 +870,7 @@ button.secondary-button {
   max-width: 1200px; /* 위의 컨텐츠와 동일한 넓이 설정 */
   margin-left: auto; /* 좌우 중앙 정렬 */
   margin-right: auto; /* 좌우 중앙 정렬 */
+  padding: 12px;
 }
 
 
@@ -885,8 +886,6 @@ button.secondary-button {
   height: 300px;
   overflow-y: auto;
   padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
   border-radius: 5px;
   line-height: 1.6;
   font-size: 17px;

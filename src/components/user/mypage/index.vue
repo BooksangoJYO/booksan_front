@@ -159,15 +159,12 @@ const deleteAccount = async () => {
 };
 
 const openModal = () => {
-    console.log('모달 열기 시도');
     showModal.value = true;
     newNickname.value = loginInfo.value?.nickname || '';
-    console.log('showModal 상태:', showModal.value);
 };
 
 // 모달 닫기 함수 수정
 const closeModal = () => {
-    console.log('모달 닫기');
     showModal.value = false;
     newNickname.value = '';
     isAvailable.value = false;
