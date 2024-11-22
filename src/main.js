@@ -12,8 +12,3 @@ app.use(router);
 app.use(pinia);
 app.mount('#app');
 
-if (!import.meta.env.DEV) {
-  ['log', 'warn', 'error'].forEach(method => {
-    console[method] = () => {};
-  });
-}
