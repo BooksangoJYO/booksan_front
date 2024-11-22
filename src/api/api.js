@@ -286,6 +286,11 @@ export default {
   getRecommendedIsbnList() {
     const url = '/api/board/recommend/books';
     return apiClient.get(url);
+  },
+
+  getWeeklyStats(){
+    const url = '/api/admin/dashboard/data';
+    return apiClient.get(url);
   }
 };
 
