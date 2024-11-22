@@ -9,14 +9,16 @@
       <div class="book-info">
         <img :src="book.image" alt="책 이미지" class="book-image" />
         <div class="book-details">
-          <h1>{{ book.title }}</h1>
-          <p>저자: {{ book.author }}</p>
-          <p>출판사: {{ book.publisher }}</p>
-          <p>ISBN: {{ book.isbn }}</p>
+          <h1 class="h1-style">{{ book.title }}</h1>
+          <div class="book-details-notitle">
+            <p>저자: {{ book.author }}</p>
+            <p>출판사: {{ book.publisher }}</p>
+            <p>ISBN: {{ book.isbn }}</p>
+          </div>
         </div>
       </div>
       <h2>책 소개</h2>
-    <p>{{ book.description }}</p>
+      <textarea class="book-description-textarea" readonly>{{ book.description }}</textarea>
 
       <hr>
 
@@ -25,9 +27,9 @@
             <template v-if="boards && boardsData.boards.length>0">
                 <h2>해당 책 가판대 목록</h2>
                 <div v-for="(board, index) in boardsData.boards" :key="index" class="board-item" @click="openRead(board.dealId)">
-                <p><strong>{{ board.title }}</strong></p>
-                <p>{{ board.postedTime }} 전</p>
-                <p>가격: {{ board.price }}원</p>
+                  <p class="board-time">{{ board.postedTime }} 전</p>
+                  <p><strong>{{ board.title }}</strong></p>
+                  <p>가격: {{ board.price }}원</p>
                 </div>
             </template>
             <template v-else>
@@ -40,7 +42,7 @@
             <button @click="goToPage(boardsData.page - 1)" :disabled="!boardsData.prev" class="pagination-button">이전</button>
             <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
                 <button @click="goToPage(pageNum)" :class="{ active: pageNum === boardsData.page }" class="pagination-button">
-                {{ pageNum }}
+                  {{ pageNum }}
                 </button>
             </span>
             <button @click="goToPage(boardsData.page + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
@@ -277,7 +279,10 @@ async function addComment(commentData) {
     }
   </script>
   
-  <style scoped>
+<style scoped>
+
+
+
   .book-detail-container {
     padding: 20px;
     max-width: 800px;
@@ -315,6 +320,7 @@ async function addComment(commentData) {
 }
 
 .board-item {
+  position: relative;
   padding: 10px;
   margin-bottom: 15px; /* 게시글 간 간격 */
   border: 1px solid #ddd;
@@ -327,22 +333,31 @@ async function addComment(commentData) {
   border-color: #8b4513;
 }
 
+.board-time {
+  position: absolute; /* 부모 요소를 기준으로 위치 설정 */
+  top: 10px; /* 상단 여백 */
+  right: 10px; /* 오른쪽 여백 */
+  font-size: 14px; /* 글씨 크기 조정 */
+  color: #888; /* 색상 설정 */
+  text-align: right; /* 텍스트 정렬 */
+}
+
 .pagination {
   display: flex; /* 플렉스 박스 사용 */
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
-  gap: 5px; /* 버튼 간 간격 */
+  gap: 0px; /* 버튼 간 간격 제거 */
   margin-top: 50px; /* 위쪽 간격 */
-  margin-bottom: 50px; /* 위쪽 간격 */
+  margin-bottom: 50px; /* 아래쪽 간격 */
 }
 
+
 .pagination-button {
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
+  padding: 10px 20px;
+  border: 0.5px solid #ccc;
+  border-radius: 1px;
+  background-color: #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .pagination-button:hover {
@@ -351,8 +366,9 @@ async function addComment(commentData) {
 }
 
 .pagination-button.active {
-  background-color: #693610;
+  background-color: #5a321f;
   color: #fff;
+  font-weight: bold;
 }
 
 .pagination-button:disabled {
@@ -360,6 +376,7 @@ async function addComment(commentData) {
   color: #999;
   cursor: not-allowed;
 }
+
 
 .alarm-setting {
 display: flex;
@@ -399,5 +416,30 @@ background-color: #daa681;
 .alarm-setting:not(.bookmarked) {
 opacity: 0.7;
 }
-  </style>
+
+
+.book-description-textarea {
+  width: 100%; /* 너비를 책 상세정보에 맞게 설정 */
+  height: 300px; /* 높이 설정 */
+  padding: 10px; /* 내부 여백 */
+  font-size: 14px; /* 글씨 크기 */
+  border: 1px solid #ddd; /* 테두리 */
+  border-radius: 8px; /* 둥근 모서리 */
+  background-color: #f9f9f9; /* 배경색 */
+  resize: none; /* 크기 조정 비활성화 */
+  color: #333; /* 글씨 색상 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤 표시 */
+  line-height: 1.5; /* 줄 간격 */
+  margin-bottom: 40px;
+}
+
+
+.h1-style{
+  margin-bottom: 40px;
+}
+
+.book-details-notitle p{
+  margin-bottom:20px;
+}
+</style>
   
