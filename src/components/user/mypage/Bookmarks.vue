@@ -33,7 +33,7 @@
 
                         <!-- 데이터가 없을 때 -->
                         <div v-else-if="!bookmarks.length" class="text-center py-5">
-                            <p class="text-muted">북마크한 게시글이 없습니다.</p>
+                            <p class="text-muted">북마크한 글이 없습니다.</p>
                         </div>
 
                         <!-- 북마크 목록 -->

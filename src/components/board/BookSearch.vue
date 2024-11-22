@@ -5,7 +5,7 @@
         <input
           type="text"
           v-model="keyword"
-          placeholder="책 제목을 입력해주세요"
+          placeholder="도서 제목을 입력해주세요"
           @keydown.enter="searchBook"
           class="search-input"
         />
@@ -94,8 +94,8 @@
       data.next = responseData.next;
       data.totalPages = Math.ceil(responseData.total / responseData.size);
     } catch (error) {
-      console.error("책 검색 오류:", error);
-      alert("책 정보를 불러오는 데 문제가 발생했습니다.");
+      console.error("도서 검색 오류:", error);
+      alert("도서 정보를 불러오는 데 문제가 발생했습니다.");
     }
   };
   
