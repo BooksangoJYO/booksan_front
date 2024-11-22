@@ -1,44 +1,79 @@
 <script setup>
+import api from '@/api/api';
 import AdminHeader from '@/components/admin/AdminHeader.vue';
 import ChartCard from '@/components/admin/ChartCard.vue';
 import StatCard from '@/components/admin/StatCard.vue';
-import { computed, ref } from 'vue';
-const currentPage = ref('대시보드');
+import { computed, onMounted, ref } from 'vue';
 
-const weekDates = ref(['11/12', '11/13', '11/14', '11/15', '11/16', '11/17', '11/18']);
+const currentPage = ref('대시보드');
+const weekDates = ref([]);
+
 const stats = ref({
-  users: [120, 145, 135, 150, 170, 160, 180],
-  trades: [85, 90, 100, 110, 120, 115, 125],
-  chats: [200, 220, 240, 230, 250, 260, 280],
-  signups: [50, 55, 60, 65, 70, 75, 80]
+  users: [],
+  trades: [],
+  chats: [],
+  signups: []
 });
 
-const statsData = computed(() => [
-  {
-    title: '총 이용자',
-    value: stats.value.users[stats.value.users.length - 1],
-    icon: 'group',
-    change: '+12%'
-  },
-  {
-    title: '거래 수',
-    value: stats.value.trades[stats.value.trades.length - 1],
-    icon: 'shopping_cart',
-    change: '+8%'
-  },
-  {
-    title: '채팅방',
-    value: stats.value.chats[stats.value.chats.length - 1],
-    icon: 'chat',
-    change: '+15%'
-  },
-  {
-    title: '신규 가입',
-    value: stats.value.signups[stats.value.signups.length - 1],
-    icon: 'person_add',
-    change: '+5%'
+const getWeeklyStats = async () => {
+  try {
+    const response = await api.getWeeklyStats();
+    const data = await response.data.weeklyData;
+    const sortedData = [...data].reverse();
+
+    weekDates.value = sortedData.map(item => item.date);
+    stats.value = {
+      users: sortedData.map(item => item.users),
+      trades: sortedData.map(item => item.deals),
+      chats: sortedData.map(item => item.chats),
+      signups: sortedData.map(item => item.signups)
+    };
+  } catch (error) {
+    console.error('통계 데이터 가져오기 실패:', error)
   }
-]);
+};
+
+const calculateDailyGrowth = (today, yesterday) => {
+  if (yesterday === 0) return today > 0 ? '+100%' : '0%';
+  const growthRate = ((today - yesterday) / yesterday) * 100;
+  return growthRate > 0 ? `+${growthRate.toFixed(1)}%` : `${growthRate.toFixed(1)}%`;
+};
+
+const statsData = computed(() => {
+  const lastIndex = stats.value.users.length - 1;
+  const secondLastIndex = lastIndex - 1;
+  
+  return [
+    {
+      title: '이용자 수',
+      value: stats.value.users[lastIndex] || 0,
+      icon: 'group',
+      iconClass: 'text-blue-500',
+      change: calculateDailyGrowth(stats.value.users[lastIndex] || 0, stats.value.users[secondLastIndex] || 0)
+    },
+    {
+      title: '거래 수',
+      value: stats.value.trades[lastIndex] || 0,
+      icon: 'shopping_cart',
+      iconClass: 'text-red-500',
+      change: calculateDailyGrowth(stats.value.trades[lastIndex] || 0, stats.value.trades[secondLastIndex] || 0)
+    },
+    {
+      title: '채팅방',
+      value: stats.value.chats[lastIndex] || 0,
+      icon: 'chat',
+      iconClass: 'text-green-500',
+      change: calculateDailyGrowth(stats.value.chats[lastIndex] || 0, stats.value.chats[secondLastIndex] || 0)
+    },
+    {
+      title: '신규 가입',
+      value: stats.value.signups[lastIndex] || 0,
+      icon: 'person_add',
+      iconClass: 'text-yellow-500',
+      change: calculateDailyGrowth(stats.value.signups[lastIndex] || 0, stats.value.signups[secondLastIndex] || 0)
+    }
+  ];
+});
 
 const chartData = computed(() => [
   {
@@ -80,17 +115,17 @@ const chartData = computed(() => [
 ]);
 
 const menuItems = [
-  { name: '대시보드', path: '/dashboard' },
-  { name: '유저 관리', path: '/users' },
-  { name: '가판대 관리', path: '/stores' },
-  { name: '데이터 업로드', path: '/upload' }
+  { name: '대시보드', path: '/dashboard' }
 ];
+
+onMounted(async () => {
+  await getWeeklyStats();
+});
 </script>
 
 <template>
   <AdminHeader/>
   <div class="dashboard">
-    <!-- 사이드바 -->
     <div class="sidebar">
       <h2 class="menu-title">관리자 메뉴</h2>
       <nav class="menu-list">
@@ -107,11 +142,10 @@ const menuItems = [
       </nav>
     </div>
 
-    <!-- 메인 콘텐츠 -->
     <div class="main-content">
       <header class="dashboard-header">
         <h1 class="dashboard-title">대시보드 현황</h1>
-        <p class="dashboard-subtitle">지난 7일간의 서비스 현황입니다.</p>
+        <p class="dashboard-subtitle">오늘의 서비스 현황입니다.</p>
       </header>
 
       <div class="stats-grid">
@@ -136,16 +170,16 @@ const menuItems = [
 <style scoped>
 .dashboard {
   display: flex;
-  min-height: 100vh;
   background-color: #f3f4f6;
   padding: 0 2rem;
+  height: auto; /* 100%에서 변경 */
 }
 
 .sidebar {
   width: 200px;
   background: white;
   padding: 2rem 0;
-  height: 100vh;
+  height: auto;
   border-right: 1px solid #e5e7eb;
 }
 
@@ -185,6 +219,8 @@ const menuItems = [
   flex: 1;
   padding: 2rem 1.5rem;
   margin-left: 1rem;
+  height: auto;
+  background-color: #f3f4f6; /* 추가 */
 }
 
 .dashboard-header {
@@ -213,6 +249,7 @@ const menuItems = [
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
+  padding-bottom: 2rem; /* 추가 */
 }
 
 @media (max-width: 1024px) {

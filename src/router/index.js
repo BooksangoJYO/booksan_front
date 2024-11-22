@@ -113,7 +113,10 @@ const router = createRouter({
                 loginGuard(to,from,next);
             }
         },
-        { path: '/admin/dashBoard', component: DashBoard },
+        { path: '/admin/dashBoard', component: DashBoard,
+            beforeEnter: (to, from, next) => {
+            loginGuard(to,from,next);
+        }},
     ]
 });
 

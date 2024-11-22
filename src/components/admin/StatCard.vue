@@ -3,20 +3,26 @@ defineProps({
   title: String,
   value: Number,
   icon: String,
+  iconClass: String,
   change: String
-})
+});
 </script>
 
 <template>
   <div class="stat-card">
     <div class="stat-header">
-      <div class="stat-icon">
-        <i class="material-icons">{{ icon }}</i>
-      </div>
-      <span class="stat-change">{{ change }}</span>
+      <i class="material-icons" :class="iconClass">{{ icon }}</i>
+      <span :class="[
+        'change-value',
+        change.includes('+') ? 'text-emerald-500' : 'text-red-500'
+      ]">
+        {{ change }}
+      </span>
     </div>
-    <h3 class="stat-title">{{ title }}</h3>
-    <p class="stat-value">{{ value.toLocaleString() }}</p>
+    <div class="stat-content">
+      <h3 class="stat-title">{{ title }}</h3>
+      <p class="stat-value">{{ value }}</p>
+    </div>
   </div>
 </template>
 
@@ -35,14 +41,30 @@ defineProps({
   margin-bottom: 1rem;
 }
 
-.stat-icon {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  background-color: #e0e7ff;
+.material-icons {
+  padding: 8px;
+  border-radius: 8px;
+  background-color: rgb(243 244 246);
+  font-size: 24px;
 }
 
-.stat-change {
-  color: #10b981;
+.text-blue-500 {
+  color: #3B82F6;
+}
+
+.text-red-500 {
+  color: #EF4444;
+}
+
+.text-green-500, .text-emerald-500 {
+  color: #10B981;
+}
+
+.text-yellow-500 {
+  color: #F59E0B;
+}
+
+.change-value {
   font-size: 0.875rem;
   font-weight: 600;
 }
@@ -57,9 +79,5 @@ defineProps({
   font-size: 1.5rem;
   font-weight: bold;
   color: #1f2937;
-}
-
-.material-icons {
-  font-size: 24px;
 }
 </style>

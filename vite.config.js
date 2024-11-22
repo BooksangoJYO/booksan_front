@@ -33,6 +33,11 @@ export default defineConfig({
     secure: false, // 요청을 보낼 프록시 서버 URL
 
       },
+      '/api/admin': {
+        target: 'http://localhost:8081',
+        changeOrigin: true, // 추가
+    secure: false, // 요청을 보낼 프록시 서버 URL
+      },
       '/ws-stomp': {
         target: 'http://localhost:8080',
         changeOrigin: true, // 추가

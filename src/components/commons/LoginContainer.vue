@@ -18,6 +18,7 @@
         </div>
         <RouterLink to="/main/chatPage" class="nav-link">북싼챗</RouterLink>
         <RouterLink to="/mypage" class="nav-link">마이페이지</RouterLink>
+        <RouterLink to="/admin/dashboard" class="nav-link"v-if="loginInfo.role&& loginInfo.role==admin">관리자 페이지 전환</RouterLink>
         <button class="icon-button" @click="handleLogout">로그아웃</button>
         <p>{{loginInfo.nickName}}</p>
     </div>
