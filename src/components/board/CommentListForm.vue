@@ -5,7 +5,7 @@
       <div class="review-container" v-for="(review, index) in reviews" :key="index">
         <div class="review-header">
           <span class="review-author">{{ review.email }}</span>
-          <span class="review-date">{{ review.insertDatetime }}</span>
+          <span class="review-date">{{ formatDate(review.insertDatetime) }}</span>
         </div>
         <div class="review-content" v-if="!review.isEditing">
           <p>{{ review.content }}</p>
@@ -31,6 +31,26 @@ import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 import { defineEmits, defineProps } from 'vue';
 import { useRoute } from 'vue-router';
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+
+  //날짜와 시간 포맷팅
+  const year = date.getFullYear();
+  const month = String(date.getMonth()+1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2,'0');
+
+  const hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2,'0');
+
+  //오전,오후 처리
+  const ampm = hours >= 12 ? '오후' : '오전';
+  const formattedHours = hours % 12 || 12;
+
+  //최종 포맷 조합
+  return `${year}-${month}-${day} ${ampm} ${formattedHours}: ${minutes}`;
+}
+
 
 const store = useMainStore();
 const{loginInfo} = storeToRefs(store);
@@ -170,13 +190,13 @@ button.delete-button:hover {
 }
 /* 수정 상자 스타일 */
 .editing-textarea {
-  width: 500px !important;/* 원하는 너비 지정 */
+  width: 320px !important;/* 원하는 너비 지정 */
   height: 100% !important;/* 원하는 높이 지정 */
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  resize: vertical;
+  resize: none;
   background-color: #fff;
   margin-right: auto; /* 왼쪽으로 붙이기 */
 }

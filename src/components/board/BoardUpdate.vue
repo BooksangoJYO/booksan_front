@@ -53,11 +53,7 @@
             <div class="book-field">
               <dt class="field-label">ISBN</dt>
               <dd class="field-value">{{ selectedBook.isbn }}</dd>
-            </div>
-            <div class="book-field">
-              <span class="field-label">출판일</span>
-              <span class="field-value">{{ form.publishDate }}</span>
-            </div>
+            </div>            
             <div class="book-field">
               <dt class="field-label">카테고리</dt>
               <dd class="field-value">                
@@ -428,7 +424,7 @@
   font-weight: bold;
   color: #8b4513;
   width: 100px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   
 }
 
@@ -562,7 +558,7 @@ margin: 20px 0; /* 위아래 간격 */
 }
 
 .book-field {
-  margin-bottom: 17px;
+  margin-bottom: 25px;
   display: flex;
   align-items: center;
   gap: 10px;  
@@ -573,6 +569,7 @@ margin: 20px 0; /* 위아래 간격 */
   display: flex;
   gap: 10px;
   margin-bottom: 60px;
+  margin-top: 10px;
 }
 
 .status-button-group button {

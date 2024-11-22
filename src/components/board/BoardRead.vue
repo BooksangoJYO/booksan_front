@@ -69,17 +69,26 @@
 
 
             <div class="board-details">
+              <button 
+                v-if="isWriter"
+                class="status-button" 
+                @click="toggleSaleStatus"
+              >                  
+                {{ board.status === 'N' ? '판매 중' : '판매 완료' }}
+              </button>
+              <button
+                v-if="!isWriter"
+                class="status-view-button"
+              >
+                {{  board.status === 'N' ? '판매 중' : '판매 완료' }}            
+              </button>
               <h1 class="board-title">{{ board.title }}</h1>
+              
               <ul class="board-metadata">
                 <li class="aligned-item">
-                  <strong>상품명</strong> {{ book.title }}
-                  <button 
-                    v-if="isWriter"
-                    class="status-button" 
-                    @click="toggleSaleStatus"
-                  >
-                    {{ board.status === 'N' ? '판매 중' : '판매 완료' }}
-                  </button>
+                  <div class="board-title-container">
+                    <strong>상품명</strong> {{ book.title }}                      
+                  </div>
                 </li>
                 <li><strong>카테고리</strong> {{ categoryName }}</li>
                 <li><strong>판매자</strong> {{ board.email }}</li>
@@ -141,7 +150,7 @@
               <p><strong>ISBN</strong> {{ book.isbn }}</p>
               <p class="book-description">
                 <strong>책 소개</strong>
-                <span class="description-text">{{ book.description }}</span>
+                <span class="description-text">{{ bookDescription }}</span>
               </p>
             </div>
           </div>
@@ -171,225 +180,231 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
 import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
-    const store = useMainStore();
-    const{loginInfo} = storeToRefs(store);
-    const route = useRoute();
-    const router = useRouter();
-    const board = ref(null); // 게시물 정보
-    const book = ref(null); // 도서 정보
-    const reviews = ref([]); // 리뷰 정보
-    const isModalVisible = ref(false); //삭제 모달 표시 여부
-    const isWriter = ref(false); // 작성자인지 여부
-    const isBookMarked = ref(false);
 
-    const categoryMap = {
-      1: "철학",
-      2: "종교",
-      3: "사회 과학",
-      4: "순수 과학",
-      5: "기술 과학",
-      6: "예술",
-      7: "언어",
-      8: "문학",
-      9: "역사",
-      10: "기타",
-    };
+//책소개 부분에 정보가 없을 경우 글씨 띄우는 부분
+const bookDescription = computed (() => {
+  return book.value?.description || "책 소개 정보가 없습니다.";
+});
 
-    //가판대 판매여부 변경 버튼
-    async function toggleSaleStatus() {
-      const newStatus = board.value.status === 'N' ? 'Y' : 'N';
-      
-      try{
-        // API 호출로 서버에 변경 사항 저장
-        await api.updateBoardStatus(board.value.dealId, newStatus)
-        
-        //상태 업데이트
-        board.value.status = newStatus;
+const store = useMainStore();
+const{loginInfo} = storeToRefs(store);
+const route = useRoute();
+const router = useRouter();
+const board = ref(null); // 게시물 정보
+const book = ref(null); // 도서 정보
+const reviews = ref([]); // 리뷰 정보
+const isModalVisible = ref(false); //삭제 모달 표시 여부
+const isWriter = ref(false); // 작성자인지 여부
+const isBookMarked = ref(false);
 
-        //알림 메세지
-        alert(`판매 상태가 ${newStatus === 'N' ? '판매중' : '판매완료'}로 변경되었습니다.`);
-    
-      } catch(error) {
-        console.error('판매 상태 변경 오류: ',error);
-        alert('판매 상태를 변경하지 못했습니다.')
-      }
-      }
-    // 이미지 슬라이드 관련 코드
-    const images = ref([]);
-    const currentIndex = ref(0)
+const categoryMap = {
+  1: "철학",
+  2: "종교",
+  3: "사회 과학",
+  4: "순수 과학",
+  5: "기술 과학",
+  6: "예술",
+  7: "언어",
+  8: "문학",
+  9: "역사",
+  10: "기타",
+};
 
-    const nextSlide = () => {
-      if (currentIndex.value < images.value.length - 1) {
-        currentIndex.value++
-      }
-    }
-
-    const prevSlide = () => {
-      if (currentIndex.value > 0) {
-        currentIndex.value--
-      }
-    }
-
-    const goToSlide = (index) => {
-      currentIndex.value = index
-    }
-    // 여기까지
-
-    // 계산된 속성(카테고리 명 이름 보여주기 위한 함수)
-    const categoryName = computed(() => {
-      if (board.value) {
-        return categoryMap[board.value.booksCategoryId] || "알 수 없음";
-      }
-      return "알 수 없음";
-    });
-    
-    
-
-    //댓글 목록을 가져와서 reviews 배열을 갱신하는 함수
-    async function getCommentList(isbn) {
-      try {
-        const response = await api.getCommentList(isbn);
-        if (response.data.status === 'success') {
-          reviews.value = response.data.bookCommentList; //최신 댓글 목록으로 업데이트
-        } else {
-          console.error('댓글 목록을 가져오는데 실패했습니다.',response.data.message);
-        } 
-      } catch (error) {
-          console.error('댓글 목록을 가져오는 중 오류 발생:', error);
-      }
-    }
-
-    
-    
-
-    //삭제 모달 열기
-    function showDeleteModal() {
-      isModalVisible.value = true;
-    }
-
-    //삭제 모달 닫기
-    function closeModal() {
-      isModalVisible.value = false;
-    }
-
-    //삭제 확인 함수
-    async function confirmDelete() {
-      try {
-        const response = await api.deleteBoard(board.value.dealId, {email: board.value.email});
-        if (response.data.status === "success") {
-          alert("게시글이 삭제되었습니다.");
-          goToBoardList(); // 삭제후 목록 페이지로 이동
-        } else {
-          alert("삭제 실패: " + response.data.message);
-        }
-      } catch (error) {
-        console.error("게시글 삭제 중 오류발생:",error);
-        if(error.status === 401){
-            alert('로그인이 필요한 기능입니다.')
-        }
-        else{
-            alert('삭제에 실패했습니다.')
-        }
-      } finally{
-        closeModal(); // 모달 닫기
-      }
-    }
-
-
-    //수정 페이지로 이동하는 함수
-    function goToBoardUpdate() {
-        const dealId = board.value.dealId;
-        console.log("책정보 보내기:", book.value);
-        if(dealId) {
-            router.push({
-                path: `/board/update/${dealId}`,
-                query: {
-                    isbn: book.value.isbn //ISBN만 전달
-                }
-            });
-        }
-    }
-
-    //목록 페이지로 이동
-    function goToBoardList() {
-        router.push('/board/list');
-    }
+//가판대 판매여부 변경 버튼
+async function toggleSaleStatus() {
+  const newStatus = board.value.status === 'N' ? 'Y' : 'N';
   
-    //게시물 정보 조회 함수
-    async function getBoardRead(dealId) {
-      try{
-          const response = await api.getBoardRead(dealId);
-          board.value = response.data.data; //게시물 데이터
-          images.value = board.value.imageFileDTOList; //이미지 데이터
-          book.value = response.data.bookData; //책 데이터
-          isWriter.value = response.data.isWriter; // 작성자인지 여부
-          isBookMarked.value =  response.data.data.isBookMarked === 'Y'
-      } catch (error) {
-          console.error('게시물 정보를 가져오는 중 오류 발생:', error);
-      }
-    }
+  try{
+    // API 호출로 서버에 변경 사항 저장
+    await api.updateBoardStatus(board.value.dealId, newStatus)
     
+    //상태 업데이트
+    board.value.status = newStatus;
 
-    // 페이지 마운트 시 호출
-    onMounted(async () => {
-        const dealId = route.params.dealId;
-        
-        // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
-        await getBoardRead(dealId); //게시글 단건조회
-        if (board.value && board.value.isbn) {
-            await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
-        }
-    });
-  
-    //채팅방 생성후 이동
-    const openChat = async () =>{
-        if(!loginInfo.value.email){
-          emitter.emit('show-modal');
-        }
-        else{
-          console.log("오픈챗실행");
-          const writerEmail = board.value.email;
-          const dealId = board.value.dealId;
-          await api.postChatRoom(board.value.title,dealId,writerEmail)
-          .then(response => {
-              const chatRoom = response.data; // 서버에서 반환된 데이터
-              sessionStorage.setItem('chat.roomId',chatRoom.roomId);
-              window.open(
-                'http://localhost:5173/chat/room',
-                '채팅방',
-                'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
-              );
-          })
-          .catch(err => {
-              alert("서버 오류입니다. 다시시도해주세요");
-          });
-        }
-    }
+    //알림 메세지
+    alert(`판매 상태가 ${newStatus === 'N' ? '판매중' : '판매완료'}로 변경되었습니다.`);
 
-    const openSellerChat = async () => {
-      window.open(
-              'http://localhost:5173/chat/room/'+board.value.dealId,
-              '채팅방',
-              'width=800,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
-            );
-    }
+  } catch(error) {
+    console.error('판매 상태 변경 오류: ',error);
+    alert('판매 상태를 변경하지 못했습니다.')
+  }
+  }
+// 이미지 슬라이드 관련 코드
+const images = ref([]);
+const currentIndex = ref(0)
 
-    const toggleBookmark = async ()=>{
-      if(!loginInfo.value.email){
-        emitter.emit('show-modal');
-      }
-      else{
-        const response = await api.insertBookMark(board.value.dealId); 
-        if(response.data.status){
-          isBookMarked.value = !isBookMarked.value;
-        } 
-      }
+const nextSlide = () => {
+  if (currentIndex.value < images.value.length - 1) {
+    currentIndex.value++
+  }
+}
+
+const prevSlide = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+  }
+}
+
+const goToSlide = (index) => {
+  currentIndex.value = index
+}
+// 여기까지
+
+// 계산된 속성(카테고리 명 이름 보여주기 위한 함수)
+const categoryName = computed(() => {
+  if (board.value) {
+    return categoryMap[board.value.booksCategoryId] || "알 수 없음";
+  }
+  return "알 수 없음";
+});
+
+
+
+//댓글 목록을 가져와서 reviews 배열을 갱신하는 함수
+async function getCommentList(isbn) {
+  try {
+    const response = await api.getCommentList(isbn);
+    if (response.data.status === 'success') {
+      reviews.value = response.data.bookCommentList; //최신 댓글 목록으로 업데이트
+    } else {
+      console.error('댓글 목록을 가져오는데 실패했습니다.',response.data.message);
+    } 
+  } catch (error) {
+      console.error('댓글 목록을 가져오는 중 오류 발생:', error);
+  }
+}
+
+
+
+
+//삭제 모달 열기
+function showDeleteModal() {
+  isModalVisible.value = true;
+}
+
+//삭제 모달 닫기
+function closeModal() {
+  isModalVisible.value = false;
+}
+
+//삭제 확인 함수
+async function confirmDelete() {
+  try {
+    const response = await api.deleteBoard(board.value.dealId, {email: board.value.email});
+    if (response.data.status === "success") {
+      alert("게시글이 삭제되었습니다.");
+      goToBoardList(); // 삭제후 목록 페이지로 이동
+    } else {
+      alert("삭제 실패: " + response.data.message);
     }
+  } catch (error) {
+    console.error("게시글 삭제 중 오류발생:",error);
+    if(error.status === 401){
+        alert('로그인이 필요한 기능입니다.')
+    }
+    else{
+        alert('삭제에 실패했습니다.')
+    }
+  } finally{
+    closeModal(); // 모달 닫기
+  }
+}
+
+
+//수정 페이지로 이동하는 함수
+function goToBoardUpdate() {
+    const dealId = board.value.dealId;
+    console.log("책정보 보내기:", book.value);
+    if(dealId) {
+        router.push({
+            path: `/board/update/${dealId}`,
+            query: {
+                isbn: book.value.isbn //ISBN만 전달
+            }
+        });
+    }
+}
+
+//목록 페이지로 이동
+function goToBoardList() {
+    router.push('/board/list');
+}
+
+//게시물 정보 조회 함수
+async function getBoardRead(dealId) {
+  try{
+      const response = await api.getBoardRead(dealId);
+      board.value = response.data.data; //게시물 데이터
+      images.value = board.value.imageFileDTOList; //이미지 데이터
+      book.value = response.data.bookData; //책 데이터
+      isWriter.value = response.data.isWriter; // 작성자인지 여부
+      isBookMarked.value =  response.data.data.isBookMarked === 'Y'
+  } catch (error) {
+      console.error('게시물 정보를 가져오는 중 오류 발생:', error);
+  }
+}
+
+
+// 페이지 마운트 시 호출
+onMounted(async () => {
+    const dealId = route.params.dealId;
+    
+    // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
+    await getBoardRead(dealId); //게시글 단건조회
+    if (board.value && board.value.isbn) {
+        await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
+    }
+});
+
+//채팅방 생성후 이동
+const openChat = async () =>{
+    if(!loginInfo.value.email){
+      emitter.emit('show-modal');
+    }
+    else{
+      console.log("오픈챗실행");
+      const writerEmail = board.value.email;
+      const dealId = board.value.dealId;
+      await api.postChatRoom(board.value.title,dealId,writerEmail)
+      .then(response => {
+          const chatRoom = response.data; // 서버에서 반환된 데이터
+          sessionStorage.setItem('chat.roomId',chatRoom.roomId);
+          window.open(
+            'http://localhost:5173/chat/room',
+            '채팅방',
+            'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+          );
+      })
+      .catch(err => {
+          alert("서버 오류입니다. 다시시도해주세요");
+      });
+    }
+}
+
+const openSellerChat = async () => {
+  window.open(
+          'http://localhost:5173/chat/room/'+board.value.dealId,
+          '채팅방',
+          'width=800,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+        );
+}
+
+const toggleBookmark = async ()=>{
+  if(!loginInfo.value.email){
+    emitter.emit('show-modal');
+  }
+  else{
+    const response = await api.insertBookMark(board.value.dealId); 
+    if(response.data.status){
+      isBookMarked.value = !isBookMarked.value;
+    } 
+  }
+}
 </script>
   
 <style scoped>
 .main-container {
-  max-width: 1150px;
+  max-width: 1010px;
   width: 100%;
   margin: 0 auto;  /* 중앙 정렬을 위해 필수 */
 }
@@ -423,13 +438,21 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 }
 
 .status-button {
-  background-color: #8b4513; /* 갈색 버튼 */
-  color: white;
-  padding: 10px 20px;
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정해 오른쪽으로 밀림 */
+  background-color: #8b4513; 
+  color: #ffffff; /* 버튼 텍스트 색상 */
+  padding: 5px 10px; /* 좌우 패딩을 줄임 */
   border: none;
   border-radius: 5px;
+  font-size: 16px; /* 텍스트 크기 조정 */
+  text-align: center;
   cursor: pointer;
-  font-size: 14px;
+  font-weight: bold;
+  flex-shrink: 0; /* 버튼 크기 고정 */
+  min-width: 80px; /* 최소 너비 */
+  max-width: 100px; /* 최대 너비 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+
 }
 
 .status-button:hover {
@@ -442,8 +465,6 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
   cursor: pointer;
   transition: transform 0.3s ease, filter 0.3s ease; /* 부드러운 애니메이션 */
 }
-
-
 
 .board-info {
   display: flex;
@@ -472,13 +493,13 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 }
 
 .board-details {
-  flex: 1;
+  position: relative; /* 상대적 위치 설정 */  
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   text-align: left;
   margin-left: 0px; /* 왼쪽 여백 제거 */
-  max-width: 600px; /* 텍스트 영역의 최대 너비 설정 */
+  max-width: 100%; /* 텍스트 영역의 최대 너비 설정 */
 }
 
 .book-info {
@@ -495,7 +516,10 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 .aligned-item {
   display: flex; /* 플렉스 박스로 설정 */
   align-items: flex-start; /* 항목을 위쪽 정렬 */
+  
+  height: 40px;
 }
+
 
 .aligned-item .status-button {
   margin-left: 20px;
@@ -663,11 +687,54 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 }
 
 .board-title {
-  font-size: 2.5em; /* 제목 크기 증가 */
+  font-size: 2.5em; /* 제목 크기 */
   font-weight: bold;
-  margin-bottom: 20px; /* 아래 여백 */
   text-align: left; /* 왼쪽 정렬 */
+  word-wrap: break-word; /* 단어가 길면 줄바꿈 */
+  overflow-wrap: break-word; /* 단어가 길어질 경우 줄바꿈 */
+  line-height: 1.4; /* 줄 간격 */
+  white-space: normal; /* 텍스트 줄바꿈 허용 */
+  max-width: 100%; /* 부모 요소의 너비를 넘지 않도록 제한 */
 }
+
+.status-view-button {
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정해 오른쪽으로 밀림 */  
+  background-color: #8b4513; 
+  color: #ffffff; /* 버튼 텍스트 색상 */
+  padding: 5px 10px; /* 좌우 패딩을 줄임 */
+  border: none;
+  border-radius: 5px;
+  font-size: 16px; /* 텍스트 크기 조정 */
+  text-align: center;
+  cursor: default; /* 버튼 클릭 비활성화 */
+  font-weight: bold;
+  flex-shrink: 0; /* 버튼 크기 고정 */
+  min-width: 80px; /* 최소 너비 */
+  max-width: 100px; /* 최대 너비 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.board-title-container {
+  display: block; /* flex 대신 block 사용 */
+  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+  max-width: 100%; /* 부모 컨테이너 너비를 초과하지 않도록 설정 */
+  line-height: 1.5; /* 줄 간격 */
+}
+
+.board-title-container strong {
+  display: inline-block; /* strong 태그를 블록 형태로 변경 */
+  margin-bottom: 5px; /* 제목과 텍스트 사이 여백 */
+}
+
+.board-title-container span {
+  display: block; /* 텍스트 줄바꿈 허용 */
+  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+  white-space: normal; /* 텍스트 줄바꿈 허용 */
+  max-width: 100%; /* 부모 컨테이너 초과 방지 */
+}
+
 
 .board-metadata {
   list-style: none; /* 리스트 스타일 제거 */
@@ -676,17 +743,26 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 }
 
 .board-metadata li {
-  font-size: 1.2em; /* 항목 글씨 크기 증가 */
-  margin-bottom: 10px; /* 각 항목 간 간격 증가 */
-  display: flex; /* 라벨과 값을 나란히 배치 */
-  align-items: center; /* 수직 정렬 */
-  white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+  font-size: 1.2em;
+  margin: 15px 0;
+  display: block; /* 텍스트 줄바꿈을 위해 flex 제거 */
+  white-space: normal; /* 줄바꿈 허용 */
+  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* CSS3 표준 줄바꿈 */
 }
 
 ul.board-metadata {
   width: 600px; /* 기존 크기에서 좌우 너비를 확장 */
   max-width: 100%; /* 부모 요소의 크기를 초과하지 않도록 설정 */
   margin: 0 auto; /* 중앙 정렬 */
+}
+
+.board-metadata li {
+  font-size: 1.2em; /* 항목 글씨 크기 */
+  margin: 15px 0; /* 상품명과 동일한 위아래 간격 */
+  display: flex; /* 라벨과 값을 나란히 배치 */
+  align-items: center; /* 수직 정렬 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
 
 
@@ -732,6 +808,7 @@ button {
   opacity: 0.5;
   background-color: #8D6E63;  /* 더 밝은 브라운 */
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);  /* 안쪽 하얀 테두리 효과 */
+  margin-right:5px;
 }
 
 /* 버튼별 색상 설정 */
