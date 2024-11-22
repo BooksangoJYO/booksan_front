@@ -85,10 +85,8 @@
               <h1 class="board-title">{{ board.title }}</h1>
               
               <ul class="board-metadata">
-                <li class="aligned-item">
-                  <div class="board-title-container">
-                    <strong>상품명</strong> {{ book.title }}                      
-                  </div>
+                <li class="aligned-item">                  
+                    <strong>상품명</strong> {{ book.title }}                  
                 </li>
                 <li><strong>카테고리</strong> {{ categoryName }}</li>
                 <li><strong>판매자</strong> {{ board.email }}</li>
@@ -181,13 +179,14 @@ import { useRoute, useRouter } from 'vue-router';
 import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
 import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
 
+
 //책소개 부분에 정보가 없을 경우 글씨 띄우는 부분
 const bookDescription = computed (() => {
   return book.value?.description || "책 소개 정보가 없습니다.";
 });
 
 const store = useMainStore();
-const{loginInfo} = storeToRefs(store);
+const{loginInfo,paginationData,keyword} = storeToRefs(store);
 const route = useRoute();
 const router = useRouter();
 const board = ref(null); // 게시물 정보
@@ -293,6 +292,8 @@ async function confirmDelete() {
     const response = await api.deleteBoard(board.value.dealId, {email: board.value.email});
     if (response.data.status === "success") {
       alert("게시글이 삭제되었습니다.");
+      keyword.value='';
+      paginationData.value.page=1;
       goToBoardList(); // 삭제후 목록 페이지로 이동
     } else {
       alert("삭제 실패: " + response.data.message);
@@ -327,7 +328,10 @@ function goToBoardUpdate() {
 
 //목록 페이지로 이동
 function goToBoardList() {
-    router.push('/board/list');
+    router.push({
+     path:'/board/list',
+     query: {page: route.query.page}, //쿼리 파라미터로 페이지 번호 복원
+    });
 }
 
 //게시물 정보 조회 함수
@@ -715,40 +719,31 @@ const toggleBookmark = async ()=>{
 }
 
 .board-title-container {
-  display: block; /* flex 대신 block 사용 */
+  display: block; /* 텍스트 줄바꿈을 위해 block으로 설정 */
   word-wrap: break-word; /* 긴 단어 줄바꿈 */
-  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
-  max-width: 100%; /* 부모 컨테이너 너비를 초과하지 않도록 설정 */
+  overflow-wrap: break-word; /* CSS3 표준 줄바꿈 */
+  max-width: 100%; /* 부모 컨테이너를 초과하지 않도록 설정 */
+  white-space: normal; /* 줄바꿈 허용 */
   line-height: 1.5; /* 줄 간격 */
+  padding: 5px; /* 박스 안 여백 */
+  box-sizing: border-box; /* 패딩을 포함한 크기 계산 */
 }
 
 .board-title-container strong {
-  display: inline-block; /* strong 태그를 블록 형태로 변경 */
-  margin-bottom: 5px; /* 제목과 텍스트 사이 여백 */
+  display: inline-block; /* 강제로 줄바꿈되지 않도록 설정 */
+  margin-bottom: 5px; /* 제목과 텍스트 사이 여백 추가 */
 }
 
 .board-title-container span {
-  display: block; /* 텍스트 줄바꿈 허용 */
-  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  display: inline; /* 줄바꿈을 고려한 텍스트 스타일 */
+  white-space: normal; /* 줄바꿈 허용 */
   overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
-  white-space: normal; /* 텍스트 줄바꿈 허용 */
-  max-width: 100%; /* 부모 컨테이너 초과 방지 */
 }
-
 
 .board-metadata {
   list-style: none; /* 리스트 스타일 제거 */
   padding: 0;
   margin: 0; /* 리스트 간격 제거 */
-}
-
-.board-metadata li {
-  font-size: 1.2em;
-  margin: 15px 0;
-  display: block; /* 텍스트 줄바꿈을 위해 flex 제거 */
-  white-space: normal; /* 줄바꿈 허용 */
-  word-wrap: break-word; /* 긴 단어 줄바꿈 */
-  overflow-wrap: break-word; /* CSS3 표준 줄바꿈 */
 }
 
 ul.board-metadata {
@@ -757,34 +752,33 @@ ul.board-metadata {
   margin: 0 auto; /* 중앙 정렬 */
 }
 
+
 .board-metadata li {
-  font-size: 1.2em; /* 항목 글씨 크기 */
-  margin: 15px 0; /* 상품명과 동일한 위아래 간격 */
-  display: flex; /* 라벨과 값을 나란히 배치 */
-  align-items: center; /* 수직 정렬 */
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  display: flex; /* 수평 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 10px; /* 항목 간 간격 */
+  margin-bottom: 15px; /* 항목 간 간격 */
+  padding: 5px 0; /* 위아래 패딩 */
 }
 
-
 .board-metadata li strong {
-  width: 150px; 
-  text-align: left;
-  display: inline-block;
-  color: #8D6E63;
-  font-size: 1.4em;
-  white-space: nowrap;
+  flex-shrink: 0; /* 강제로 크기를 줄이지 않음 */
+  width: 150px; /* 고정 너비 */
+  text-align: left; /* 왼쪽 정렬 */
+  color: #8D6E63; /* 글자 색상 */
+  font-size: 1.2em; /* 글자 크기 */
+  line-height: 1; /* 줄 간격 */
+  margin: 0; /* 여백 초기화 */
 }
 
 .board-metadata li span {
-  display: inline-block; /* inline 요소의 크기 제어 */
-  max-width: 100%; /* 부모 요소 너비에 맞게 제한 */
-  font-size: 1.1em; /* 글자 크기 */
+  flex: 1; /* 남은 공간을 텍스트가 채움 */
+  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
   text-align: left; /* 텍스트 왼쪽 정렬 */
-  color: #8B4513; /* 텍스트 색상 */
-  white-space: normal; /* 줄 바꿈 허용 */
-  word-wrap: break-word; /* 단어가 너무 길 경우 줄 바꿈 */
-  overflow-wrap: break-word; /* 단어가 화면을 넘어갈 경우 줄 바꿈 */
-  line-height: 1.5; /* 줄 간격 설정 */
+  font-size: 1.1em; /* 텍스트 크기 */
+  color: #2C3E50; /* 텍스트 색상 */
+  line-height: 1.5; /* 줄 간격 */
 }
 
 .button-group {

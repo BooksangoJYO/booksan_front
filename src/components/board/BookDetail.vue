@@ -284,14 +284,14 @@ async function addComment(commentData) {
 
 
   .book-detail-container {
-    padding: 20px;
-    max-width: 800px;
+    padding: 10px;
+    width: 800px;
     margin: 0 auto; /* 중앙 정렬 */
   }
   
   .book-info {
     display: flex;
-    gap: 20px;
+    gap: 15px;
   }
   
   .book-image {
@@ -315,8 +315,8 @@ async function addComment(commentData) {
   }
 
 .board-section {
-  margin-top: 70px; /* 위쪽 간격 */
-  margin-bottom: 20px; /* 아래쪽 간격 */
+  margin-top: 50px; /* 위쪽 간격 */
+  margin-bottom: 15px; /* 아래쪽 간격 */
 }
 
 .board-item {
@@ -420,11 +420,11 @@ opacity: 0.7;
 
 .book-description-textarea {
   width: 100%; /* 너비를 책 상세정보에 맞게 설정 */
-  height: 300px; /* 높이 설정 */
-  padding: 10px; /* 내부 여백 */
-  font-size: 14px; /* 글씨 크기 */
+  height: 250px; /* 높이 설정 */
+  padding: 8px; /* 내부 여백 */
+  font-size: 13px; /* 글씨 크기 */
   border: 1px solid #ddd; /* 테두리 */
-  border-radius: 8px; /* 둥근 모서리 */
+  border-radius: 6px; /* 둥근 모서리 */
   background-color: #f9f9f9; /* 배경색 */
   resize: none; /* 크기 조정 비활성화 */
   color: #333; /* 글씨 색상 */
