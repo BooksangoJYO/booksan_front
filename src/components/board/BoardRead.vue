@@ -23,8 +23,8 @@
                 <div class="slides" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
                   <div v-for="(image, index) in images" :key="index" class="slide">
                     <div class="image-frame">
-                      <img 
-                        :src="'/api/board/read/download/' + image.imgId" 
+                      <img  
+                        :src="API_URLS.BOARD + '/api/board/read/download/' + image.imgId"  
                         :alt="'Image ' + index"
                         class="slide-image"
                       />
@@ -150,6 +150,10 @@
   </template>
   
 <script setup>
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 import api from '@/api/api'; //api.js파일 import
 import NoneBookMarkIcon from '@/assets/images/bookMarkWhite.svg';
 import BookMarkIcon from '@/assets/images/bookMarkWhiteFill.svg';

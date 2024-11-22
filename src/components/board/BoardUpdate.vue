@@ -149,9 +149,13 @@
   </template>
   
   <script setup>
-  import { useRouter, useRoute } from "vue-router";
-  import { ref, onMounted, computed } from "vue";
+  const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
   import api from "@/api/api";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
   
   const router = useRouter();
   const route = useRoute(); // 라우트에서 dealId 가져오기
@@ -243,7 +247,7 @@
       existingImages.value = boardData.imageFileDTOList.map(img => ({
         type: "existing",
         imgId: img.imgId,
-        preview: `/api/board/read/download/${img.imgId}`
+        preview: API_URLS.BOARD +`/api/board/read/download/${img.imgId}`
       }))
     } catch (error) {
       console.error("게시글 데이터를 불러오는 중 오류 발생:", error);

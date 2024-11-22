@@ -9,6 +9,12 @@ function getCookie(name) {
   return null;
 }
 
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+  CHAT: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_CHAT : '',
+};
+
 
 const apiClient = axios.create({
   withCredentials: true,
@@ -45,7 +51,7 @@ apiClient.interceptors.response.use(
         // 인증 서버로 직접 refresh 요청
         const refreshToken = getCookie('refreshToken');
         const { data } = await apiClient.post(
-          '/api/users/refresh',
+          `${API_URLS.USERS}/api/users/refresh`,
           {}, // 요청 바디가 비어있다면 빈 객체로 보냄
           {
             headers: {
@@ -86,66 +92,66 @@ apiClient.interceptors.response.use(
 
 export default {
   login(uid, email) {
-    return apiClient.post('/api/users/auth/socialLogin', { uid, email });
+    return apiClient.post(`${API_URLS.USERS}/api/users/auth/socialLogin`, { uid, email });
   },
 
   signup(email, uid, nickname) {
-    return apiClient.post('/api/users/signup', { email, uid, nickname });
+    return apiClient.post(`${API_URLS.USERS}/api/users/signup`, { email, uid, nickname });
   },
 
   handleKakaoCallback(code) {
-    return apiClient.get(`/api/users/auth/kakao/callback?code=${code}`);
+    return apiClient.get(`${API_URLS.USERS}/api/users/auth/kakao/callback?code=${code}`);
   },
 
   checkNickname(nickname) {
-    return apiClient.get(`/api/users/checkNickname?nickname=${nickname}`);
+    return apiClient.get(`${API_URLS.USERS}/api/users/checkNickname?nickname=${nickname}`);
   },
 
   getUserInfo() {
-    return apiClient.get('/api/users/loginInfo');
+    return apiClient.get(`${API_URLS.USERS}/api/users/loginInfo`);
   },
 
   getBookMarks() {
-    return apiClient.get('/api/board/bookMark/list');
+    return apiClient.get(`${API_URLS.BOARD}/api/board/bookMark/list`);
   },
 
   getMyPosts(params) {
-    return apiClient.get('/api/board/mypage/list', {params});
+    return apiClient.get(`${API_URLS.BOARD}/api/board/mypage/list`, {params});
   },
 
   updateProfile(userData) {
-    return apiClient.post('/api/users/update', userData);
+    return apiClient.post(`${API_URLS.USERS}/api/users/update`, userData);
   },
 
   deleteAccount() {
-    return apiClient.delete('/api/users/delete');
+    return apiClient.delete(`${API_URLS.USERS}/api/users/delete`);
   },
 
   getRecommendedBooks() {
-    return apiClient.get('/api/books/recommended');
+    return apiClient.get(`${API_URLS.BOARD}/api/books/recommended`);
   },
 
   //네이버 책 검색 api(가판대 등록시 사용)
   getBooksInfo(searchTitle, page, size) {
-    const url = `/api/books/searchAll/${searchTitle}/${page}/${size}`;
+    const url = `${API_URLS.BOARD}/api/books/searchAll/${searchTitle}/${page}/${size}`;
     return apiClient.get(url);
   },
 
   //등록된 책정보 얻기(조회페이지에서 사용-선택된 책정보)
   getBookInfo(isbn) {
-    const url = `/api/books/search/${isbn}`;
+    const url = `${API_URLS.BOARD}/api/books/search/${isbn}`;
     return apiClient.get(url);
   },
 
   //책 카테고리 얻기
   getBookCategories() {
-    const url = '/api/books/categories';
+    const url = `${API_URLS.BOARD}/api/books/categories`;
     return apiClient.get(url);
   },
 
   //가판대 등록
   BoardInsert(boardData) {
-    const url = '/api/board/insert';
+    const url = `${API_URLS.BOARD}/api/board/insert`;
     console.log(boardData);
     return apiClient.post(url, boardData, {
       headers: {
@@ -156,19 +162,19 @@ export default {
 
   //가판대 단건조회
   getBoardRead(dealId) {
-    const url = `/api/board/read/${dealId}`;
+    const url = `${API_URLS.BOARD}/api/board/read/${dealId}`;
     return apiClient.get(url);  
   },
 
   //가판대 목록 가져오기
   getBoardList(page, size, keyword, availableOnly, booksCategoryId, isbn) {
-    const url = `/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}&isbn=${isbn}`;
+    const url = `${API_URLS.BOARD}/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}&isbn=${isbn}`;
     return apiClient.get(url);
   },
 
   //가판대 수정
   updateBoard(dataToSend) {
-    const url = '/api/board/update';
+    const url = `${API_URLS.BOARD}/api/board/update`;
     return apiClient.put(url, dataToSend, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -177,13 +183,13 @@ export default {
   },
 
   postChatRoom(name,dealId, writerEmail) {
-    const url = `/api/chat/room/insert//${writerEmail}`;
+    const url = `${API_URLS.CHAT}/api/chat/room/insert/${writerEmail}`;
     return apiClient.post(url,{name,dealId});
   },
 
   //게시판 삭제
   deleteBoard(dealId, email) {
-    const url = `/api/board/delete/${dealId}`;
+    const url = `${API_URLS.BOARD}/api/board/delete/${dealId}`;
     return apiClient.delete(url, {
       data: email
     });
@@ -191,25 +197,25 @@ export default {
 
   //댓글 등록
   addComment(isbn, content) {
-    const url = '/api/books/comment/insert';
+    const url =`${API_URLS.BOARD}/api/books/comment/insert`;
     return apiClient.post(url, { isbn, content });
   },
 
   //댓글 목록
   getCommentList(isbn) {
-    const url = `/api/books/comment/list/${isbn}`;
+    const url = `${API_URLS.BOARD}/api/books/comment/list/${isbn}`;
     return apiClient.get(url);
   },
 
   //댓글 수정
   updateBookComment(commentId, content, email) {
-    const url = '/api/books/comment/update';
+    const url = `${API_URLS.BOARD}/api/books/comment/update`;
     return apiClient.put(url, { commentId, content, email });
   },
 
   //댓글 삭제
   deleteBookComment(commentId, email) {
-    const url = `/api/books/comment/delete/${commentId}`;
+    const url = `${API_URLS.BOARD}/api/books/comment/delete/${commentId}`;
     return apiClient.delete(url, {
       data : { email }
     });
@@ -217,13 +223,13 @@ export default {
 
   //판매 상태 변경 API 메서드 추가
   updateBoardStatus(dealId, status) {
-    const url = `/api/board/status/update`;
+    const url =`${API_URLS.BOARD}/api/board/status/update`;
     return apiClient.put(url, {dealId,status})
   },
 
   //추천 가격 요청 API 요청
   getRecommendPrice(isbn, publishDate, bookOriginalPrice) {
-    const url = '/api/books/recommendPrice';
+    const url = `${API_URLS.BOARD}/api/books/recommendPrice`;
     return apiClient.post(url, {
       isbn: isbn,
       publishDate: publishDate,
@@ -232,63 +238,63 @@ export default {
   },
 
   insertBookMark(dealId) {
-    const url = '/api/board/bookMark/insert/'+dealId;
+    const url = `${API_URLS.BOARD}/api/board/bookMark/insert/`+dealId;
     return apiClient.post(url);
   },
 
   getBookMarkList() {
-    const url = '/api/board/bookMark/list'
+    const url = `${API_URLS.BOARD}/api/board/bookMark/list`;
     return apiClient.get(url);
   },
 
   getRoomInfo(roomId) {
-    const url = `/api/chat/room/${roomId}`;
+    const url = `${API_URLS.CHAT}/api/chat/room/${roomId}`;
     return apiClient.get(url);
   },
 
   getRoomList() {
-    const url = '/api/chat/rooms';
+    const url =`${API_URLS.CHAT}/api/chat/rooms`;
     return apiClient.get(url);
   },
 
   getRoomListByDealId(dealId){
-    const url = '/api/chat/rooms/seller/'+dealId;
+    const url = `${API_URLS.CHAT}/api/chat/rooms/seller/`+dealId;
     console.log(url);
     return apiClient.get(url);
   },
 
   getPrevMessage(roomId) {
-    const url = `/api/chat/prevMessage/${roomId}`;
+    const url = `${API_URLS.CHAT}/api/chat/prevMessage/${roomId}`;
     return apiClient.get(url);
   },
 
   getAlertRooms() {
-    const url = `/api/chat/rooms/alert`;
+    const url =`${API_URLS.CHAT}/api/chat/rooms/alert`;
     return apiClient.get(url);
   },
 
   getReservationBoards() {
-    const url = `/api/board/reservation/list`;
+    const url =`${API_URLS.BOARD}/api/board/reservation/list`;
     return apiClient.get(url);
   },
 
   insertBookMarkBook(isbn) {
-    const url = '/api/books/bookMark/book/insert/'+isbn;
+    const url =`${API_URLS.BOARD}/api/books/bookMark/book/insert/`+isbn;
     return apiClient.post(url);
   },
 
   getBookMarkBookList(page,size) {
-    const url = '/api/books/bookMark/book/list?page='+page+'&size='+size
+    const url = `${API_URLS.BOARD}/api/books/bookMark/book/list?page=`+page+'&size='+size
     return apiClient.get(url);
   },
 
   getRecommendedIsbnList() {
-    const url = '/api/board/recommend/books';
+    const url = `${API_URLS.BOARD}/api/board/recommend/books`;
     return apiClient.get(url);
   },
 
   getWeeklyStats(){
-    const url = '/api/admin/dashboard/data';
+    const url = `${API_URLS.USERS}/api/admin/dashboard/data`;
     return apiClient.get(url);
   }
 };

@@ -9,7 +9,7 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
-import { onMounted,ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -41,7 +41,6 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
-                sessionStorage.setItem('userEmail',responseData.userEmail);
                 doLogin();
                 router.replace('/');
                 //그전 url이 있으면 전페이지로 이동, 없으면 메인페이지
