@@ -22,9 +22,6 @@ const apiClient = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json'
   },
-  httpsAgent: new https.Agent({
-    rejectUnauthorized: false  // self-signed 인증서 허용
-  })
 });
 
 apiClient.interceptors.request.use(
