@@ -1,4 +1,4 @@
-import router from '@/router';
+import { useMainStore } from '@/store/mainStore';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -9,15 +9,20 @@ function getCookie(name) {
   return null;
 }
 
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+  CHAT: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_CHAT : '',
+};
+
 
 const apiClient = axios.create({
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
   }
 });
-
 
 apiClient.interceptors.request.use(
   config => {
@@ -36,6 +41,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if(error.response?.status === 500) console.log("서버에러");
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
       
@@ -44,25 +50,36 @@ apiClient.interceptors.response.use(
         
         // 인증 서버로 직접 refresh 요청
         const refreshToken = getCookie('refreshToken');
-        const { data } = await apiClient.post('http://3.38.92.146:8080/api/users/refresh', {
-          refreshToken
-        });
+        const { data } = await apiClient.post(
+          `${API_URLS.USERS}/api/users/refresh`,
+          {}, // 요청 바디가 비어있다면 빈 객체로 보냄
+          {
+            headers: {
+              refreshToken: refreshToken // 헤더에 리프레시 토큰 추가
+            }
+          }
+        );
         
         // 새 access token으로 원래 요청 재시도
         const newAccessToken = data.accessToken;
-        console.log("새로운 엑세스 토큰 "+ newAccessToken);
+        const newRefreshToken = data.refreshToken;
         Cookies.set('accessToken', newAccessToken, { 
           httpOnly: false, 
           secure: true 
         });
-        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+        if(newRefreshToken){
+          console.log("새로운 리플레쉬 토큰",newRefreshToken);
+          Cookies.set('refreshToken', newRefreshToken, { 
+            httpOnly: false, 
+            secure: true 
+          });
+        }
+        error.config.headers.accesstoken = newAccessToken;
         return apiClient(error.config);
-      } catch (error) {
+      } catch (error) { 
         // refresh 실패시 로그인으로
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        localStorage.removeItem("userData");
-        router.replace({ path: '/login' });
+        const store = useMainStore();
+        store.doLogout();
       }
     }
     return Promise.reject(error);
@@ -74,109 +91,223 @@ apiClient.interceptors.response.use(
 
 
 export default {
-  handleKakaoCallback(code) {
-    return axios.get(`http://3.38.92.146:8080/api/users/auth/kakao/callback?code=${code}`);
+  login(uid, email) {
+    return apiClient.post(`${API_URLS.USERS}/api/users/auth/socialLogin`, { uid, email });
   },
 
-  logout() {
-    return axios.post('http://3.38.92.146:8080/api/users/logout');
+  signup(email, uid, nickname) {
+    return apiClient.post(`${API_URLS.USERS}/api/users/signup`, { email, uid, nickname });
+  },
+
+  handleKakaoCallback(code) {
+    return apiClient.get(`${API_URLS.USERS}/api/users/auth/kakao/callback?code=${code}`);
+  },
+
+  checkNickname(nickname) {
+    return apiClient.get(`${API_URLS.USERS}/api/users/checkNickname?nickname=${nickname}`);
   },
 
   getUserInfo() {
-    return axios.get('http://3.38.92.146:8080/api/users/mypage');
+    return apiClient.get(`${API_URLS.USERS}/api/users/loginInfo`);
+  },
+
+  getBookMarks() {
+    return apiClient.get(`${API_URLS.BOARD}/api/board/bookMark/list`);
+  },
+
+  getMyPosts(params) {
+    return apiClient.get(`${API_URLS.BOARD}/api/board/mypage/list`, {params});
   },
 
   updateProfile(userData) {
-    return axios.post('http://3.38.92.146:8080/api/users/update', userData);
+    return apiClient.post(`${API_URLS.USERS}/api/users/update`, userData);
+  },
+
+  updateProfileImage(formData) {
+    return apiClient.put('/api/users/update/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+  
+  deleteProfileImage() {
+    return apiClient.delete('/api/users/delete/image');
   },
 
   deleteAccount() {
-    return axios.delete('http://3.38.92.146:8080/api/users/delete');
+    return apiClient.delete(`${API_URLS.USERS}/api/users/delete`);
   },
 
+  getRecommendedBooks() {
+    return apiClient.get(`${API_URLS.BOARD}/api/books/recommended`);
+  },
+
+  //네이버 책 검색 api(가판대 등록시 사용)
   getBooksInfo(searchTitle, page, size) {
-    const url = `http://13.125.214.144:8080/api/books/searchAll/${searchTitle}/${page}/${size}`;
-    return axios.get(url);
+    const url = `${API_URLS.BOARD}/api/books/searchAll/${searchTitle}/${page}/${size}`;
+    return apiClient.get(url);
   },
 
+  //등록된 책정보 얻기(조회페이지에서 사용-선택된 책정보)
   getBookInfo(isbn) {
-    const url = `http://13.125.214.144:8080/api/books/search/${isbn}`;
-    return axios.get(url);
+    const url = `${API_URLS.BOARD}/api/books/search/${isbn}`;
+    return apiClient.get(url);
   },
 
+  //책 카테고리 얻기
   getBookCategories() {
-    const url = 'http://13.125.214.144:8080/api/books/categories';
-    return axios.get(url);
+    const url = `${API_URLS.BOARD}/api/books/categories`;
+    return apiClient.get(url);
   },
 
+  //가판대 등록
   BoardInsert(boardData) {
-    const url = 'http://13.125.214.144:8080/api/board/insert';
-    return axios.post(url, boardData);
+    const url = `${API_URLS.BOARD}/api/board/insert`;
+    console.log(boardData);
+    return apiClient.post(url, boardData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
+  //가판대 단건조회
   getBoardRead(dealId) {
-    const url = `http://13.125.214.144:8080/api/board/read/${dealId}`;
-    return axios.get(url);
+    const url = `${API_URLS.BOARD}/api/board/read/${dealId}`;
+    return apiClient.get(url);  
   },
 
-  getBoardList(page, size, keyword) {
-    const url = `http://13.125.214.144:8080/api/board/list?page=${page}&size=${size}&keyword=${keyword}`;
-    return axios.get(url);
+  //가판대 목록 가져오기
+  getBoardList(page, size, keyword, availableOnly, booksCategoryId, isbn) {
+    const url = `${API_URLS.BOARD}/api/board/list?page=${page}&size=${size}&keyword=${keyword}&availableOnly=${availableOnly}&booksCategoryId=${booksCategoryId}&isbn=${isbn}`;
+    return apiClient.get(url);
   },
 
+  //가판대 수정
   updateBoard(dataToSend) {
-    const url = 'http://13.125.214.144:8080/api/board/update';
-    return axios.put(url, dataToSend);
+    const url = `${API_URLS.BOARD}/api/board/update`;
+    return apiClient.put(url, dataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
 
-  postChatRoom(roomName, writerEmail) {
-    const url = `http://3.39.238.25:8080/api/chat/room/insert/${roomName}/${writerEmail}`;
-    return axios.post(url);
+  postChatRoom(name,dealId, writerEmail) {
+    const url = `${API_URLS.CHAT}/api/chat/room/insert/${writerEmail}`;
+    return apiClient.post(url,{name,dealId});
   },
 
-  deleteBoard(dealId) {
-    const url = `http://13.125.214.144:8080/api/board/delete/${dealId}`;
-    return axios.delete(url);
+  //게시판 삭제
+  deleteBoard(dealId, email) {
+    const url = `${API_URLS.BOARD}/api/board/delete/${dealId}`;
+    return apiClient.delete(url, {
+      data: email
+    });
   },
 
-  addComment(isbn, email, content) {
-    const url = 'http://13.125.214.144:8080/api/books/comment/insert';
-    return axios.post(url, { isbn, email, content });
+  //댓글 등록
+  addComment(isbn, content) {
+    const url =`${API_URLS.BOARD}/api/books/comment/insert`;
+    return apiClient.post(url, { isbn, content });
   },
 
+  //댓글 목록
   getCommentList(isbn) {
-    const url = `http://13.125.214.144:8080/api/books/comment/list/${isbn}`;
-    return axios.get(url);
+    const url = `${API_URLS.BOARD}/api/books/comment/list/${isbn}`;
+    return apiClient.get(url);
   },
 
+  //댓글 수정
   updateBookComment(commentId, content, email) {
-    const url = 'http://13.125.214.144:8080/api/books/comment/update';
-    return axios.put(url, { commentId, content, email });
+    const url = `${API_URLS.BOARD}/api/books/comment/update`;
+    return apiClient.put(url, { commentId, content, email });
   },
 
-  deleteBookComment(commentId) {
-    const url = `http://13.125.214.144:8080/api/books/comment/delete/${commentId}`;
-    return axios.delete(url);
+  //댓글 삭제
+  deleteBookComment(commentId, email) {
+    const url = `${API_URLS.BOARD}/api/books/comment/delete/${commentId}`;
+    return apiClient.delete(url, {
+      data : { email }
+    });
+  },
+
+  //판매 상태 변경 API 메서드 추가
+  updateBoardStatus(dealId, status) {
+    const url =`${API_URLS.BOARD}/api/board/status/update`;
+    return apiClient.put(url, {dealId,status})
+  },
+
+  //추천 가격 요청 API 요청
+  getRecommendPrice(isbn, publishDate, bookOriginalPrice) {
+    const url = `${API_URLS.BOARD}/api/books/recommendPrice`;
+    return apiClient.post(url, {
+      isbn: isbn,
+      publishDate: publishDate,
+      bookOriginalPrice: bookOriginalPrice,
+      });
+  },
+
+  insertBookMark(dealId) {
+    const url = `${API_URLS.BOARD}/api/board/bookMark/insert/`+dealId;
+    return apiClient.post(url);
+  },
+
+  getBookMarkList() {
+    const url = `${API_URLS.BOARD}/api/board/bookMark/list`;
+    return apiClient.get(url);
   },
 
   getRoomInfo(roomId) {
-    const url = `http://3.39.238.25:8080/api/chat/room/${roomId}`;
-    return axios.get(url);
+    const url = `${API_URLS.CHAT}/api/chat/room/${roomId}`;
+    return apiClient.get(url);
   },
 
   getRoomList() {
-    const url = 'http://3.39.238.25:8080/api/chat/rooms';
-    return axios.get(url);
+    const url =`${API_URLS.CHAT}/api/chat/rooms`;
+    return apiClient.get(url);
+  },
+
+  getRoomListByDealId(dealId){
+    const url = `${API_URLS.CHAT}/api/chat/rooms/seller/`+dealId;
+    console.log(url);
+    return apiClient.get(url);
   },
 
   getPrevMessage(roomId) {
-    const url = `http://3.39.238.25:8080/api/chat/prevMessage/${roomId}`;
-    return axios.get(url);
+    const url = `${API_URLS.CHAT}/api/chat/prevMessage/${roomId}`;
+    return apiClient.get(url);
   },
 
-  getAlarmRooms(email) {
-    const url = `http://3.39.238.25:8080/api/chat/rooms/alarm/${email}`;
-    return axios.get(url);
+  getAlertRooms() {
+    const url =`${API_URLS.CHAT}/api/chat/rooms/alert`;
+    return apiClient.get(url);
   },
+
+  getReservationBoards() {
+    const url =`${API_URLS.BOARD}/api/board/reservation/list`;
+    return apiClient.get(url);
+  },
+
+  insertBookMarkBook(isbn) {
+    const url =`${API_URLS.BOARD}/api/books/bookMark/book/insert/`+isbn;
+    return apiClient.post(url);
+  },
+
+  getBookMarkBookList(page,size) {
+    const url = `${API_URLS.BOARD}/api/books/bookMark/book/list?page=`+page+'&size='+size
+    return apiClient.get(url);
+  },
+
+  getRecommendedIsbnList() {
+    const url = `${API_URLS.BOARD}/api/board/recommend/books`;
+    return apiClient.get(url);
+  },
+
+  getWeeklyStats(){
+    const url = `${API_URLS.USERS}/api/admin/dashboard/data`;
+    return apiClient.get(url);
+  }
 };
 

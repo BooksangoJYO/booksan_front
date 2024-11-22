@@ -4,34 +4,119 @@ import BoardInsert from '@/components/board/BoardInsert.vue';
 import BoardList from '@/components/board/BoardList.vue';
 import BoardRead from '@/components/board/BoardRead.vue';
 import BoardUpdate from '@/components/board/BoardUpdate.vue';
-import ChatRoom from '@/components/chat/ChatRoom.vue';
-import ChatRoomList from '@/components/chat/ChatRoomList.vue';
+import BookDetail from '@/components/board/BookDetail.vue';
+import BookListSearch from '@/components/board/BookListSearch.vue';
 import KakaoCallback from '@/components/user/KakaoCallback.vue';
-import LogoutTest from '@/components/user/LogoutTest.vue';
-import SocialLogin from '@/components/user/SocialLogin.vue';
+import SocialLogin from '@/components/user/SocialLoginModal.vue';
 import SocialSignup from '@/components/user/SocialSignup.vue';
-import ProfileInfo from '@/components/user/mypage/ProfileInfo.vue';
+import BookMarkBooks from '@/components/user/mypage/BookMarkBooks.vue';
+import Bookmarks from '@/components/user/mypage/Bookmarks.vue';
+import MyPost from '@/components/user/mypage/MyPost.vue';
+import Mypage from '@/components/user/mypage/index.vue';
+import emitter from '@/emitter/emitter';
+import DashBoard from '@/pages/admin/DashBoard.vue';
+import Chatting from '@/pages/chat/Chatting.vue';
+import MainChatting from '@/pages/chat/MainChatting.vue';
+import { useMainStore } from '@/store/mainStore';
 import { createRouter, createWebHistory } from 'vue-router';
 
+const loginGuard = (to,from,next) =>{
+    const store = useMainStore();
+    let isAuthenticated = false;
+    store.doLogin();
+    if(store.loginInfo?.email){
+        isAuthenticated = true;
+    }
+    if (!isAuthenticated) {
+        emitter.emit('show-modal');
+        next(false);
+    } else {
+        next();
+    }
+}
+
+const loginGuardForChat = (to,from,next) =>{
+    const store = useMainStore();
+    let isAuthenticated = false;
+    store.doLogin();
+    if(store.loginInfo?.email){
+        isAuthenticated = true;
+    }
+    if (!isAuthenticated) {
+        window.close();
+    } else {
+        next();
+    }
+}
+
+const updateLogin = (to,from,next) =>{
+    const store = useMainStore();
+    store.doLogin();
+    next();
+}
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: Main },
+        { path: '/', component: Main , 
+            beforeEnter: (to, from, next) => {
+                updateLogin(to,from,next);
+        }},
         { path: '/login', name: 'login', component: SocialLogin },
         { path: '/signup', name: 'signup', component: SocialSignup },
-        { path: '/logout', name: 'LogoutTest', component: LogoutTest },
-        // { path: '/mypage', name: 'mypage', component: Mypage },
-        { path: '/profileInfo', name: 'profileInfo', component: ProfileInfo },
+        { path: '/mypage', name: 'mypage', component: Mypage,
+         beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }},
+        { path: '/mypage/bookmarks', name: 'bookmarks', component: Bookmarks,
+         beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }},
+        { path: '/mypage/myposts', name: 'mypost', component: MyPost,
+         beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }},
+        { path: '/mypage/bookmarkbooks', name: 'bookmarkbooks', component: BookMarkBooks ,
+            beforeEnter: (to, from, next) => {
+                    loginGuard(to,from,next);
+                }},
         { path: '/auth/kakao/callback', name: 'KakaoCallback', component: KakaoCallback },
-        { path: '/board/insert', component: BoardInsert},
-        { path: '/board/list', component: BoardList},
-        { path: '/board/read/:dealId', component: BoardRead},
-        { path: '/board/update/:dealId', component: BoardUpdate},
-        {path:'/chat/roomList',component : ChatRoomList},
-        {path: '/chat/room/enter/:roomId',component: ChatRoom}
-
-
+        { path: '/board/insert', component: BoardInsert,
+            beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }
+        },
+        { path: '/board/list', component: BoardList, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        { path: '/board/read/:dealId', component: BoardRead, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        { path: '/board/update/:dealId', component: BoardUpdate,
+            beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }
+        },
+        { path: '/book/list', component: BookListSearch, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        { path: '/book/detail/:isbn', component: BookDetail, beforeEnter: (to, from, next) => {
+            updateLogin(to,from,next);
+        }},
+        {path: '/chat/room/:dealId?',component: Chatting,
+            beforeEnter: (to, from, next) => {
+                loginGuardForChat(to,from,next);
+            }
+        },
+        {path: '/main/chatPage',component:MainChatting,
+            beforeEnter: (to, from, next) => {
+                loginGuard(to,from,next);
+            }
+        },
+        { path: '/admin/dashBoard', component: DashBoard,
+            beforeEnter: (to, from, next) => {
+            loginGuard(to,from,next);
+        }},
     ]
 });
 

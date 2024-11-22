@@ -1,15 +1,22 @@
 <template>
-    <div>카카오 로그인 처리중...</div>
+    <div class="loading-spinner">
+        <p>Loading...</p>
+    </div>
 </template>
 
 <script setup>
-import api from '@/api/api.js';
+// import axios from 'axios';
+import api from '@/api/api';
+import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
+const store = useMainStore();
+const {doLogin} = store;
+const isLoading = ref(true);
 
 onMounted(async () => {
     const code = route.query.code;
@@ -21,9 +28,9 @@ onMounted(async () => {
     }
 
     try {
-        const response = await api.apiClient.get(`/users/auth/kakao/callback?code=${code}`);
+        const response = await api.handleKakaoCallback(code);
         const responseData = response.data;
-
+        
         if (responseData.status === 'success') {
             if (responseData.type === 'existing') {
                 Cookies.set('accessToken', responseData.accessToken, { 
@@ -34,9 +41,11 @@ onMounted(async () => {
                     httpOnly: false, 
                     secure: true
                 });
-                localStorage.setItem('userEmail',responseData.userEmail);
-                router.push('/chat/roomList');
-            } else {
+                doLogin();
+                router.replace('/');
+                //그전 url이 있으면 전페이지로 이동, 없으면 메인페이지
+            } else if(responseData.type === 'new'){
+                // 신규 회원이거나 탈퇴했던 회원인 경우
                 router.push({
                     path: '/signup',
                     query: {
@@ -50,7 +59,32 @@ onMounted(async () => {
         }
     } catch (error) {
         console.error('로그인 처리 실패:', error);
+        alert('로그인 처리 중 오류가 발생했습니다.');
         router.push('/login');
     }
 });
 </script>
+
+<style scoped>
+/* 스피너 커스텀 스타일 */
+.loading-spinner {
+   position: fixed;
+   top: 20px;  
+   left: 20px; 
+   width: 60px;  /* 크기 키움 */
+   height: 60px;
+   border: 4px solid #f3f3f3;
+   border-top: 4px solid #8B4513;
+   border-radius: 50%;
+   animation: spin 1s linear infinite;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+p {
+    margin: 0;
+    font-size: 12px;
+    color: #8B4513;
+}
+</style>
