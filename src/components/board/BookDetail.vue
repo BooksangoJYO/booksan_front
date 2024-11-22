@@ -310,20 +310,42 @@ async function addComment(commentData) {
   flex: 1;
 }
 
-.review-section {
-  margin-top: 20px;
-}
 
-.review {
-  padding: 10px;
-  border: 1px solid #8b4513;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
+  .book-detail-container {
+    padding: 10px;
+    width: 800px;
+    margin: 0 auto; /* 중앙 정렬 */
+  }
+  
+  .book-info {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .book-image {
+    max-width: 150px;
+    border-radius: 8px;
+  }
+  
+  .book-details {
+    flex: 1;
+  }
+  
+  .review-section {
+    margin-top: 20px;
+  }
+  
+  .review {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
 
 .board-section {
-  margin-top: 70px; /* 위쪽 간격 */
-  margin-bottom: 20px; /* 아래쪽 간격 */
+  margin-top: 50px; /* 위쪽 간격 */
+  margin-bottom: 15px; /* 아래쪽 간격 */
 }
 
 .board-item {
@@ -427,10 +449,14 @@ opacity: 0.7;
 
 .book-description-textarea {
   width: 100%; /* 너비를 책 상세정보에 맞게 설정 */
-  height: 320px; /* 높이 설정 */
-  font-size: 16px; /* 글씨 크기 */
-  border: none;
-  border-radius: 8px; /* 둥근 모서리 */
+
+  height: 250px; /* 높이 설정 */
+  padding: 8px; /* 내부 여백 */
+  font-size: 13px; /* 글씨 크기 */
+  border: 1px solid #ddd; /* 테두리 */
+  border-radius: 6px; /* 둥근 모서리 */
+  background-color: #f9f9f9; /* 배경색 */
+
   resize: none; /* 크기 조정 비활성화 */
   color: #333; /* 글씨 색상 */
   overflow-y: auto; /* 내용이 많을 경우 스크롤 표시 */
