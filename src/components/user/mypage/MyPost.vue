@@ -43,7 +43,7 @@
                                 @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
                                     <img 
-                                        :src="`/api/board/read/download/${board.dealId}`"  
+                                        :src="API_URLS.BOARD +`/api/board/read/download/${board.dealId}`"  
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
@@ -82,6 +82,10 @@
 </template>
 
 <script setup>
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';

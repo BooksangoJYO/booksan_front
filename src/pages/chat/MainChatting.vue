@@ -20,7 +20,10 @@
 </template>
 
 <script setup>
-
+const API_URLS = {
+  CHAT: import.meta.env.VITE_API_CHAT,
+  WS_URL: import.meta.env.VITE_WS_URL
+};
 import api from '@/api/api';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
@@ -72,7 +75,7 @@ function getCookie(name) {
 
 const stompClient = new StompJs.Client({
   webSocketFactory: () => {
-    return new SockJS('/ws-stomp');
+    return new SockJS(API_URLS.WS_URL);
   },
   connectHeaders: {
     accessToken: getCookie('accessToken'),
@@ -100,7 +103,7 @@ const stompClient = new StompJs.Client({
 });
 
 const subscribeAlarm = () => {
-  const url = '/sub/alarm';
+  const url = API_URLS.CHAT+'/sub/alarm';
   subscriptionAlarm = stompClient.subscribe(url, message => {
     const recv = JSON.parse(message.body);
     recvMessage(recv);
@@ -109,7 +112,7 @@ const subscribeAlarm = () => {
 
 const subscribeChatRoom = () => {
   if(chatRoomData.roomId){
-    const url = '/sub/chat/room/'+chatRoomData.roomId;
+    const url = API_URLS.CHAT+'/sub/chat/room/'+chatRoomData.roomId;
     subscriptionChatRoom = stompClient.subscribe(url, message => {
       const recv = JSON.parse(message.body);
       recvMessage(recv);
@@ -141,7 +144,7 @@ const sendMessage = (content) => {
   
   try {
       stompClient.publish({
-          destination: '/pub/chat/message',
+          destination: API_URLS.CHAT+'/pub/chat/message',
           body: JSON.stringify({
               type: 'TALK',
               roomId: chatRoomData.roomId,
