@@ -1,4 +1,3 @@
-import router from '@/router';
 import { useMainStore } from '@/store/mainStore';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -36,7 +35,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if(error.response?.status === 500){router.replace('/');}
+    if(error.response?.status === 500) console.log("서버에러");
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
       
