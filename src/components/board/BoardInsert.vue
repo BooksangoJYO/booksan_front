@@ -70,13 +70,13 @@
               </div>
             </div>
             <div v-else class="empty-book-info">
-              <p>도서가 선택되지 않았습니다. 왼쪽에서 책을 선택해주세요.</p>
+              <p>도서가 선택되지 않았습니다. <br>왼쪽에서 책을 선택해주세요.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!--출판일 입력-->
+      <!--인쇄일 입력-->
       <section class="publish-and-recommend-section">
         <div class="publish-date-wrapper">
           <h2 class="section-title">인쇄일 입력</h2>        
@@ -88,18 +88,12 @@
           />
         </div>
         <!--추천 가격 표시-->
-        <div class="recommend-price-wrapper">
-          <h2 class="section-title">추천 판매가</h2>
-          <div>
-            <p v-if="discountValue === '0'">
-              가격 정보가 없습니다.
-            </p>
-            <p v-else-if="recommendedPrice !== null">
-                추천 판매가: <strong> {{ recommendedPrice.toLocaleString() }}</strong>원 입니다.
-            </p>
-            <p v-else>
-              추천 판매가를 확인하려면 도서 선택과 출판일을 입력하세요.
-            </p>
+        <div class="recommend-price-wrapper">          
+          <div v-if="recommendedPrice !== null">
+            <h2 class="section-title">추천 판매가</h2>            
+            <p>                
+              추천 판매가: <strong> {{ recommendedPrice.toLocaleString() }}</strong>원 입니다.
+            </p>            
           </div>
         </div>
       </section>      
@@ -149,16 +143,15 @@
     :selectedCategory="selectedCategory" 
     @confirm="submitForm"
     @cancel="closeModal"
-  >
-    <h3>등록 내용을 확인하세요</h3>
-    <ul>
-      <li><strong>제목:</strong> {{ form.title }}</li>
-      <li><strong>내용:</strong> {{ form.content }}</li>
-      <li><strong>카테고리:</strong> {{ selectedCategory }}</li>
-      <li><strong>판매가:</strong> {{ form.price }}</li>
-      <li><strong>출판일:</strong> {{ form.publishDate }}</li>
-      <li><strong>선택된 책:</strong> {{ selectedBook?.title || '선택 안됨' }}</li>
-    </ul>
+  >    
+    <div>
+      <div><strong>제목:</strong> {{ form.title }}</div>
+      <div><strong>내용:</strong> {{ form.content }}</div>
+      <div><strong>카테고리:</strong> {{ selectedCategory }}</div>
+      <div><strong>판매가:</strong> {{ form.price }}</div>
+      <div><strong>출판일:</strong> {{ form.publishDate }}</div>
+      <div><strong>선택된 책:</strong> {{ selectedBook?.title || '선택 안됨' }}</div>
+    </div>
   </BoardInsertCheck>
   </template>
   
@@ -207,8 +200,7 @@
 
       //API 요청
       const response = await api.BoardInsert(formData);
-      if(response.data.status === 'success'){
-        alert('등록이 완료되었습니다!');
+      if(response.data.status === 'success'){        
 
         //모달 닫기
         closeModal();
@@ -381,9 +373,13 @@
   /* 전체 레이아웃 */
   .container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px; /* 기존 패딩 */
+    display: block;
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+    width: 60%;
   }
   
   /* 헤더 스타일 */
@@ -402,7 +398,7 @@
     align-items: flex-start; /* 상단 정렬 */
     justify-content: space-between; /* 좌우 정렬 */
     gap: 20px; /* 항목 간격 */
-    margin-bottom: 20px; /* 하단 여백 */
+    margin-bottom: 30px; /* 하단 여백 */
   }
 
   .publish-date-wrapper {
@@ -486,89 +482,116 @@
   }
   
   .image-item {
-    width: 100%;
-    aspect-ratio: 1;
-    overflow: hidden;
+    width: 150px;
+    height:150px;  
+    
     border: 1px solid #DFE2E6;
     border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .image-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100px;
+    height: 100px;
+    object-fit: contain; /* 이미지를 잘리지 않도록 비율 유지 */
   }
   
   /* 검색 및 선택된 책 섹션 */
   .book-search-section {
-    margin-bottom: 40px;
-  }
-  
-  .search-container {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .search-area {
-    flex: 2;
-    border: 1px solid #DFE2E6;
-    border-radius: 4px;
-    padding: 20px;
-    background-color: #F8F9FA;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .selected-book-area {
-    flex: 3;
-    border: 1px solid #DFE2E6;
-    border-radius: 4px;
-    padding: 20px;
-    background-color: #F8F9FA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  
-  .selected-book-info {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-    text-align: left;
-  }
-  
-  .selected-book-cover {
-    width: 100%;
-    max-width: 250px;
-    height: auto;
-    margin-bottom: 20px;
-    align-self: center;
-  }
-  
-  .selected-book-details {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
+  margin-bottom: 40px;
+}
+
+.search-container {
+  display: flex;
+  gap: 20px;
+  max-width: 1200px; /* 최대 너비 제한 */
+  margin: 0 auto; /* 중앙 정렬 */
+  width: 100%; /* 전체 너비 사용 */
+}
+
+.search-area {
+  flex: 4;
+  border: 1px solid #DFE2E6;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #F8F9FA;
+  min-width: 0; /* flex 아이템의 최소 너비 0으로 설정 */
+}
+
+.selected-book-area {
+  flex: 3;
+  border: 1px solid #DFE2E6;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #F8F9FA;
+}
+
+.selected-book-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  text-align: center;
+}
+
+.selected-book-cover {
+  width: 100%;
+  max-width: 150px; /* 최대 너비를 줄임 */
+  height: auto; /* 비율 유지 */
+  margin-bottom: 10px; /* 아래 여백 줄임 */
+}
+
+.selected-book-details {
+  margin-top:30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 간격 유지 */
+  width: 100%;
+  font-size: 14px; /* 텍스트 크기 */
+}
+
+.book-field {
+  display: grid;
+  grid-template-columns: 110px 1fr; /* 라벨 영역을 줄여 전체 글씨 왼쪽으로 이동 */
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.field-label {
+  font-weight: bold;
+  text-align: left;
+  font-size: 13px;
+  color: #555;
+  margin-left: 30px; /* 글씨를 왼쪽으로 이동 */
+}
+
+.field-value {
+  text-align: left;
+  font-size: 13px;
+  color: #333;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
   .book-field {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    align-items: center;
-    gap: 10px;
+    grid-template-columns: 90px 1fr; /* 모바일에서는 더욱 왼쪽으로 */
   }
-  
+
   .field-label {
-    color: #666;
-    font-size: 14px;
+    font-size: 12px;
+    margin-left: -8px; /* 모바일에서도 동일하게 적용 */
   }
-  
+
   .field-value {
-    font-size: 14px;
+    font-size: 12px;
   }
+}
   
   /* 빈 상태 메시지 */
   .empty-book-info {
@@ -577,7 +600,7 @@
   }
   
   /* 판매가 입력 */
-  .price-section {
+  .price-section {    
     margin-bottom: 40px;
   }
   
@@ -671,5 +694,23 @@
       max-width: 200px;
     }
   }
+
+  .dropdown-wrapper {
+  display: flex;
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  align-items: center; /* 세로 정렬 */
+  width: 100%; /* 부모 컨테이너의 너비를 채움 */
+}
+
+.category-dropdown {
+  width: auto; /* 드롭다운 너비 자동 조정 */
+  min-width: 150px; /* 최소 너비 설정 */
+  padding: 8px; /* 내부 여백 */
+  border: 1px solid #DFE2E6;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: left; /* 드롭다운 텍스트 왼쪽 정렬 */
+  background-color: #F8F9FA;
+}
   </style>
   

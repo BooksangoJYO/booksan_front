@@ -1,67 +1,78 @@
 <template>
-    <div class="book-detail-container">
-      <div class="alarm-setting" :class="{ 'bookmarked': isBookMarkedBook }" @click="insertBookMarkBook">
-        <img :src="isBookMarkedBook ? AlarmIcon : NotAlarmIcon" alt="Alarm Icon" class="alarm-icon" />
-        <span class="alarm-text">알림 설정</span>
-      </div>
-      <!-- 책 이미지와 정보 -->
-       
-      <div class="book-info">
-        <img :src="book.image" alt="책 이미지" class="book-image" />
-        <div class="book-details">
-          <h1>{{ book.title }}</h1>
-          <p>저자: {{ book.author }}</p>
-          <p>출판사: {{ book.publisher }}</p>
-          <p>ISBN: {{ book.isbn }}</p>
-        </div>
-      </div>
-      <h2>책 소개</h2>
-    <p>{{ book.description }}</p>
-
-      <hr>
-
-        <!-- 게시글 목록 -->
-        <div class="board-section">
-            <template v-if="boards && boardsData.boards.length>0">
-                <h2>해당 책 가판대 목록</h2>
-                <div v-for="(board, index) in boardsData.boards" :key="index" class="board-item" @click="openRead(board.dealId)">
-                <p><strong>{{ board.title }}</strong></p>
-                <p>{{ board.postedTime }} 전</p>
-                <p>가격: {{ board.price }}원</p>
-                </div>
-            </template>
-            <template v-else>
-                <div class="no-boards">
-                <p>등록된 게시글이 없습니다.</p>
-                </div>
-            </template>
-        </div>
-        <div class="pagination">
-            <button @click="goToPage(boardsData.page - 1)" :disabled="!boardsData.prev" class="pagination-button">이전</button>
-            <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
-                <button @click="goToPage(pageNum)" :class="{ active: pageNum === boardsData.page }" class="pagination-button">
-                {{ pageNum }}
-                </button>
-            </span>
-            <button @click="goToPage(boardsData.page + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
-        </div>
-  
-
-
-      <hr>
-        
-      <!-- 리뷰 섹션 -->
-      <CommentForm @comment-submitted="addComment" />
-      <CommentListForm
-          :reviews = "boardsData.reviews"
-          :isbn = "book.isbn"
-          @updateBookComment = "updateBookComment"
-          @deleteBookComment = "deleteBookComment"
-        />
+  <div class="book-detail-container">
+    <div class="alarm-setting" :class="{ 'bookmarked': isBookMarkedBook }" @click="insertBookMarkBook">
+      <img :src="isBookMarkedBook ? AlarmIcon : NotAlarmIcon" alt="Alarm Icon" class="alarm-icon" />
+      <span class="alarm-text">알림 설정</span>
     </div>
-  </template>
+    <!-- 책 이미지와 정보 -->
+      
+    <div class="book-info">
+      <img :src="book.image" alt="책 이미지" class="book-image" />
+      <div class="book-details">
+        <h1 class="h1-style">{{ book.title }}</h1>
+        <div class="book-details-info">
+          <div class="info-row">
+            <span class="label">저자</span>
+            <span class="content">{{ book.author }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">출판사</span>
+            <span class="content">{{ book.publisher }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">ISBN</span>
+            <span class="content">{{ book.isbn }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h2 style="margin-top: 30px; margin-bottom: 20px; color: #5a321f;">책 소개</h2>
+    <textarea class="book-description-textarea" readonly>{{ book.description }}</textarea>
+
+    <hr style="color: #8b4513;">
+
+      <!-- 게시글 목록 -->
+      <div class="board-section">
+        <template v-if="boards && boardsData.boards.length>0">
+          <h2 style="color:#8b4513">해당 가판대 목록</h2>
+          <div v-for="(board, index) in boardsData.boards" :key="index" class="board-item" @click="openRead(board.dealId)">
+            <p class="board-time">{{ board.postedTime }} 전</p>
+            <p><strong>{{ board.title }}</strong></p>
+            <p>가격 {{ board.price.toLocaleString() }}원</p>
+          </div>
+        </template>
+        <template v-else>
+          <div class="no-boards">
+          <p>등록된 게시글이 없습니다.</p>
+          </div>
+        </template>
+      </div>
+      <div class="pagination">
+          <button @click="goToPage(boardsData.page - 1)" :disabled="!boardsData.prev" class="pagination-button">이전</button>
+          <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
+              <button @click="goToPage(pageNum)" :class="{ active: pageNum === boardsData.page }" class="pagination-button">
+                {{ pageNum }}
+              </button>
+          </span>
+          <button @click="goToPage(boardsData.page + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
+      </div>
+
+
+
+    <hr style="color: #8b4513;">
+      
+    <!-- 리뷰 섹션 -->
+    <CommentForm @comment-submitted="addComment" />
+    <CommentListForm
+        :reviews = "boardsData.reviews"
+        :isbn = "book.isbn"
+        @updateBookComment = "updateBookComment"
+        @deleteBookComment = "deleteBookComment"
+      />
+  </div>
+</template>
   
-  <script setup>
+<script setup>
 import api from '@/api/api';
 import AlarmIcon from '@/assets/images/bell.svg';
 import NotAlarmIcon from '@/assets/images/bellNot.svg';
@@ -275,18 +286,40 @@ async function addComment(commentData) {
         } 
       }
     }
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
+.book-detail-container {
+  padding: 20px;
+  min-width: 800px;
+  margin: 0 auto; /* 중앙 정렬 */
+}
+
+.book-info {
+  display: flex;
+  gap: 35px;
+  color: #8b4513;
+}
+
+.book-image {
+  max-width: 150px;
+  border-radius: 8px;
+}
+
+.book-details {
+  flex: 1;
+}
+
+
   .book-detail-container {
-    padding: 20px;
-    max-width: 800px;
+    padding: 10px;
+    width: 800px;
     margin: 0 auto; /* 중앙 정렬 */
   }
   
   .book-info {
     display: flex;
-    gap: 20px;
+    gap: 15px;
   }
   
   .book-image {
@@ -309,12 +342,14 @@ async function addComment(commentData) {
     margin-bottom: 10px;
   }
 
+
 .board-section {
-  margin-top: 70px; /* 위쪽 간격 */
-  margin-bottom: 20px; /* 아래쪽 간격 */
+  margin-top: 50px; /* 위쪽 간격 */
+  margin-bottom: 15px; /* 아래쪽 간격 */
 }
 
 .board-item {
+  position: relative;
   padding: 10px;
   margin-bottom: 15px; /* 게시글 간 간격 */
   border: 1px solid #ddd;
@@ -327,22 +362,31 @@ async function addComment(commentData) {
   border-color: #8b4513;
 }
 
+.board-time {
+  position: absolute; /* 부모 요소를 기준으로 위치 설정 */
+  top: 10px; /* 상단 여백 */
+  right: 10px; /* 오른쪽 여백 */
+  font-size: 14px; /* 글씨 크기 조정 */
+  color: #888; /* 색상 설정 */
+  text-align: right; /* 텍스트 정렬 */
+}
+
 .pagination {
   display: flex; /* 플렉스 박스 사용 */
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
-  gap: 5px; /* 버튼 간 간격 */
+  gap: 0px; /* 버튼 간 간격 제거 */
   margin-top: 50px; /* 위쪽 간격 */
-  margin-bottom: 50px; /* 위쪽 간격 */
+  margin-bottom: 50px; /* 아래쪽 간격 */
 }
 
+
 .pagination-button {
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
+  padding: 10px 20px;
+  border: 0.5px solid #ccc;
+  border-radius: 1px;
+  background-color: #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .pagination-button:hover {
@@ -351,8 +395,9 @@ async function addComment(commentData) {
 }
 
 .pagination-button.active {
-  background-color: #693610;
+  background-color: #5a321f;
   color: #fff;
+  font-weight: bold;
 }
 
 .pagination-button:disabled {
@@ -360,6 +405,7 @@ async function addComment(commentData) {
   color: #999;
   cursor: not-allowed;
 }
+
 
 .alarm-setting {
 display: flex;
@@ -399,5 +445,50 @@ background-color: #daa681;
 .alarm-setting:not(.bookmarked) {
 opacity: 0.7;
 }
-  </style>
+
+
+.book-description-textarea {
+  width: 100%; /* 너비를 책 상세정보에 맞게 설정 */
+
+  height: 250px; /* 높이 설정 */
+  padding: 8px; /* 내부 여백 */
+  font-size: 13px; /* 글씨 크기 */
+  border: 1px solid #ddd; /* 테두리 */
+  border-radius: 6px; /* 둥근 모서리 */
+  background-color: #f9f9f9; /* 배경색 */
+
+  resize: none; /* 크기 조정 비활성화 */
+  color: #333; /* 글씨 색상 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤 표시 */
+  line-height: 1.5; /* 줄 간격 */
+  margin-bottom: 40px;
+}
+
+
+.h1-style{
+  margin-bottom: 40px;
+}
+
+.book-details-info {
+  margin: 20px 0;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;  /* 라벨 너비 80px 고정, 내용물은 남은 공간 차지 */
+  gap: 20px;  /* 라벨과 내용 사이 간격 */
+  margin-bottom: 10px;  /* 각 행 사이 간격 */
+}
+
+.label {
+  color: #8D6E63;
+  font-weight: 500;
+}
+
+.content {
+  color: #333;
+  font-weight: 700;
+  font-size: 20px;
+}
+</style>
   

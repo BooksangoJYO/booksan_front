@@ -5,7 +5,7 @@
         <input
           type="text"
           v-model="keyword"
-          placeholder="책 제목을 입력해주세요"
+          placeholder="도서 제목을 입력해주세요"
           @keydown.enter="searchBook"
           class="search-input"
         />
@@ -30,37 +30,32 @@
         </div>
   
         <!-- 페이지네이션 -->
-        <div class="pagination" v-if="data.books.length">
-          <button
-            @click="goToPage(data.start - 1)"
-            :disabled="!data.prev"
-            class="pagination-button"
-          >
-            이전
-          </button>
-          <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
-            <button
-              @click="goToPage(pageNum)"
+        <nav v-if="data.books.length" aria-label="페이지 탐색" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" :class="{ disabled: !data.prev }">
+              <a class="page-link" href="#" @click.prevent="goToPage(data.start - 1)">이전</a>
+            </li>
+            <li 
+              class="page-item" 
+              v-for="pageNum in pagesInCurrentBlock" 
+              :key="pageNum"
               :class="{ active: pageNum === data.page }"
-              class="pagination-button"
             >
-              {{ pageNum }}
-            </button>
-          </span>
-          <button
-            @click="goToPage(data.end + 1)"
-            :disabled="!data.next"
-            class="pagination-button"
-          >
-            다음
-          </button>
-        </div>
+              <a class="page-link" href="#" @click.prevent="goToPage(pageNum)">
+                {{ pageNum }}
+              </a>
+            </li>
+            <li class="page-item" :class="{ disabled: !data.next }">
+              <a class="page-link" href="#" @click.prevent="goToPage(data.end + 1)">다음</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </template>
   
   <script setup>
-  import { ref, reactive, computed, defineEmits } from "vue";
+  import { ref, reactive, computed } from "vue";
   import api from "@/api/api";
 
   const emit = defineEmits(["book-selected"]); // 부모로 선택된 책 정보를 전달
@@ -99,8 +94,8 @@
       data.next = responseData.next;
       data.totalPages = Math.ceil(responseData.total / responseData.size);
     } catch (error) {
-      console.error("책 검색 오류:", error);
-      alert("책 정보를 불러오는 데 문제가 발생했습니다.");
+      console.error("도서 검색 오류:", error);
+      alert("도서 정보를 불러오는 데 문제가 발생했습니다.");
     }
   };
   
@@ -122,13 +117,21 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width:500px;
+    width: 100%;
   }
   
   /* 검색 입력 필드 스타일 */
   .search-input-wrapper {
     display: flex;
     gap: 10px;
+    align-items: center;
+    height: 50px;
+    box-sizing: border;
+    width : 80%;
   }
+
+
   
   .search-input {
     flex: 1;
@@ -136,6 +139,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
+    width: 500px;
   }
   
   .search-button {
@@ -158,6 +162,7 @@
     gap: 10px;
     max-height: 400px;
     overflow-y: auto;
+    padding-right: 10px;
   }
   
   .book-list-item {
@@ -200,35 +205,21 @@
   }
   
   /* 페이지네이션 */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-  }
+  .page-link {
+  color: #8B4513;
+  padding: 0.25rem 0.3rem;  /* 패딩 조금 줄임 */
+  font-size: 0.875rem;  /* 폰트 크기 약간 줄임 */
+}
+
+.page-item.active .page-link {
+  background-color: #8B4513;
+  border-color: #8B4513;
+  color: white;
+}
+
+.page-link:hover {
+  color: #A25D0D;
+}
   
-  .pagination-button {
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .pagination-button:hover {
-    background-color: #8b4513;
-    color: #fff;
-  }
-  
-  .pagination-button.active {
-    background-color: #693610;
-    color: #fff;
-  }
-  
-  .pagination-button:disabled {
-    background-color: #f0f0f0;
-    color: #999;
-    cursor: not-allowed;
-  }
   </style>
   

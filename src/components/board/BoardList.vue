@@ -3,7 +3,7 @@
       
 
     <!-- 검색 입력 및 버튼 -->
-    <h4 class="bookList-title"> 중고책 찾기 </h4>
+    <h4 class="bookList-title"> 가판대 </h4>
     <div class="search-container">
       <input 
           type="text" 
@@ -89,7 +89,7 @@ import api from '@/api/api'; // API 요청을 보내는 파일을 import
 import BookMarkIcon from '@/assets/images/bookMarkFillIcon.svg';
 import NotBookMarkIcon from '@/assets/images/bookMarkIcon.svg';
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 import art from '@/assets/images/art.png';
 import entire from '@/assets/images/entire.png';
@@ -103,13 +103,18 @@ import religion from '@/assets/images/religion.png';
 import SearchIcon from '@/assets/images/searchIcon.svg';
 import socialScience from '@/assets/images/socialScience.png';
 import technicalScience from '@/assets/images/technicalScience.png';
+import { storeToRefs } from 'pinia';
+import { useMainStore } from '@/store/mainStore';
+
 
 
 // 상태 정의
+const route = useRoute(); // useRoute를 사용하여 현재 경로 정보를 가져옴
 const router = useRouter();
-const keyword = ref('');
 const availableOnly = ref(false);
 const boardList = ref([]);
+const store = useMainStore();
+const{paginationData,keyword} = storeToRefs(store);
 
 const selectedCategoryId = ref(0);
 const categories = ref([
@@ -130,23 +135,13 @@ const isbn = ref('');
 
 const setCategory = (categoryId) => {
   selectedCategoryId.value = categoryId; // 선택된 카테고리 ID 저장
-  paginationData.page = 1;
-  paginationData.size = 10;
+  keyword.value=''; // 키워드 초기화
+  paginationData.value.page = 1;
+  paginationData.value.size = 10;
   console.log(`Selected Category ID: ${categoryId}`);  
   fetchBoardList(); // 선택한 카테고리에 따라 게시글 목록 새로고침
 };
 
-
-
-const paginationData = reactive({
-  page: 1,
-  size: 10,
-  totalPages: 1,
-  start: 1,
-  end: 10,
-  prev: false,
-  next: false
-});
 
 // 가격 표시
 const formatPrice = (price) => {
@@ -164,15 +159,15 @@ const filteredBoardList = computed(() => {
 // 블록 내의 페이지 리스트를 계산하는 변수
 const pageInCurrentBlock = computed(() => {
   const pages = [];
-  for (let i = paginationData.start; i <= paginationData.end; i++) {
+  for (let i = paginationData.value.start; i <= paginationData.value.end; i++) {
     pages.push(i);
   }
   return pages;
 });
 
 const search = () => {
-  paginationData.page = 1;
-  paginationData.size = 10;
+  paginationData.value.page = 1;
+  paginationData.value.size = 10;
   fetchBoardList();
 };
 
@@ -181,8 +176,8 @@ const fetchBoardList = async () => {
   console.log("현재 isbn 값: ", keyword.value);
   try {
       const response = await api.getBoardList(
-      paginationData.page, 
-      paginationData.size, 
+      paginationData.value.page, 
+      paginationData.value.size, 
       keyword.value || '', 
       availableOnly.value,
       selectedCategoryId.value || 0, //선택된 카테고리 ID 전달
@@ -191,13 +186,13 @@ const fetchBoardList = async () => {
 
     if (response.data && response.data.data && response.data.data.dtoList) {
       boardList.value = response.data.data.dtoList;
-      paginationData.page = response.data.data.page;
-      paginationData.size = response.data.data.size;
-      paginationData.start = response.data.data.start;
-      paginationData.end = response.data.data.end;
-      paginationData.prev = response.data.data.prev;
-      paginationData.next = response.data.data.next;
-      paginationData.totalPages = Math.ceil(response.data.data.total / paginationData.size);
+      paginationData.value.page = response.data.data.page;
+      paginationData.value.size = response.data.data.size;
+      paginationData.value.start = response.data.data.start;
+      paginationData.value.end = response.data.data.end;
+      paginationData.value.prev = response.data.data.prev;
+      paginationData.value.next = response.data.data.next;
+      paginationData.value.totalPages = Math.ceil(response.data.data.total / paginationData.value.size);
     } else {
       boardList.value = [];
     }
@@ -209,20 +204,26 @@ const fetchBoardList = async () => {
 
 // 페이지 이동
 const goToPage = (pageNum) => {
-  if (pageNum >= 1 && pageNum <= paginationData.totalPages) {
-    paginationData.page = pageNum;
+  if (pageNum >= 1 && pageNum <= paginationData.value.totalPages) {
+    paginationData.value.page = pageNum;
     fetchBoardList();
   }
 };
 
 // 게시글 등록 이동
-function goToBoardInsert() {
+function goToBoardInsert() {  
   router.push({ path: '/board/insert' });
+  keyword.value ='';
+  paginationData.value.page= 1;
+  fetchBoardList();
 }
 
 // 게시글 조회 페이지로 이동
 function goToBoardRead(dealId) {
-  router.push({ path: `/board/read/${dealId}` });
+  router.push({ 
+    path: `/board/read/${dealId}`,
+    query: { page: paginationData.value.page }, // 현재 페이지 전달
+   });
 }
 
 // 시간 포맷팅 함수
@@ -242,7 +243,13 @@ function formatTimeAgo(datetime) {
   return `${seconds}초`;
 }
 
-onMounted(fetchBoardList);
+onMounted(() => {
+  const pageFromQuery = route.query.page;
+  if (pageFromQuery) {
+    paginationData.value.page = parseInt(pageFromQuery, 10); // 쿼리에서 페이지 번호 복원
+  }
+  fetchBoardList(); // 목록 데이터 가져오기
+});
 
 </script>
 

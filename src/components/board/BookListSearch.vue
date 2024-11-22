@@ -22,7 +22,7 @@
           @click="selectBook(book)"
           class="book-grid-item"
         >
-          <img :src="book.image" alt="책 이미지" class="book-image" />
+          <img :src="book.image" alt="도서 이미지" class="book-image" />
           <h3 class="book-title">{{ book.title }}</h3>
           <p class="book-author">{{ book.author }}</p>
         </div>
