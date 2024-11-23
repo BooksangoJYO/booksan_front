@@ -73,7 +73,7 @@ function getCookie(name) {
 
 const stompClient = new StompJs.Client({
   webSocketFactory: () => {
-    return new SockJS(API_URLS.WS_URL);
+    return new SockJS(API_URLS.CHAT+"/ws-stomp");
   },
   connectHeaders: {
     accessToken: getCookie('accessToken'),
