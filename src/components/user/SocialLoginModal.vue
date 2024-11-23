@@ -33,6 +33,10 @@
 <script setup>
 import kakaoIcon from '@/assets/images/kakaoLogin.png';
 
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+};
+    
 const props = defineProps({
     isOpen: {
         type: Boolean,
@@ -47,7 +51,7 @@ const closeModal = () => {
 };
 
 const handleKakaoLogin = () => {
-    window.location.href = '/api/users/auth/kakao/login';
+    window.location.href = API_URLS.USERS+'/api/users/auth/kakao/login';
 };
 </script>
 
