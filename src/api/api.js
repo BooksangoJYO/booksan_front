@@ -124,7 +124,7 @@ export default {
   },
 
   updateProfileImage(formData) {
-    return apiClient.put('/api/users/update/image', formData, {
+    return apiClient.put(API_URLS.USERS+'/api/users/update/image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -132,7 +132,7 @@ export default {
   },
   
   deleteProfileImage() {
-    return apiClient.delete('/api/users/delete/image');
+    return apiClient.delete(API_URLS.USERS+'/api/users/delete/image');
   },
 
   deleteAccount() {
