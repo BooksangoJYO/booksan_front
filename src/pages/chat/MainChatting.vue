@@ -144,7 +144,7 @@ const sendMessage = (content) => {
   
   try {
       stompClient.publish({
-          destination: API_URLS.CHAT+'/pub/chat/message',
+          destination: '/pub/chat/message',
           body: JSON.stringify({
               type: 'TALK',
               roomId: chatRoomData.roomId,
