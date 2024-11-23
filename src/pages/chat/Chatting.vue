@@ -26,12 +26,16 @@ import api from '@/api/api';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
 import ChatRoomSellerList from '@/components/chat/ChatRoomSellerList.vue';
+import { useMainStore } from '@/store/mainStore';
 import * as StompJs from '@stomp/stompjs';
+import { storeToRefs } from 'pinia';
 import SockJS from 'sockjs-client';
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const email = sessionStorage.getItem('userEmail');
+const store = useMainStore();
+const {loginInfo} =storeToRefs(store);
+
 const router = useRouter();
 const route = useRoute();
 const dealId = route.params.dealId ? Number(route.params.dealId) : null
@@ -142,12 +146,12 @@ const sendMessage = (content) => {
   
   try {
       stompClient.publish({
-          destination: API_URLS.CHAT+'/pub/chat/message',
+          destination: '/pub/chat/message',
           body: JSON.stringify({
               type: 'TALK',
               roomId: chatRoomData.roomId,
               message: content,
-              sender : email
+              sender : loginInfo.value.email
           })
       });
       
