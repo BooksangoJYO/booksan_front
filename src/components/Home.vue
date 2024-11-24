@@ -23,11 +23,10 @@
         <div v-for="book in books" :key="book.isbn" class="book-card">
           <img :src="book.bookImageUrl" :alt="book.title" class="book-image">
           <h3 class="book-title">{{ book.bookTitle }}</h3>
-          <p class="book-author">{{ book.bookWriter }}</p>
-          <p class="book-author">{{ book.bookPublisher }}</p>
+          <p class="book-author">{{ book.bookWriter }} · {{ book.bookPublisher }}</p>
         </div>
       </div>
-      
+
       <h2 class="recommendation-title">베스트셀러 도서</h2>
       <div class="book-container">
         <div v-for="board in data.boards" 
