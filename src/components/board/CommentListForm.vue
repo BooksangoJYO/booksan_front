@@ -4,7 +4,7 @@
     <div v-if="reviews && reviews.length">
       <div class="review-container" v-for="(review, index) in reviews" :key="index">
         <div class="review-header">
-          <span class="review-author">{{ review.email }}</span>:
+          <span class="review-author">{{ userInfo[review.email]?.nickname }}</span>:
           <span class="review-date">{{ formatDate(review.insertDatetime) }}</span>
         </div>
         <div class="review-content" v-if="!review.isEditing">
@@ -32,14 +32,25 @@ import { storeToRefs } from 'pinia';
 import { onMounted, defineEmits, defineProps } from 'vue';
 import { useRoute } from 'vue-router';
 
-const userInfo = ref(null); // 사용자 정보
-const getUserInfoByEmail = async (email) => {
-  const response = await api.getUserInfoByEmail(email);
-  const nickname = response.data.nickname;
-  const imgId = response.data.imgId;
-  userInfo.value = { nickname, imgId };
-  console.log(userInfo.value)
-}
+const userMap = ref({})
+
+onMounted(async () => {
+  const userPromises = props.reviews.map(review => 
+    api.getUserInfoByEmail(review.email)
+      .then(response => ({
+        email: review.email,
+        userInfo: {
+          nickname: response.data.nickname,
+          imgId: response.data.imgId
+        }
+      }))
+  )
+  const results = await Promise.all(userPromises)
+  
+  results.forEach(result => {
+    userMap.value[result.email] = result.userInfo
+  })
+})
 
 function formatDate(dateString) {
   const date = new Date(dateString);
