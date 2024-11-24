@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
     console.log = () => {}
     console.warn = () => {}
     console.error = () => {}
-  }
+}
   
 pinia.use(piniaPluginPersistedstate);
 app.use(router);
