@@ -110,6 +110,10 @@ export default {
   getUserInfo() {
     return apiClient.get(`${API_URLS.USERS}/api/users/loginInfo`);
   },
+  
+  getUserInfoByEmail(email) {
+    return apiClient.get(`/api/users/userInfoBy/${email}`);
+  },
 
   getBookMarks() {
     return apiClient.get(`${API_URLS.BOARD}/api/board/bookMark/list`);
