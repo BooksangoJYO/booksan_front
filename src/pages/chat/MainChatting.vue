@@ -22,8 +22,8 @@
 <script setup>
 const API_URLS = {
   CHAT: import.meta.env.VITE_API_CHAT,
-  WS_URL: import.meta.env.VITE_WS_URL
 };
+
 import api from '@/api/api';
 import ChatRoom from '@/components/chat/ChatRoom.vue';
 import ChatRoomList from '@/components/chat/ChatRoomList.vue';
@@ -106,7 +106,7 @@ const stompClient = new StompJs.Client({
 });
 
 const subscribeAlarm = () => {
-  const url = API_URLS.CHAT+'/sub/alarm';
+  const url ='/sub/alarm';
   subscriptionAlarm = stompClient.subscribe(url, message => {
     const recv = JSON.parse(message.body);
     recvMessage(recv);
@@ -115,7 +115,7 @@ const subscribeAlarm = () => {
 
 const subscribeChatRoom = () => {
   if(chatRoomData.roomId){
-    const url = API_URLS.CHAT+'/sub/chat/room/'+chatRoomData.roomId;
+    const url = '/sub/chat/room/'+chatRoomData.roomId;
     subscriptionChatRoom = stompClient.subscribe(url, message => {
       const recv = JSON.parse(message.body);
       recvMessage(recv);
