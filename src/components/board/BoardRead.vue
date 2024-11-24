@@ -360,7 +360,7 @@ onMounted(async () => {
     if (board.value && board.value.isbn) {
         await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
     }
-    await getUserInfoByEmail(); // 유저 정보 가져오기
+    await getUserInfoByEmail(board.value.email); // 유저 정보 가져오기
 });
 
 //채팅방 생성후 이동
@@ -408,8 +408,8 @@ const toggleBookmark = async ()=>{
   }
 }
 
-    const getUserInfoByEmail = async () => {
-      const response = await api.getUserInfoByEmail(board.value.email);
+    const getUserInfoByEmail = async (email) => {
+      const response = await api.getUserInfoByEmail(email);
       const nickname = response.data.nickname;
       const imgId = response.data.imgId;
       userInfo.value = { nickname, imgId };
