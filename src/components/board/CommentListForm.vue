@@ -4,7 +4,7 @@
     <div v-if="reviews && reviews.length">
       <div class="review-container" v-for="(review, index) in reviews" :key="index">
         <div class="review-header">
-          <span class="review-author">{{ review.email }}</span>
+          <span class="review-author">{{ getUserInfoByEmail(review.email) }}</span>:
           <span class="review-date">{{ formatDate(review.insertDatetime) }}</span>
         </div>
         <div class="review-content" v-if="!review.isEditing">
@@ -29,8 +29,17 @@
 <script setup>
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { defineEmits, defineProps } from 'vue';
+import { onMounted, defineEmits, defineProps } from 'vue';
 import { useRoute } from 'vue-router';
+
+const userInfo = ref(null); // 사용자 정보
+const getUserInfoByEmail = async (email) => {
+  const response = await api.getUserInfoByEmail(email);
+  const nickname = response.data.nickname;
+  const imgId = response.data.imgId;
+  userInfo.value = { nickname, imgId };
+  console.log(userInfo.value)
+}
 
 function formatDate(dateString) {
   const date = new Date(dateString);

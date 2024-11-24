@@ -89,7 +89,7 @@
                     <strong>상품명</strong> {{ book.title }}                  
                 </li>
                 <li><strong>카테고리</strong> {{ categoryName }}</li>
-                <li><strong>판매자</strong> {{ board.email }}</li>
+                <li><strong>판매자</strong> {{ userInfo.nickname }}</li>
                 <li><strong>판매가</strong> {{ board.price.toLocaleString() }}원</li>
               </ul>            
               <div class="button-group">
@@ -182,36 +182,80 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
 import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
+    const store = useMainStore();
+    const{loginInfo} = storeToRefs(store);
+    const route = useRoute();
+    const router = useRouter();
+    const board = ref(null); // 게시물 정보
+    const book = ref(null); // 도서 정보
+    const reviews = ref([]); // 리뷰 정보
+    const isModalVisible = ref(false); //삭제 모달 표시 여부
+    const isWriter = ref(false); // 작성자인지 여부
+    const isBookMarked = ref(false);
+    const userInfo = ref(null); // 사용자 정보
 
+    const categoryMap = {
+      1: "철학",
+      2: "종교",
+      3: "사회 과학",
+      4: "순수 과학",
+      5: "기술 과학",
+      6: "예술",
+      7: "언어",
+      8: "문학",
+      9: "역사",
+      10: "기타",
+    };
+
+    // 이미지 슬라이드 관련 코드
+    const images = ref([]);
+    const currentIndex = ref(0)
+
+    const nextSlide = () => {
+      if (currentIndex.value < images.value.length - 1) {
+        currentIndex.value++
+      }
+    }
+
+    const prevSlide = () => {
+      if (currentIndex.value > 0) {
+        currentIndex.value--
+      }
+    }
+
+    const goToSlide = (index) => {
+      currentIndex.value = index
+    }
+    // 여기까지
+
+    // 계산된 속성(카테고리 명 이름 보여주기 위한 함수)
+    const categoryName = computed(() => {
+      if (board.value) {
+        return categoryMap[board.value.booksCategoryId] || "알 수 없음";
+      }
+      return "알 수 없음";
+    });
+    
+    
+
+    //댓글 목록을 가져와서 reviews 배열을 갱신하는 함수
+    async function getCommentList(isbn) {
+      try {
+        const response = await api.getCommentList(isbn);
+        if (response.data.status === 'success') {
+          reviews.value = response.data.bookCommentList; //최신 댓글 목록으로 업데이트
+        } else {
+          console.error('댓글 목록을 가져오는데 실패했습니다.',response.data.message);
+        } 
+      } catch (error) {
+          console.error('댓글 목록을 가져오는 중 오류 발생:', error);
+      }
+    }
 
 //책소개 부분에 정보가 없을 경우 글씨 띄우는 부분
 const bookDescription = computed (() => {
   return book.value?.description || "책 소개 정보가 없습니다.";
 });
-
-const store = useMainStore();
-const{loginInfo,paginationData,keyword} = storeToRefs(store);
-const route = useRoute();
-const router = useRouter();
-const board = ref(null); // 게시물 정보
-const book = ref(null); // 도서 정보
-const reviews = ref([]); // 리뷰 정보
-const isModalVisible = ref(false); //삭제 모달 표시 여부
-const isWriter = ref(false); // 작성자인지 여부
-const isBookMarked = ref(false);
-
-const categoryMap = {
-  1: "철학",
-  2: "종교",
-  3: "사회 과학",
-  4: "순수 과학",
-  5: "기술 과학",
-  6: "예술",
-  7: "언어",
-  8: "문학",
-  9: "역사",
-  10: "기타",
-};
 
 //가판대 판매여부 변경 버튼
 async function toggleSaleStatus() {
@@ -231,53 +275,7 @@ async function toggleSaleStatus() {
     console.error('판매 상태 변경 오류: ',error);
     alert('판매 상태를 변경하지 못했습니다.')
   }
-  }
-// 이미지 슬라이드 관련 코드
-const images = ref([]);
-const currentIndex = ref(0)
-
-const nextSlide = () => {
-  if (currentIndex.value < images.value.length - 1) {
-    currentIndex.value++
-  }
 }
-
-const prevSlide = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--
-  }
-}
-
-const goToSlide = (index) => {
-  currentIndex.value = index
-}
-// 여기까지
-
-// 계산된 속성(카테고리 명 이름 보여주기 위한 함수)
-const categoryName = computed(() => {
-  if (board.value) {
-    return categoryMap[board.value.booksCategoryId] || "알 수 없음";
-  }
-  return "알 수 없음";
-});
-
-
-
-//댓글 목록을 가져와서 reviews 배열을 갱신하는 함수
-async function getCommentList(isbn) {
-  try {
-    const response = await api.getCommentList(isbn);
-    if (response.data.status === 'success') {
-      reviews.value = response.data.bookCommentList; //최신 댓글 목록으로 업데이트
-    } else {
-      console.error('댓글 목록을 가져오는데 실패했습니다.',response.data.message);
-    } 
-  } catch (error) {
-      console.error('댓글 목록을 가져오는 중 오류 발생:', error);
-  }
-}
-
-
 
 
 //삭제 모달 열기
@@ -362,6 +360,7 @@ onMounted(async () => {
     if (board.value && board.value.isbn) {
         await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
     }
+    await getUserInfoByEmail(); // 유저 정보 가져오기
 });
 
 //채팅방 생성후 이동
@@ -408,6 +407,14 @@ const toggleBookmark = async ()=>{
     } 
   }
 }
+
+    const getUserInfoByEmail = async () => {
+      const response = await api.getUserInfoByEmail(board.value.email);
+      const nickname = response.data.nickname;
+      const imgId = response.data.imgId;
+      userInfo.value = { nickname, imgId };
+      console.log(userInfo.value)
+    }
 </script>
   
 <style scoped>
