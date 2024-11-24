@@ -21,12 +21,13 @@
       <h2 class="recommendation-title">오직 당신만을 위한 AI큐레이션</h2>
       <div class="book-container">
         <div v-for="book in books" :key="book.isbn" class="book-card">
-          <img :src="book.image" :alt="book.title" class="book-image">
-          <h3 class="book-title">{{ book.title }}</h3>
-          <p class="book-author">{{ book.author }}</p>
-          <p class="book-author">{{ book.publisher }}</p>
+          <img :src="book.bookImageUrl" :alt="book.title" class="book-image">
+          <h3 class="book-title">{{ book.bookTitle }}</h3>
+          <p class="book-author">{{ book.bookWriter }}</p>
+          <p class="book-author">{{ book.bookPublisher }}</p>
         </div>
       </div>
+      
       <h2 class="recommendation-title">베스트셀러 도서</h2>
       <div class="book-container">
         <div v-for="board in data.boards" 
@@ -77,6 +78,7 @@ const loadRecommendedBooks = async () => {
 
 onMounted(() => {
     loadRecommendedBooks();
+    getRecommendedIsbnList();
 });
 
 const goToDetail = (isbn) => {
@@ -100,24 +102,11 @@ const getRecommendedIsbnList = async () => {
     try {
         const response = await api.getRecommendedIsbnList();
         books.value = response.data;
-        console.log(response.data);
     } catch (error) {
         console.error('추천 도서 데이터를 불러오지 못함');
     }
 };
 
-onMounted(async () => {
-    console.log("onMounted 호출됨");
-    await getRecommendedIsbnList();
-    for (let i = 0; i < books.value.length; i++) {
-        const isbn = books.value[i];
-        const response = await api.getBookInfo(isbn);
-        console.log(response.data.bookInfo);
-        books.value[i] = response.data.bookInfo;
-        console.log(books.value[i]);
-    }
-    console.log(books.value);
-})
 </script>
   
 <style scoped>
