@@ -48,13 +48,13 @@
         </template>
       </div>
       <div class="pagination">
-          <button @click="goToPage(boardsData.page - 1)" :disabled="!boardsData.prev" class="pagination-button">이전</button>
+          <button @click="goToPage(boardsData.start - 1)" :disabled="!boardsData.prev" class="pagination-button">이전</button>
           <span v-for="pageNum in pagesInCurrentBlock" :key="pageNum">
               <button @click="goToPage(pageNum)" :class="{ active: pageNum === boardsData.page }" class="pagination-button">
                 {{ pageNum }}
               </button>
           </span>
-          <button @click="goToPage(boardsData.page + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
+          <button @click="goToPage(boardsData.end + 1)" :disabled="!boardsData.next" class="pagination-button">다음</button>
       </div>
 
 

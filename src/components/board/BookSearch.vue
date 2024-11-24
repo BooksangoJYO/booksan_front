@@ -55,8 +55,8 @@
   </template>
   
   <script setup>
-  import { ref, reactive, computed } from "vue";
   import api from "@/api/api";
+import { computed, reactive, ref } from "vue";
 
   const emit = defineEmits(["book-selected"]); // 부모로 선택된 책 정보를 전달
   const keyword = ref("");
@@ -95,7 +95,6 @@
       data.totalPages = Math.ceil(responseData.total / responseData.size);
     } catch (error) {
       console.error("도서 검색 오류:", error);
-      alert("도서 정보를 불러오는 데 문제가 발생했습니다.");
     }
   };
   
