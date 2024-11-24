@@ -57,12 +57,12 @@ emitter.on('show-modal', () => {
 
 const closeBoardReservationList = () => {
     doLogin();
-    viewBoardReservationList.value = !viewBoardReservationList.value;
+    viewBoardReservationList.value = false;
 }
 
 const closeAlertList = () => {
+    viewChatAlertList.value = false;
     doLogin();
-    viewChatAlertList.value = !viewBoardReservationList.value;
 }
 
 const toggleBoardReservationList = () => {
