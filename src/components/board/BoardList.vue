@@ -70,7 +70,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="no-board-message">게시글이 없습니다.</p>
+      <p class="no-board-message">거래중인 가판대가 없습니다.</p>
     </div>
 
     <!-- 페이지네이션 -->
