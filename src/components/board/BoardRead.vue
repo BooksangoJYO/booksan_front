@@ -192,7 +192,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     const isModalVisible = ref(false); //삭제 모달 표시 여부
     const isWriter = ref(false); // 작성자인지 여부
     const isBookMarked = ref(false);
-    const userInfo = ref(null); // 사용자 정보
+    const userMap = ref({})
 
     const categoryMap = {
       1: "철학",
@@ -410,10 +410,10 @@ const toggleBookmark = async ()=>{
 
     const getUserInfoByEmail = async (email) => {
       const response = await api.getUserInfoByEmail(email);
-      const nickname = response.data.nickname;
-      const imgId = response.data.imgId;
-      userInfo.value = { nickname, imgId };
-      console.log(userInfo.value)
+      userMap.value[email] = {
+        nickname: response.data.nickname,
+        imgId: response.data.imgId
+      }
     }
 </script>
   
