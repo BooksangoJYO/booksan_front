@@ -4,7 +4,7 @@
     <div v-if="reviews && reviews.length">
       <div class="review-container" v-for="(review, index) in reviews" :key="index">
         <div class="review-header">
-          <span class="review-author">{{ getUserInfoByEmail(review.email) }}</span>:
+          <span class="review-author">{{ review.email }}</span>:
           <span class="review-date">{{ formatDate(review.insertDatetime) }}</span>
         </div>
         <div class="review-content" v-if="!review.isEditing">
