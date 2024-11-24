@@ -59,7 +59,7 @@ const openChat = (roomId) => {
   emit("close");
   sessionStorage.setItem('chat.roomId', roomId);
   const chatWindow = window.open(
-    'http://localhost:5173/chat/room',
+    'https://www.booksan.shop/chat/room',
     '채팅방',
     'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
   );
