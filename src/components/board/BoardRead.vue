@@ -357,6 +357,7 @@ onMounted(async () => {
     
     // 게시물 정보를 먼저 가져온 후, ISBN을 통해 도서 정보 가져오기(도서 리뷰 목록은 백엔드에서 게시물 단건 조회시 같이 불러오게 만들어둠)
     await getBoardRead(dealId); //게시글 단건조회
+    console.log("게시글 단건조회:", board.value);
     if (board.value && board.value.isbn) {
         await getCommentList(book.value.isbn); //책리뷰 목록 가져오기
     }
@@ -410,10 +411,12 @@ const toggleBookmark = async ()=>{
 
     const getUserInfoByEmail = async (email) => {
       const response = await api.getUserInfoByEmail(email);
+      console.log("유저 정보 response:", response.data);
       userInfo.value = {
         nickname: response.data.nickname,
         imgId: response.data.imgId
       }
+      console.log("저장된 userInfo:", userInfo.value);
     }
 </script>
   
