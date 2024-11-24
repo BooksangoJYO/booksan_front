@@ -15,7 +15,7 @@
         <img :src="SearchIcon" alt="검색" class="search-icon" @click="searchBook">
       </div>
       <!-- 도서 리스트 그리드 -->
-      <div class="book-grid-wrapper">
+      <div class="book-grid-wrapper" v-if="data.books.length">
         <div
           v-for="(book, index) in data.books"
           :key="index"
@@ -27,7 +27,9 @@
           <p class="book-author">{{ book.author }}</p>
         </div>
       </div>
-  
+      <div v-else>
+        <p class="no-board-message">해당 책에 대한 정보가 없습니다.</p>
+      </div>
       <!-- 페이지네이션 -->
       <div class="pagination" v-if="data.books.length">
         <button
@@ -60,9 +62,9 @@
 
 <script setup>
 import api from "@/api/api";
+import SearchIcon from '@/assets/images/searchIcon.svg';
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router'; // useRoute 가져오기
-import SearchIcon from '@/assets/images/searchIcon.svg';
 
 const route = useRoute();
 const router = useRouter();
@@ -102,7 +104,6 @@ const searchBook = async () => {
     data.totalPages = Math.ceil(responseData.total / responseData.size);
   } catch (error) {
     console.error("도서 검색 실패:", error);
-    alert("도서 정보를 불러오는 데 문제가 발생했습니다.");
   }
 };
 

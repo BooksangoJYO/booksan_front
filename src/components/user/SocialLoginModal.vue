@@ -73,6 +73,7 @@ const handleKakaoLogin = () => {
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 9999; /* 이 줄 추가 */
 }
 
 .modal-backdrop {
@@ -82,11 +83,11 @@ const handleKakaoLogin = () => {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1040;
+    z-index: 9998; /* 더 높은 값으로 변경 */
 }
 
 .modal {
-    z-index: 1045;
+    z-index: 9999; /* 더 높은 값으로 변경 */
     position: absolute;
 }
 

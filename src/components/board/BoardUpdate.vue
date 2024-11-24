@@ -144,11 +144,11 @@
   USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
   BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
 };
-import { useRouter, useRoute } from "vue-router";
-import { ref, onMounted, computed } from "vue";
 import api from "@/api/api";
-import { storeToRefs } from 'pinia';
 import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const store = useMainStore();
 const{paginationData,keyword} = storeToRefs(store);
@@ -306,7 +306,7 @@ const updateForm = async () => {
       alert("수정되었습니다.");
       keyword.value='';
       paginationData.value.page=1;      
-      router.push("/board/list");
+      router.push(`/board/read/${dealId}`);
     } else {
       alert("수정 실패: " + response.data.message);
     }
