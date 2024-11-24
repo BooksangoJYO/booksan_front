@@ -2,6 +2,8 @@ import { useMainStore } from '@/store/mainStore';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+axios.defaults.validateStatus = () => true;
+
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);

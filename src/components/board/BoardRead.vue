@@ -377,7 +377,7 @@ const openChat = async () =>{
           const chatRoom = response.data; // 서버에서 반환된 데이터
           sessionStorage.setItem('chat.roomId',chatRoom.roomId);
           window.open(
-            'http://localhost:5173/chat/room',
+            'https://www.booksan.shop/chat/room',
             '채팅방',
             'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
           );
