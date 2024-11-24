@@ -28,7 +28,7 @@
                   ]"
               >
                   <div class="chat-bubble">
-                      <div class="sender-name" v-if="message.sender !== currentUser">
+                      <div class="sender-name" v-if="message.sender !== loginInfo.email">
                           {{ message.sender }}
                       </div>
                       <div class="message-content">
@@ -60,6 +60,11 @@
 
 <script setup>
 import { defineEmits, defineProps, nextTick, ref, watchEffect } from 'vue';
+import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
+
+const store = useMainStore();
+const {loginInfo} = storeToRefs(store);
 
 const props = defineProps({
   data: {
@@ -72,7 +77,8 @@ const emit = defineEmits();
 const inputMessage = ref('');
 const showMenu = ref(false);
 const messageContainer = ref(null);
-const currentUser = sessionStorage.getItem("userEmail");
+
+
 
 // 스크롤을 맨 아래로 이동시키는 함수
 const scrollToBottom = async () => {

@@ -70,7 +70,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="no-board-message">게시글이 없습니다.</p>
+      <p class="no-board-message">거래중인 가판대가 없습니다.</p>
     </div>
 
     <!-- 페이지네이션 -->
@@ -88,8 +88,8 @@
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
 import BookMarkIcon from '@/assets/images/bookMarkFillIcon.svg';
 import NotBookMarkIcon from '@/assets/images/bookMarkIcon.svg';
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import art from '@/assets/images/art.png';
 import entire from '@/assets/images/entire.png';
@@ -103,8 +103,8 @@ import religion from '@/assets/images/religion.png';
 import SearchIcon from '@/assets/images/searchIcon.svg';
 import socialScience from '@/assets/images/socialScience.png';
 import technicalScience from '@/assets/images/technicalScience.png';
-import { storeToRefs } from 'pinia';
 import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
 
 
 
