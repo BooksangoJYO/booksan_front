@@ -89,7 +89,7 @@
                     <strong>상품명</strong> {{ book.title }}                  
                 </li>
                 <li><strong>카테고리</strong> {{ categoryName }}</li>
-                <li><strong>판매자</strong> {{ userInfo.nickname }}</li>
+                <li><strong>판매자</strong> {{ userInfo?.nickname }}</li>
                 <li><strong>판매가</strong> {{ board.price.toLocaleString() }}원</li>
               </ul>            
               <div class="button-group">
@@ -192,7 +192,7 @@ import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     const isModalVisible = ref(false); //삭제 모달 표시 여부
     const isWriter = ref(false); // 작성자인지 여부
     const isBookMarked = ref(false);
-    const userMap = ref({})
+    const userInfo = ref(null); // 사용자 정보
 
     const categoryMap = {
       1: "철학",
@@ -410,7 +410,7 @@ const toggleBookmark = async ()=>{
 
     const getUserInfoByEmail = async (email) => {
       const response = await api.getUserInfoByEmail(email);
-      userMap.value[email] = {
+      userInfo.value = {
         nickname: response.data.nickname,
         imgId: response.data.imgId
       }
