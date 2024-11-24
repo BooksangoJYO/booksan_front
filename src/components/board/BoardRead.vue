@@ -391,7 +391,7 @@ const openChat = async () =>{
 
 const openSellerChat = async () => {
   window.open(
-          'http://localhost:5173/chat/room/'+board.value.dealId,
+          'https://www.booksan.shop/chat/room/'+board.value.dealId,
           '채팅방',
           'width=800,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
         );
