@@ -24,7 +24,7 @@
                   :key="index"
                   :class="[
                       'message-wrapper',
-                      message.sender === currentUser ? 'message-right' : 'message-left'
+                      message.sender === loginInfo.email ? 'message-right' : 'message-left'
                   ]"
               >
                   <div class="chat-bubble">

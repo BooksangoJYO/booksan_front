@@ -1,77 +1,94 @@
 <template>
-    <div class="chat-left">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>채팅방 리스트</h3>
-            </div>
-        </div>
-        <!-- 방 목록은 비동기로 서버에서 얻어 출력한다 -->
-        <ul id="roomList">
-			<li
-            v-if="data.chatRooms.length"
-			v-for="room in data.chatRooms"
-			:key="room.roomId"
-			@click="enterRoom(room.roomId)"
-            class="room-item"
-			>
-        <div class="chat-item">
-            <div class="avatar"></div>
-            <div class="message">
-                <div class="text">{{ room.name }}</div>
-                <div v-if="getUserRole(room)">
-                    <span 
-                    class="type-tag"
-                    :class="{
-                        'purchase': getUserRole(room) === '구매',
-                        'sale': getUserRole(room) === '판매'
-                    }"
-                    >{{getUserRole(room)}}</span>
-                </div>
-            </div>
-        </div>
-			</li>
-		</ul>
+  <div class="chat-left">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>채팅방 리스트</h3>
+      </div>
     </div>
+    <ul id="roomList">
+      <li
+        v-if="data.chatRooms.length"
+        v-for="room in data.chatRooms"
+        :key="room.roomId"
+        @click="enterRoom(room.roomId)"
+        class="room-item"
+      >
+        <div class="chat-item">
+          <div class="avatar">
+            <img :src="room.otherUserProfile || defaultProfile" :alt="getOtherUserEmail(room)">
+          </div>
+          <div class="message">
+            <div class="text">{{ room.name }}</div>
+            <div v-if="getUserRole(room)">
+              <span
+                class="type-tag"
+                :class="{
+                  'purchase': getUserRole(room) === '구매',
+                  'sale': getUserRole(room) === '판매'
+                }"
+              >{{getUserRole(room)}}</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup>
 import api from "@/api/api";
+import { useMainStore } from "@/store/mainStore";
+import { storeToRefs } from "pinia";
 import { defineEmits, onMounted, reactive } from 'vue';
 
-    const email = sessionStorage.getItem('userEmail');
-    const emit = defineEmits();
-    const data = reactive({
-        chatRooms: []
-    });
+const store = useMainStore();
+const { loginInfo } = storeToRefs(store);
+const defaultProfile = `${API_URLS.USERS}/api/users/read/download/524`;
+const email = sessionStorage.getItem('userEmail');
+const emit = defineEmits();
 
+const data = reactive({
+  chatRooms: []
+});
 
-    onMounted(()=>{
-        roomListOutput();
-    })
+onMounted(() => {
+  roomListOutput();
+});
 
-    const getUserRole= (room)=> {
-        const userType = room.userMap[email];
-      if (email && userType != null) {
-        return userType == "customer" ? "구매" : "판매";
-      }
-      return null; // 해당 이메일이 없으면 null 반환
-    }
+const getUserRole = (room) => {
+  const userType = room.userMap[email];
+  if (email && userType != null) {
+    return userType == "customer" ? "구매" : "판매";
+  }
+  return null;
+};
 
-    const roomListOutput = async () => {
-        const response = await api.getRoomList();
-        data.chatRooms = response.data;  // 받아온 방 목록을 상태에 저장
-    };
+const roomListOutput = async () => {
+  const response = await api.getRoomList();
+  data.chatRooms = response.data;
+  // 각 방의 프로필 이미지 로딩
+  await Promise.all(data.chatRooms.map(fetchUserProfile));
+};
 
+const enterRoom = roomId => {
+  sessionStorage.setItem('chat.roomId', roomId);
+  emit('enterChatRoom');
+};
 
-    const enterRoom = roomId => {
-        //입장하는 사람의 이름과 채팅방이름을 지역저장소에 저장한다
-        //이렇게 저장하면 다른 페이지에서 해당 키를 이용하여 값을 읽을 수 있다
-        sessionStorage.setItem('chat.roomId', roomId);
-        emit('enterChatRoom');
-    }
+const getOtherUserEmail = (room) => {
+  return Object.keys(room.userMap).find(email => email !== loginInfo.value.email);
+};
 
-
-
+const fetchUserProfile = async (room) => {
+  const otherEmail = getOtherUserEmail(room);
+  try {
+    const response = await api.getUserInfoByEmail(otherEmail);
+    room.otherUserProfile = `${API_URLS.USERS}/api/users/read/download/${response.data.imgId}`;
+  } catch (error) {
+    console.error('프로필 이미지를 불러오는데 실패했습니다:', error);
+    room.otherUserProfile = defaultProfile;
+  }
+};
 </script>
 
 <style scoped>
