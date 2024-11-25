@@ -36,7 +36,9 @@
 <script setup>
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
-
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+};
 const defaultProfile = `${API_URLS.USERS}/api/users/read/download/524`;
 const data = reactive({
   alertRooms: [],
