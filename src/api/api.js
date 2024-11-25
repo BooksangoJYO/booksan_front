@@ -112,7 +112,7 @@ export default {
   },
   
   getUserInfoByEmail(email) {
-    return apiClient.get(`/api/users/userInfoBy/${email}`);
+    return apiClient.get(`${API_URLS.USERS}/api/users/userInfoBy/${email}`);
   },
 
   getBookMarks() {
