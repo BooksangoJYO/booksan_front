@@ -61,7 +61,7 @@ onMounted(() => {
 
 const getUserRole = (room) => {
   const userType = room.userMap[loginInfo.value.email];
-  if (email && userType != null) {
+  if (loginInfo.value.email && userType != null) {
     return userType == "customer" ? "구매" : "판매";
   }
   return null;
