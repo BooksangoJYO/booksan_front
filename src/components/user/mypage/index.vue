@@ -275,7 +275,7 @@ const getFormData = () => {
         formData.append('file', imageFile.value);
         return formData;
     } else {
-        formData.append('imgId', 514);
+        formData.append('imgId', 524);
     }
     
 }
