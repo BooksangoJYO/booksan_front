@@ -4,8 +4,8 @@
         <div class="card-body">
             <nav class="nav flex-column">
                 <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage' }" to="/mypage">프로필 정보</router-link>
-                <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage/bookmarkbooks' }" to="/mypage/bookmarkbooks">책갈피한 서재</router-link>
-                <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage/bookmarks' }" to="/mypage/bookmarks">관심 가판대</router-link>
+                <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage/bookmarkbooks' }" to="/mypage/bookmarkbooks">알림 설정 도서</router-link>
+                <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage/bookmarks' }" to="/mypage/bookmarks">책갈피한 가판대</router-link>
                 <router-link class="nav-link" :class="{ 'active': $route.path === '/mypage/myposts' }" to="/mypage/myposts">나의 판매 가판대</router-link>
             </nav>
         </div>
