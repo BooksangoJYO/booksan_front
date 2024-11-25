@@ -120,7 +120,7 @@ import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import Cookies from 'js-cookie';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
@@ -305,10 +305,8 @@ const readProfileImage = async () => {
     }
 };
 
-watch(() => loginInfo.value, (newValue) => {
-    if (Object.keys(newValue).length > 0) { // loginInfo가 비어있지 않을 때만 실행
-        readProfileImage();
-    }
+onMounted(() => (e) => {
+    readProfileImage();
 });
 
 </script>
