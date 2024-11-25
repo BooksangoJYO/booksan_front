@@ -49,7 +49,6 @@ const API_URLS = {
 const store = useMainStore();
 const { loginInfo } = storeToRefs(store);
 const defaultProfile = `${API_URLS.USERS}/api/users/read/download/524`;
-const email = sessionStorage.getItem('userEmail');
 const emit = defineEmits();
 
 const data = reactive({
@@ -61,7 +60,7 @@ onMounted(() => {
 });
 
 const getUserRole = (room) => {
-  const userType = room.userMap[email];
+  const userType = room.userMap[loginInfo.value.email];
   if (email && userType != null) {
     return userType == "customer" ? "구매" : "판매";
   }
@@ -138,8 +137,14 @@ ul {
   height: 48px;
   border-radius: 24px;
   background-color: #f0f0f0;
+  overflow: hidden;
 }
 
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .message {
   flex: 1;
 }
