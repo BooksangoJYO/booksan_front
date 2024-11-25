@@ -298,7 +298,7 @@ const readProfileImage = async () => {
         if(!loginInfo.value.imgId) {
             console.log("loginfo에 imgId가 없을때")
         } else {
-            image.value = `/api/users/read/download/${loginInfo.value.imgId}`;
+            image.value = `${API_URLS.USERS}/api/users/read/download/${loginInfo.value.imgId}`;
         }
     } catch (error) {
         console.error("프로필 데이터를 불러오는 중 오류 발생:", error);
