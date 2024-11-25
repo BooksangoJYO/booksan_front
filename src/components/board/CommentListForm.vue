@@ -46,9 +46,10 @@ onMounted(async () => {
       }))
   )
   const results = await Promise.all(userPromises)
-  
+  console.log("results : " + results);
   results.forEach(result => {
     userMap.value[result.email] = result.userInfo
+    console.log("result.userInfo : " + result.userInfo);
   })
 })
 
