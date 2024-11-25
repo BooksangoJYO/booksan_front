@@ -88,7 +88,7 @@
 import api from '@/api/api'; // API 요청을 보내는 파일을 import
 import BookMarkIcon from '@/assets/images/bookMarkFillIcon.svg';
 import NotBookMarkIcon from '@/assets/images/bookMarkIcon.svg';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import art from '@/assets/images/art.png';
@@ -118,6 +118,10 @@ const boardList = ref([]);
 const store = useMainStore();
 const{paginationData,keyword} = storeToRefs(store);
 
+watch([keyword, () => paginationData.value.page,selectedCategoryId.value], () => {
+  fetchBoardList();
+});
+
 const selectedCategoryId = ref(0);
 const categories = ref([
   { id:0, name:"전체", icon:entire},
@@ -141,7 +145,6 @@ const setCategory = (categoryId) => {
   paginationData.value.page = 1;
   paginationData.value.size = 10;
   console.log(`Selected Category ID: ${categoryId}`);  
-  fetchBoardList(); // 선택한 카테고리에 따라 게시글 목록 새로고침
 };
 
 
@@ -170,7 +173,6 @@ const pageInCurrentBlock = computed(() => {
 const search = () => {
   paginationData.value.page = 1;
   paginationData.value.size = 10;
-  fetchBoardList();
 };
 
 // 게시글 목록 가져오기
@@ -208,7 +210,6 @@ const fetchBoardList = async () => {
 const goToPage = (pageNum) => {
   if (pageNum >= 1 && pageNum <= paginationData.value.totalPages) {
     paginationData.value.page = pageNum;
-    fetchBoardList();
   }
 };
 
@@ -217,7 +218,6 @@ function goToBoardInsert() {
   router.push({ path: '/board/insert' });
   keyword.value ='';
   paginationData.value.page= 1;
-  fetchBoardList();
 }
 
 // 게시글 조회 페이지로 이동
