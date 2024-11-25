@@ -13,7 +13,9 @@
           >
             <div class="chat-item">
               <div class="avatar-container">
-                <div class="avatar"></div>
+                <div class="avatar">
+                  <img :src="room.otherUserProfile || defaultProfile" :alt="getOtherUserEmail(room)">
+                </div>
                 <div class="notification-badge" v-if="room.hasNewMessage"></div>
               </div>
               <div class="message">
@@ -35,21 +37,40 @@
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
 
+const defaultProfile = `${API_URLS.USERS}/api/users/read/download/524`;
 const data = reactive({
   alertRooms: [],
 });
-const emit = defineEmits(["close"]); // 부모로 선택된 책 정보를 전달
+
+const emit = defineEmits(["close"]);
+
 const fetchAlertRooms = async () => {
   try {
     const response = await api.getAlertRooms();
-    // 임시로 hasNewMessage 속성 추가 (실제로는 API에서 받아와야 함)
     data.alertRooms = response.data.map(room => ({
       ...room,
-      hasNewMessage: true // 또는 서버에서 받은 실제 값
+      hasNewMessage: true
     }));
+    await Promise.all(data.alertRooms.map(fetchUserProfile));
   } catch (error) {
     console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
     emit("close");
+  }
+};
+
+const getOtherUserEmail = (room) => {
+  const currentUserEmail = sessionStorage.getItem('userEmail');
+  return Object.keys(room.userMap).find(email => email !== currentUserEmail);
+};
+
+const fetchUserProfile = async (room) => {
+  const otherEmail = getOtherUserEmail(room);
+  try {
+    const response = await api.getUserInfoByEmail(otherEmail);
+    room.otherUserProfile = `${API_URLS.USERS}/api/users/read/download/${response.data.imgId}`;
+  } catch (error) {
+    console.error('프로필 이미지를 불러오는데 실패했습니다:', error);
+    room.otherUserProfile = defaultProfile;
   }
 };
 
@@ -64,8 +85,7 @@ const openChat = (roomId) => {
     'width=500,height=600,top=100,left=500,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
   );
   emit("close");
-  
-}
+};
 </script>
 
 <style scoped>
@@ -133,8 +153,13 @@ const openChat = (roomId) => {
   border-radius: 20px;
   background-color: #f0f0f0;
   flex-shrink: 0;
+  overflow: hidden;
 }
-
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .notification-badge {
   position: absolute;
   top: -4px;
