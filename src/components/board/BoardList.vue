@@ -140,6 +140,7 @@ const setCategory = (categoryId) => {
   keyword.value=''; // 키워드 초기화
   paginationData.value.page = 1;
   paginationData.value.size = 10;
+  fetchBoardList();
   console.log(`Selected Category ID: ${categoryId}`);  
 };
 
@@ -169,6 +170,7 @@ const pageInCurrentBlock = computed(() => {
 const search = () => {
   paginationData.value.page = 1;
   paginationData.value.size = 10;
+  fetchBoardList();
 };
 
 // 게시글 목록 가져오기
@@ -207,6 +209,7 @@ const goToPage = (pageNum) => {
   if (pageNum >= 1 && pageNum <= paginationData.value.totalPages) {
     paginationData.value.page = pageNum;
   }
+  fetchBoardList();
 };
 
 // 게시글 등록 이동
@@ -249,7 +252,7 @@ onMounted(() => {
   fetchBoardList(); // 목록 데이터 가져오기
 });
 
-watch([keyword, () => paginationData.value.page,selectedCategoryId.value], () => {
+watch([() => paginationData.value.page,selectedCategoryId.value], () => {
   fetchBoardList();
 });
 
