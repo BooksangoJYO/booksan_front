@@ -60,8 +60,10 @@ onMounted(() => {
 
 const roomListOutput = async () => {
   const response = await api.getRoomListByDealId(props.dealId);
+  if(response.data){
   data.chatRooms = response.data;
   await Promise.all(data.chatRooms.map(fetchUserProfile));
+  }
 };
 
 const enterRoom = roomId => {
@@ -70,7 +72,6 @@ const enterRoom = roomId => {
 };
 
 const getOtherUserEmail = (room) => {
-  const currentUserEmail = sessionStorage.getItem('userEmail');
   return Object.keys(room.userMap).find(email => email !== loginInfo.value.email);
 };
 

@@ -49,11 +49,13 @@ const emit = defineEmits(["close"]);
 const fetchAlertRooms = async () => {
   try {
     const response = await api.getAlertRooms();
+    if(response.data){
     data.alertRooms = response.data.map(room => ({
       ...room,
       hasNewMessage: true
     }));
     await Promise.all(data.alertRooms.map(fetchUserProfile));
+  }
   } catch (error) {
     console.error("채팅방 목록을 가져오는 중 오류 발생:", error);
     emit("close");
@@ -61,8 +63,7 @@ const fetchAlertRooms = async () => {
 };
 
 const getOtherUserEmail = (room) => {
-  const currentUserEmail = sessionStorage.getItem('userEmail');
-  return Object.keys(room.userMap).find(email => email !== currentUserEmail);
+  return Object.keys(room.userMap).find(email => email !== loginInfo.value.email);
 };
 
 const fetchUserProfile = async (room) => {

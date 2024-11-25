@@ -69,9 +69,11 @@ const getUserRole = (room) => {
 
 const roomListOutput = async () => {
   const response = await api.getRoomList();
+  if(response.data){
   data.chatRooms = response.data;
   // 각 방의 프로필 이미지 로딩
   await Promise.all(data.chatRooms.map(fetchUserProfile));
+  }
 };
 
 const enterRoom = roomId => {
