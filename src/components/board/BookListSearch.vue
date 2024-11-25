@@ -92,7 +92,7 @@ const pagesInCurrentBlock = computed(() => {
 // 검색 API 호출
 const searchBook = async () => {
   try {
-    const response = await api.getBooksInfo(keyword.value, data.page, data.size);
+    const response = await api.getBooksInfo(keyword.value, data.page || 1, data.size || 10);
     const responseData = response.data;
     data.books = responseData.dtoList || [];
     data.page = responseData.page;
@@ -208,9 +208,9 @@ onMounted(()=>{
 }
 
 .book-image {
-  width: 100%; /* 이미지 크기 자동 조정 */
+  width: 100px; /* 이미지 크기 자동 조정 */
   max-width: 100px; /* 최대 너비 제한 */
-  height: auto;
+  height: 140px;
   object-fit: cover;
   margin-bottom: 8px;
   border-radius: 4px;
@@ -219,6 +219,11 @@ onMounted(()=>{
 .book-title {
   font-size: 13px;
   margin: 8px 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .book-author {
