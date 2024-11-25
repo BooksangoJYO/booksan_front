@@ -41,6 +41,11 @@ import { useMainStore } from "@/store/mainStore";
 import { storeToRefs } from "pinia";
 import { defineEmits, onMounted, reactive } from 'vue';
 
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : ''
+
+};
+
 const store = useMainStore();
 const { loginInfo } = storeToRefs(store);
 const defaultProfile = `${API_URLS.USERS}/api/users/read/download/524`;
