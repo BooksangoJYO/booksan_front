@@ -309,7 +309,7 @@ const readProfileImage = async () => {
     }
 };
 
-onMounted(() => (e) => {
+onMounted(() => {
     readProfileImage();
 });
 
