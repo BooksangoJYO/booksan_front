@@ -27,9 +27,6 @@ const reset = () => {
   keyword.value = '';
   paginationData.value.page = 1;
   
-  if (window.location.pathname === '/board/list') {
-    window.location.reload();
-  }
 }
 
 </script>
