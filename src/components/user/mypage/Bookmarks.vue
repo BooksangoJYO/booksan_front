@@ -42,7 +42,7 @@
                                 class="bookmark-item card border-0 shadow-sm mb-3"
                                 @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
-                                    <img :src="board.image_url || '/default-book.jpg'" :alt="board.title" 
+                                    <img :src="board.imageFileDTOList?.length ? API_URLS.BOARD + '/api/board/read/download/' + board.imageFileDTOList[0].imgId : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKC5SbJx2Wf9ewguE1uvgE3zc5TRnX1XfOsA&s'" alt="Book Image" 
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
@@ -87,6 +87,10 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
+
+const API_URLS = {
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);
