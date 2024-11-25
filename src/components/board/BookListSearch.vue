@@ -33,7 +33,7 @@
       <!-- 페이지네이션 -->
       <div class="pagination" v-if="data.books.length">
         <button
-          @click="goToPage(data.page - 1)"
+          @click="goToPage(data.start - 1)"
           :disabled="!data.prev"
           class="pagination-button"
         >
@@ -49,7 +49,7 @@
           </button>
         </span>
         <button
-          @click="goToPage(data.page + 1)"
+          @click="goToPage(data.end + 1)"
           :disabled="!data.next"
           class="pagination-button"
         >
