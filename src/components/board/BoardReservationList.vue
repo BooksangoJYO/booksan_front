@@ -12,7 +12,7 @@
           >
             <div class="book-item" @click="openRead(board.dealId)">
               <div class="image-container">
-                <img :src="board.image" class="book-image"/>
+                <img :src="API_URLS.BOARD+'/api/download'+board.bookImageUrl" class="book-image"/>
               </div>
               <div class="message">
                 <div class="board-title">{{ board.title }}</div>
@@ -31,6 +31,9 @@
 import api from '@/api/api';
 import { onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+const API_URLS = {
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 
 const router = useRouter();
 const emit = defineEmits(["close"]);

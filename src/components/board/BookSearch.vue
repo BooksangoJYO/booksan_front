@@ -83,7 +83,7 @@ import { computed, reactive, ref } from "vue";
   // 검색 API 호출
   const searchBook = async () => {
     try {
-      const response = await api.getBooksInfo(keyword.value, data.page || 1, data.size || 10);
+      const response = await api.getBooksInfo(keyword.value, 1, 10);
       const responseData = response.data;
       data.books = responseData.dtoList || [];
       data.page = responseData.page;

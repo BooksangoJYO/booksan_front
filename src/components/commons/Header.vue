@@ -15,17 +15,18 @@
 
 <script setup>
 import logoIcon from '@/assets/images/logo.png';
-import LoginContainer from './LoginContainer.vue';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-
+import { useRouter } from 'vue-router';
+import LoginContainer from './LoginContainer.vue';
 const store = useMainStore();
 const {keyword,paginationData} =storeToRefs(store);
+const router = useRouter();
 //중고책 찾기 누르면 키워드랑 페이지네이션 초기화
 const reset = () => {
   keyword.value = ''; //키워드 초기화
   paginationData.value.page = 1; //페이지 초기화
-  fetchBoardList(); //게시글 목록 갱신
+  router.go(0);
 };
 
 </script>
