@@ -124,6 +124,9 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
 
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+};
 
 const router = useRouter();
 const store = useMainStore();
@@ -136,10 +139,6 @@ const isLoading = ref(false);
 const defaultImage = `${API_URLS.USERS}/api/users/read/download/524`
 const image = ref(null);
 const imageFile = ref({});
-
-const API_URLS = {
-  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
-};
 
 const deleteAccount = async () => {
     if(confirm('정말 탈퇴하시겠습니까?')) {
