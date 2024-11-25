@@ -51,7 +51,7 @@
     <div v-if="filteredBoardList.length > 0" class="board-list">
       <div v-for="(board, index) in filteredBoardList" :key="index" class="board-item" @click="goToBoardRead(board.dealId)">        
         <div class="board-item-image">         
-          <img :src="API_URLS.BOARD + '/api/board/read/download/' + image.imgId" alt="Book Image" />
+          <img :src="board.imageFileListDTO.length ? API_URLS.BOARD + '/api/board/read/download/' + board.imageFileListDTO[0].imgId : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKC5SbJx2Wf9ewguE1uvgE3zc5TRnX1XfOsA&s'" alt="Book Image" />
         </div>
         <div class="board-item-details">
           <div class="board-item-info">
@@ -106,7 +106,9 @@ import technicalScience from '@/assets/images/technicalScience.png';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
 
-
+const API_URLS = {
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 
 // 상태 정의
 const route = useRoute(); // useRoute를 사용하여 현재 경로 정보를 가져옴
