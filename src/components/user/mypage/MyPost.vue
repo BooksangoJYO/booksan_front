@@ -42,7 +42,7 @@
                                 class="post-item card border-0 shadow-sm mb-3"
                                 @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
-                                    <img 
+                                    <img v-if="board.imageFileDTOList && board.imageFileDTOList.length > 0" 
                                         :src="API_URLS.BOARD +`/api/board/read/download/${board.imageFileDTOList[0].imgId}`"  
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
