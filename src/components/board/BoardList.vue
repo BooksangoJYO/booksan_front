@@ -445,8 +445,8 @@ watch([() => paginationData.value.page,selectedCategoryId.value], () => {
 }
 
 .board-item-image img {
-  width: 100%;
-  height: auto;
+  width: 180px;
+  height: 180px;
   object-fit: cover;
   border-radius: 8px;
 }
