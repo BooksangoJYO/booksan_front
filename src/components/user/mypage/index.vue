@@ -133,9 +133,13 @@ const newNickname = ref('');
 const isAvailable = ref(false);
 const nicknameMessage = ref('');
 const isLoading = ref(false);
-const defaultImage = `/api/users/read/download/514`
+const defaultImage = `${API_URLS.USERS}/api/users/read/download/524`
 const image = ref(null);
 const imageFile = ref({});
+
+const API_URLS = {
+  USERS: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_USER : '',
+};
 
 const deleteAccount = async () => {
     if(confirm('정말 탈퇴하시겠습니까?')) {

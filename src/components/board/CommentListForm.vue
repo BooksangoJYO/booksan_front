@@ -27,9 +27,10 @@
 
 
 <script setup>
+import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { onMounted, defineEmits, defineProps, ref } from 'vue';
+import { defineEmits, defineProps, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const userMap = ref({})
