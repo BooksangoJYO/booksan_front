@@ -24,10 +24,13 @@ const {keyword,paginationData} =storeToRefs(store);
 const router = useRouter();
 //중고책 찾기 누르면 키워드랑 페이지네이션 초기화
 const reset = () => {
-  keyword.value = ''; //키워드 초기화
-  paginationData.value.page = 1; //페이지 초기화
-  router.go(0);
-};
+  keyword.value = '';
+  paginationData.value.page = 1;
+  
+  if (window.location.pathname === '/board/list') {
+    window.location.reload();
+  }
+}
 
 </script>
 
