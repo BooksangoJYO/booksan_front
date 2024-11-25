@@ -118,10 +118,6 @@ const boardList = ref([]);
 const store = useMainStore();
 const{paginationData,keyword} = storeToRefs(store);
 
-watch([keyword, () => paginationData.value.page,selectedCategoryId.value], () => {
-  fetchBoardList();
-});
-
 const selectedCategoryId = ref(0);
 const categories = ref([
   { id:0, name:"전체", icon:entire},
@@ -251,6 +247,10 @@ onMounted(() => {
     paginationData.value.page = parseInt(pageFromQuery, 10); // 쿼리에서 페이지 번호 복원
   }
   fetchBoardList(); // 목록 데이터 가져오기
+});
+
+watch([keyword, () => paginationData.value.page,selectedCategoryId.value], () => {
+  fetchBoardList();
 });
 
 </script>
