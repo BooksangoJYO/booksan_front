@@ -47,7 +47,7 @@
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted small">{{ formatDate(board.created_at) }}</span>
+                                            <span class="text-muted small">{{ formatDate(board.insertDatetime) }}</span>
                                             <span class="badge" :class="board.is_sold ? 'bg-secondary' : 'bg-custom-brown'">
                                                 {{ board.is_sold ? '판매완료' : '판매중' }}
                                             </span>
