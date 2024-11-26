@@ -35,6 +35,12 @@ import { useRoute } from 'vue-router';
 
 const userMap = ref({})
 
+//게시글 단건 조회(부모 컴포넌트)에서 책리뷰 목록 (자식 컴포넌트)로 값 전달
+const props = defineProps({
+  reviews: Array,
+  isbn: String
+});
+
 // watch로 props.reviews 데이터 변경 감지
 watch(() => props.reviews, (newReviews) => {
   if (newReviews && newReviews.length > 0) {
@@ -95,11 +101,6 @@ const store = useMainStore();
 const{loginInfo} = storeToRefs(store);
 
 const route= useRoute();
-//게시글 단건 조회(부모 컴포넌트)에서 책리뷰 목록 (자식 컴포넌트)로 값 전달
-const props = defineProps({
-  reviews: Array,
-  isbn: String
-});
 
 //책리뷰 목록(자식컴포넌트)에서 게시글 단건조회(부모컴포넌트)로 이벤트 전달
 const emit = defineEmits(['updateBookComment', 'deleteBookComment']);
