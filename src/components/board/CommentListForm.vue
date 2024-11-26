@@ -38,6 +38,12 @@ const userMap = ref({})
 onMounted(async () => {
   console.log('Props:', props);
   console.log('Reviews:', props.reviews);
+
+  if (!props.reviews || !Array.isArray(props.reviews)) {
+    console.warn('Reviews prop is not an array or is missing');
+    return;
+  }
+
   const userPromises = props.reviews.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
     console.log("API response for", review.email, ":", response);
@@ -47,15 +53,16 @@ onMounted(async () => {
         nickname: response.data.nickname,
         imgId: response.data.imgId
       }
-    }
-})
-  const results = await Promise.all(userPromises)
+    };
+  });
+
+  const results = await Promise.all(userPromises);
   console.log("results : ", results);
   results.forEach(result => {
-    userMap.value[result.email] = result.userInfo
+    userMap.value[result.email] = result.userInfo;
     console.log("result.userInfo : " + result.userInfo);
-  })
-})
+  });
+});
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -86,7 +93,6 @@ const props = defineProps({
   reviews: Array,
   isbn: String
 });
-const { Proxy: { reviews }} = props;
 
 //책리뷰 목록(자식컴포넌트)에서 게시글 단건조회(부모컴포넌트)로 이벤트 전달
 const emit = defineEmits(['updateBookComment', 'deleteBookComment']);
