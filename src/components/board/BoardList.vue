@@ -210,6 +210,10 @@ const goToPage = (pageNum) => {
     paginationData.value.page = pageNum;
   }
   fetchBoardList();
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // 부드러운 스크롤 효과
+  });
 };
 
 // 게시글 등록 이동
