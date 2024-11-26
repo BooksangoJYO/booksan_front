@@ -36,18 +36,17 @@ import { useRoute } from 'vue-router';
 const userMap = ref({})
 
 onMounted(async () => {
-  console.log("props.reviews:", props.value.reviews);
-  const userPromises = props.value.reviews.map(async review => {
+  console.log("props.reviews:", props.reviews);
+  const userPromises = props.reviews.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
     console.log("API response for", review.email, ":", response);
-    api.getUserInfoByEmail(review.email)
-      .then(response => ({
-        email: review.email,
-        userInfo: {
-          nickname: response.data.nickname,
-          imgId: response.data.imgId
-        }
-      }))
+    return {
+      email: review.email,
+      userInfo: {
+        nickname: response.data.nickname,
+        imgId: response.data.imgId
+      }
+    }
 })
   const results = await Promise.all(userPromises)
   console.log("results : ", results);
