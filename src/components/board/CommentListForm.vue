@@ -86,6 +86,7 @@ const props = defineProps({
   reviews: Array,
   isbn: String
 });
+const { Proxy: { reviews }} = props;
 
 //책리뷰 목록(자식컴포넌트)에서 게시글 단건조회(부모컴포넌트)로 이벤트 전달
 const emit = defineEmits(['updateBookComment', 'deleteBookComment']);
