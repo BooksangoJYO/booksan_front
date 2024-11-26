@@ -10,7 +10,7 @@
               <div class="card mb-4 border-0 shadow-sm">
                   <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center mb-4">
-                          <h3 class="m-0">책갈피한 서재</h3>
+                          <h3 class="m-0">알림 설정 도서</h3>
                       </div>
 
                       <!-- 북마크 도서 목록 -->
