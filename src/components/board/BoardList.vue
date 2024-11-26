@@ -445,10 +445,11 @@ watch([() => paginationData.value.page,selectedCategoryId.value], () => {
 }
 
 .board-item-image img {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
+  width: 150px;
+  height: 170px;
+  object-fit: contain;
   border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 /* 텍스트 상세 정보 */
