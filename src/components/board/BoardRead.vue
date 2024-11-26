@@ -183,7 +183,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
 import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     const store = useMainStore();
-    const{loginInfo,keyword} = storeToRefs(store);
+    const{loginInfo,keyword,paginationData} = storeToRefs(store);
     const route = useRoute();
     const router = useRouter();
     const board = ref(null); // 게시물 정보
