@@ -36,7 +36,8 @@ import { useRoute } from 'vue-router';
 const userMap = ref({})
 
 onMounted(async () => {
-  console.log("props.reviews:", props.reviews);
+  console.log('Props:', props);
+  console.log('Reviews:', props.reviews);
   const userPromises = props.reviews.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
     console.log("API response for", review.email, ":", response);
