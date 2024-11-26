@@ -30,14 +30,24 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { defineEmits, defineProps, onMounted, ref } from 'vue';
+import { defineEmits, defineProps, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const userMap = ref({})
 
-onMounted(async () => {
-  const reviewsArray = [...props.reviews];
-  console.log(reviewsArray);
+// watch로 props.reviews 데이터 변경 감지
+watch(() => props.reviews, (newReviews) => {
+  if (newReviews && newReviews.length > 0) {
+    console.log("새로운 reviews 데이터:", newReviews);
+    const reviewsArray = [...newReviews];
+
+    // 비동기 API 호출 및 데이터 처리
+    processReviews(reviewsArray);
+  }
+});
+
+// 리뷰 데이터를 처리하는 함수
+const processReviews = async (reviewsArray) => {
   const userPromises = reviewsArray.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
     console.log("API response for", review.email, ":", response);
@@ -47,15 +57,19 @@ onMounted(async () => {
         nickname: response.data.nickname,
         imgId: response.data.imgId
       }
-    }
-})
-  const results = await Promise.all(userPromises)
-  console.log("results : ", results);
+    };
+  });
+
+  const results = await Promise.all(userPromises);
+
+  // userMap 업데이트
   results.forEach(result => {
-    userMap.value[result.email] = result.userInfo
-    console.log("result.userInfo : " + result.userInfo);
-  })
-})
+    userMap.value[result.email] = result.userInfo;
+    console.log("User info for", result.email, ":", result.userInfo);
+  });
+
+  console.log("최종 userMap:", userMap.value);
+};
 
 function formatDate(dateString) {
   const date = new Date(dateString);
