@@ -10,7 +10,7 @@
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h3 class="m-0">관심 가판대</h3>
+                            <h3 class="m-0">책갈피한 가판대</h3>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" v-model="showOnlySoldOut" id="soldOutCheck" @change="filterBookmarks">
                                 <label class="form-check-label" for="soldOutCheck">
@@ -42,12 +42,12 @@
                                 class="bookmark-item card border-0 shadow-sm mb-3"
                                 @click="goToDetail(board)">
                                 <div class="card-body d-flex align-items-center">
-                                    <img :src="board.image_url || '/default-book.jpg'" :alt="board.title" 
+                                    <img :src="board.imageFileDTOList?.length ? API_URLS.BOARD + '/api/board/read/download/' + board.imageFileDTOList[0].imgId : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKC5SbJx2Wf9ewguE1uvgE3zc5TRnX1XfOsA&s'" alt="Book Image" 
                                         class="book-cover me-3" 
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted small">{{ formatDate(board.created_at) }}</span>
+                                            <span class="text-muted small">{{ formatDate(board.insertDatetime) }}</span>
                                             <span class="badge" :class="board.is_sold ? 'bg-secondary' : 'bg-custom-brown'">
                                                 {{ board.is_sold ? '판매완료' : '판매중' }}
                                             </span>
@@ -87,6 +87,10 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SideBar from './SideBar.vue';
+
+const API_URLS = {
+  BOARD: process.env.NODE_ENV === 'production' ? import.meta.env.VITE_API_BOARD : '',
+};
 
 const store = useMainStore();
 const {loginInfo} = storeToRefs(store);

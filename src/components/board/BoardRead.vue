@@ -183,7 +183,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CommentListForm from './CommentListForm.vue'; //댓글 목록 컴포넌트 import
 import DeleteModal from './DeleteModal.vue'; //삭제 모달창 import
     const store = useMainStore();
-    const{loginInfo} = storeToRefs(store);
+    const{loginInfo,keyword,paginationData} = storeToRefs(store);
     const route = useRoute();
     const router = useRouter();
     const board = ref(null); // 게시물 정보
@@ -296,7 +296,7 @@ async function confirmDelete() {
       alert("게시글이 삭제되었습니다.");
       keyword.value='';
       paginationData.value.page=1;
-      goToBoardList(); // 삭제후 목록 페이지로 이동
+      router.replace("/board/list");
     } else {
       alert("삭제 실패: " + response.data.message);
     }

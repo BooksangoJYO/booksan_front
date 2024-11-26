@@ -210,6 +210,10 @@ const goToPage = (pageNum) => {
     paginationData.value.page = pageNum;
   }
   fetchBoardList();
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // 부드러운 스크롤 효과
+  });
 };
 
 // 게시글 등록 이동
@@ -445,10 +449,11 @@ watch([() => paginationData.value.page,selectedCategoryId.value], () => {
 }
 
 .board-item-image img {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
+  width: 150px;
+  height: 170px;
+  object-fit: contain;
   border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 /* 텍스트 상세 정보 */

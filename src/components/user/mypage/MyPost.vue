@@ -10,7 +10,7 @@
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h3 class="m-0">나의 도서 가판대</h3>
+                            <h3 class="m-0">나의 판매 가판대</h3>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" v-model="showOnlySoldOut" id="soldOutCheck" @change="filterPosts">
                                 <label class="form-check-label" for="soldOutCheck">
@@ -48,7 +48,7 @@
                                         style="width: 80px; height: 80px; object-fit: cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted small">{{ formatDate(board.insertDatetime) }}</span>
+                                            <span class="text-muted small">{{ formatTimeAgo(board.insertDatetime) }}</span>
                                             <span class="badge" :class="board.status === 'Y' ? 'bg-secondary' : 'bg-custom-brown'">
                                                 {{ board.status === 'Y' ? '판매완료' : '판매중' }}
                                             </span>
@@ -119,7 +119,21 @@ const pageNumbers = computed(() => {
     }
     return numbers;
 });
+function formatTimeAgo(datetime) {
+  const date = new Date(datetime);
+  const now = new Date();
+  const diff = now - date;
 
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}일`;
+  if (hours > 0) return `${hours}시간`;
+  if (minutes > 0) return `${minutes}분`;
+  return `${seconds}초`;
+}
 // 페이지 변경 함수
 const changePage = async (page) => {
     console.log('changePage 호출됨:', page);

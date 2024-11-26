@@ -12,12 +12,6 @@
             class="room-item"
           >
             <div class="chat-item">
-              <div class="avatar-container">
-                <div class="avatar">
-                  <img :src="room.otherUserProfile || defaultProfile" :alt="getOtherUserEmail(room)">
-                </div>
-                <div class="notification-badge" v-if="room.hasNewMessage"></div>
-              </div>
               <div class="message">
                 <div class="text">{{ room.name }}</div>
                 <div class="notification-indicator" v-if="room.hasNewMessage">
@@ -54,7 +48,6 @@ const fetchAlertRooms = async () => {
       ...room,
       hasNewMessage: true
     }));
-    await Promise.all(data.alertRooms.map(fetchUserProfile));
   }
   } catch (error) {
     console.error("채팅방 목록을 가져오는 중 오류 발생:", error);

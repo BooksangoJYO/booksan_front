@@ -11,8 +11,8 @@
             class="board-item"
           >
             <div class="book-item" @click="openRead(board.dealId)">
-              <div class="image-container">
-                <img :src="API_URLS.BOARD+'/api/download'+board.bookImageUrl" class="book-image"/>
+              <div class="image-container" v-if="board.imageFileDTOList && board.imageFileDTOList.length > 0">
+                <img :src="API_URLS.BOARD+'/api/board/read/download/'+board.imageFileDTOList[0].imgId" class="book-image"/>
               </div>
               <div class="message">
                 <div class="board-title">{{ board.title }}</div>

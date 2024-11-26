@@ -4,7 +4,7 @@
     <div v-if="reviews && reviews.length">
       <div class="review-container" v-for="(review, index) in reviews" :key="index">
         <div class="review-header">
-          <span class="review-author">{{ userMap[review.email]?.nickname }}</span>
+          <span class="review-author">{{ userMap[review.email]?.nickname || 'Unknown User' }}</span>
           <span class="review-date">{{ formatDate(review.insertDatetime) }}</span>
         </div>
         <div class="review-content" v-if="!review.isEditing">
@@ -30,32 +30,52 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { defineEmits, defineProps, onMounted, ref } from 'vue';
+import { defineEmits, defineProps, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const userMap = ref({})
 
-onMounted(async () => {
-  console.log("props.reviews:", props.reviews);
-  const userPromises = props.reviews.map(async review => {
+//게시글 단건 조회(부모 컴포넌트)에서 책리뷰 목록 (자식 컴포넌트)로 값 전달
+const props = defineProps({
+  reviews: Array,
+  isbn: String
+});
+
+// watch로 props.reviews 데이터 변경 감지
+watch(() => props.reviews, (newReviews) => {
+  if (newReviews && newReviews.length > 0) {
+    console.log("새로운 reviews 데이터:", newReviews);
+    const reviewsArray = [...newReviews];
+
+    // 비동기 API 호출 및 데이터 처리
+    processReviews(reviewsArray);
+  }
+});
+
+// 리뷰 데이터를 처리하는 함수
+const processReviews = async (reviewsArray) => {
+  const userPromises = reviewsArray.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
     console.log("API response for", review.email, ":", response);
-    api.getUserInfoByEmail(review.email)
-      .then(response => ({
-        email: review.email,
-        userInfo: {
-          nickname: response.data.nickname,
-          imgId: response.data.imgId
-        }
-      }))
-})
-  const results = await Promise.all(userPromises)
-  console.log("results : ", results);
+    return {
+      email: review.email,
+      userInfo: {
+        nickname: response.data.nickname,
+        imgId: response.data.imgId
+      }
+    };
+  });
+
+  const results = await Promise.all(userPromises);
+
+  // userMap 업데이트
   results.forEach(result => {
-    userMap.value[result.email] = result.userInfo
-    console.log("result.userInfo : " + result.userInfo);
-  })
-})
+    userMap.value[result.email] = result.userInfo;
+    console.log("User info for", result.email, ":", result.userInfo);
+  });
+
+  console.log("최종 userMap:", userMap.value);
+};
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -81,11 +101,6 @@ const store = useMainStore();
 const{loginInfo} = storeToRefs(store);
 
 const route= useRoute();
-//게시글 단건 조회(부모 컴포넌트)에서 책리뷰 목록 (자식 컴포넌트)로 값 전달
-const props = defineProps({
-  reviews: Array,
-  isbn: String
-});
 
 //책리뷰 목록(자식컴포넌트)에서 게시글 단건조회(부모컴포넌트)로 이벤트 전달
 const emit = defineEmits(['updateBookComment', 'deleteBookComment']);
