@@ -30,23 +30,26 @@
 import api from '@/api/api';
 import { useMainStore } from '@/store/mainStore';
 import { storeToRefs } from 'pinia';
-import { defineEmits, defineProps, onMounted, ref } from 'vue';
+import { defineEmits, defineProps, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const userMap = ref({})
 
-onMounted(async () => {
-  console.log('Props:', props);
-  console.log('Reviews:', props.reviews);
-
-  if (!props.reviews || !Array.isArray(props.reviews)) {
-    console.warn('Reviews prop is not an array or is missing');
-    return;
+onMounted(() => {
+  if (props.reviews && props.reviews.length > 0) {
+    fetchUserInfo();
   }
+});
 
+watch(() => props.reviews, (newReviews) => {
+  if (newReviews && newReviews.length > 0) {
+    fetchUserInfo();
+  }
+}, { immediate: true });
+
+async function fetchUserInfo() {
   const userPromises = props.reviews.map(async review => {
     const response = await api.getUserInfoByEmail(review.email);
-    console.log("API response for", review.email, ":", response);
     return {
       email: review.email,
       userInfo: {
@@ -57,12 +60,17 @@ onMounted(async () => {
   });
 
   const results = await Promise.all(userPromises);
+  results.forEach(result => {
+    userMap.value[result.email] = result.userInfo;
+  });
+}
+
+  const results = await Promise.all(userPromises);
   console.log("results : ", results);
   results.forEach(result => {
     userMap.value[result.email] = result.userInfo;
     console.log("result.userInfo : " + result.userInfo);
   });
-});
 
 function formatDate(dateString) {
   const date = new Date(dateString);
