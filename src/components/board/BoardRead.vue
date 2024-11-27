@@ -371,6 +371,7 @@ const openChat = async () =>{
     }
     else{
       console.log("오픈챗실행");
+      sessionStorage.removeItem('chat.roomId');
       const writerEmail = board.value.email;
       const dealId = board.value.dealId;
       await api.postChatRoom(board.value.title,dealId,writerEmail)

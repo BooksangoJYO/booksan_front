@@ -81,9 +81,9 @@ import { computed, reactive, ref } from "vue";
   });
   
   // 검색 API 호출
-  const searchBook = async () => {
+  const searchBook = async (pageNum) => {
     try {
-      const response = await api.getBooksInfo(keyword.value, 1, 10);
+      const response = await api.getBooksInfo(keyword.value, pageNum || 1, 10);
       const responseData = response.data;
       data.books = responseData.dtoList || [];
       data.page = responseData.page;
@@ -101,8 +101,7 @@ import { computed, reactive, ref } from "vue";
   // 특정 페이지로 이동
   const goToPage = (pageNum) => {
     if (pageNum < 1 || pageNum > data.totalPages) return;
-    data.page = pageNum;
-    searchBook();
+    searchBook(pageNum);
   };
   
   // 선택된 책 정보 부모로 전달
