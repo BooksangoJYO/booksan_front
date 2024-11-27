@@ -52,6 +52,7 @@ import SearchIcon from '@/assets/images/searchIcon.svg';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMainStore } from '@/store/mainStore';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const searchQuery = ref('');
