@@ -200,6 +200,7 @@ const exitChat = ()=>{
 }
 
 onMounted(async () => {
+  sessionStorage.removeItem('chat.roomId');
   stompClient.activate();
   chatRoomData.roomId='';
   const roomId = sessionStorage.getItem('chat.roomId')
