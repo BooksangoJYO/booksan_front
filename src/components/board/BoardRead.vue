@@ -293,7 +293,6 @@ async function confirmDelete() {
   try {
     const response = await api.deleteBoard(board.value.dealId, {email: board.value.email});
     if (response.data.status === "success") {
-      alert("게시글이 삭제되었습니다.");
       keyword.value='';
       paginationData.value.page=1;
       goToBoardList(); // 삭제후 목록 페이지로 이동
