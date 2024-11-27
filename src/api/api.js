@@ -306,8 +306,13 @@ export default {
     return apiClient.get(url);
   },
 
-  getRecommendedIsbnList() {
-    const url = `${API_URLS.BOARD}/api/board/recommend/books`;
+  getRecommendedIsbnListForAll() {
+    const url = `${API_URLS.BOARD}/api/board/recommend/booksForAll`;
+    return apiClient.get(url);
+  },
+
+  getRecommendedIsbnListForOne() {
+    const url = `${API_URLS.BOARD}/api/board/recommend/booksForOne`;
     return apiClient.get(url);
   },
 
