@@ -6,10 +6,10 @@
           type="text"
           v-model="keyword"
           placeholder="도서 제목을 입력해주세요"
-          @keydown.enter="searchBook"
+          @keydown.enter="doSearch()"
           class="search-input"
         />
-        <button @click="searchBook" class="search-button">검색</button>
+        <button @click="doSearch()" class="search-button">검색</button>
       </div>
   
       <!-- 검색 결과 리스트 -->
@@ -80,10 +80,11 @@ import { computed, reactive, ref } from "vue";
     return pages;
   });
   
+
   // 검색 API 호출
-  const searchBook = async (pageNum) => {
+  const searchBook = async () => {
     try {
-      const response = await api.getBooksInfo(keyword.value, pageNum || 1, 10);
+      const response = await api.getBooksInfo(keyword.value, data.page || 1, 10);
       const responseData = response.data;
       data.books = responseData.dtoList || [];
       data.page = responseData.page;
@@ -97,11 +98,17 @@ import { computed, reactive, ref } from "vue";
       console.error("도서 검색 오류:", error);
     }
   };
-  
+
+  const doSearch = ()=>{
+    data.page = 1;
+    searchBook();
+  };
+
   // 특정 페이지로 이동
   const goToPage = (pageNum) => {
     if (pageNum < 1 || pageNum > data.totalPages) return;
-    searchBook(pageNum);
+    data.page=pageNum
+    searchBook();
   };
   
   // 선택된 책 정보 부모로 전달
