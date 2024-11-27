@@ -18,7 +18,7 @@
       </div>
   
       <!-- 추천 도서 섹션 -->
-      <h2 class="recommendation-title">오직 당신만을 위한 AI큐레이션</h2>
+      <h2 class="recommendation-title">오직 당신만을 위한 큐레이션</h2>
       <div class="book-container">
         <div v-for="book in books" :key="book.isbn" class="book-card">
           <img :src="book.bookImageUrl" :alt="book.title" class="book-image">
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <h2 class="recommendation-title">베스트셀러 도서</h2>
+      <h2 class="recommendation-title">스테디셀러 도서</h2>
       <div class="book-container">
         <div v-for="board in data.boards" 
             :key="board.id" 
@@ -51,12 +51,15 @@ import MainLogo from '@/assets/images/mainLogo.png';
 import SearchIcon from '@/assets/images/searchIcon.svg';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useMainStore } from '@/store/mainStore';
 
 const router = useRouter();
 const searchQuery = ref('');
 const data = reactive({
     boards: []  // 빈 배열로 초기화
 });
+const store = useMainStore();
+const{loginInfo} = storeToRefs(store);
 
 // 추천 도서 로드
 const loadRecommendedBooks = async () => {
@@ -99,8 +102,13 @@ const handleSearch = () => {
 
 const getRecommendedIsbnList = async () => {
     try {
-        const response = await api.getRecommendedIsbnList();
-        books.value = response.data;
+        if (!loginInfo.value.email) {
+          const response = await api.getRecommendedIsbnListForOne();
+          books.value = response.data;
+        } else {
+          const response = await api.getRecommendedIsbnListForAll();
+           books.value = response.data;
+        }
     } catch (error) {
         console.error('추천 도서 데이터를 불러오지 못함');
     }
