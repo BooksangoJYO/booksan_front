@@ -326,7 +326,6 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
 }
-
 .nickname-input-group {
     display: flex;
     gap: 0.5rem;
@@ -413,8 +412,10 @@ onMounted(() => {
 /* 편집하기 버튼 */
 .btn-outline-secondary {
     margin-left: auto; /* 버튼을 오른쪽으로 밀기 */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
-
 .btn-button {
     background-color: #8B4513;
     border-color: #8B4513;
