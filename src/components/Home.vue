@@ -103,13 +103,8 @@ const handleSearch = () => {
 
 const getRecommendedIsbnList = async () => {
     try {
-        if (!loginInfo.value.email) {
-          const response = await api.getRecommendedIsbnListForAll();
-          books.value = response.data;
-        } else {
-          const response = await api.getRecommendedIsbnListForOne();
-           books.value = response.data;
-        }
+        const response = await api.getRecommendedIsbnListForAll();
+        books.value = response.data;
     } catch (error) {
         console.error('추천 도서 데이터를 불러오지 못함');
     }
