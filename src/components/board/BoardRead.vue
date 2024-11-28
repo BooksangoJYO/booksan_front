@@ -370,7 +370,6 @@ const openChat = async () =>{
     }
     else{
       console.log("오픈챗실행");
-      sessionStorage.removeItem('chat.roomId');
       const writerEmail = board.value.email;
       const dealId = board.value.dealId;
       await api.postChatRoom(board.value.title,dealId,writerEmail)
@@ -390,6 +389,10 @@ const openChat = async () =>{
 }
 
 const openSellerChat = async () => {
+    if(!loginInfo.value.email){
+      emitter.emit('show-modal');
+    }
+  sessionStorage.removeItem('chat.roomId');
   window.open(
           'https://www.booksan.shop/chat/room/'+board.value.dealId,
           '채팅방',
